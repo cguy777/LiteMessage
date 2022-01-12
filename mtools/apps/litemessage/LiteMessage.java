@@ -75,13 +75,8 @@ public class LiteMessage {
 				//menuMod.displaySettingsMenu();
 				break;
 				
-			//Display Help
-			case 3:
-				//menuMod.displayHelp();
-				break;
-				
 			//Exit
-			case 4:
+			case 3:
 				System.exit(0);
 				
 			}
