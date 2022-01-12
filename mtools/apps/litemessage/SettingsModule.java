@@ -36,6 +36,13 @@
 
 package mtools.apps.litemessage;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+
 import mtools.io.*;
 
 /**
@@ -44,10 +51,85 @@ import mtools.io.*;
  *
  */
 public class SettingsModule {
+	MConsole console;
 	MDisplay display;
 	MMenu menu;
+	Settings settings;
 	
-	public SettingsModule() {
+	
+	public SettingsModule(MConsole con) {
+		console = con;
+		display = new MDisplay();
+		menu = new MMenu("Settings Menu.  Please make a selection...");
+		settings = new Settings();
 		
+		menu.addMenuItem("Set Username");
+		
+		//Initially read the settings
+		readSettingsFromFile();
+	}
+	
+	/**
+	 * Reads the settings from the file and configures out {@link Settings} object to match.
+	 */
+	public void readSettingsFromFile() {
+		
+		//Open and then read the settings from the file.
+		try {
+			FileReader fReader = new FileReader("settings.cfg");
+			BufferedReader bReader = new BufferedReader(fReader);
+			settings.userName = bReader.readLine();
+			bReader.close();
+			fReader.close();
+		} catch (IOException e) {
+			System.err.println("Cannot access settings file!!! (settings.cfg)");
+		}
+	}
+	
+	/**
+	 * Writes whatever settings are configured in our {@link Settings} object to the cfg file.
+	 */
+	public void writeSettingsToFile() {
+		try {
+			FileWriter fWriter = new FileWriter("settings.cfg");
+			BufferedWriter bWriter = new BufferedWriter(fWriter);
+			
+			bWriter.write(settings.userName);
+			bWriter.newLine();
+		
+			bWriter.flush();
+			bWriter.close();
+			fWriter.close();
+		} catch (IOException e) {
+			System.err.println("Can not write to settings file!!! (settings.cfg)");
+		}
+	}
+	
+	/**
+	 * Call this from the main menu.
+	 */
+	public void run() {
+		menu.display();
+		
+		int selection = console.getInputInt();
+		
+		switch(selection) {
+		
+		//Set Username
+		case 0:
+			display.clear();
+			display.setBanner("Enter the username you would like displayed...");
+			display.display();
+			
+			settings.userName = console.getInputString();
+		}
+		
+		
+		//We write the settings back out to file.
+		writeSettingsToFile();
+	}
+	
+	public Settings getSettings() {
+		return settings;
 	}
 }

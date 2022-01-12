@@ -50,6 +50,9 @@ public class LiteMessage {
 		MenuModule menuMod = new MenuModule(console, menu);
 		MessagingControlModule cMod = null;
 		
+		SettingsModule sMod = new SettingsModule(console);
+		System.out.println(sMod.getSettings().userName);
+		
 		//Main control loop
 		while(true) {
 			menuMod.displayMainMenu();
@@ -72,7 +75,8 @@ public class LiteMessage {
 			
 			//Change settings
 			case 2:
-				//menuMod.displaySettingsMenu();
+				sMod.readSettingsFromFile();
+				sMod.run();
 				break;
 				
 			//Exit
