@@ -5,7 +5,7 @@ This is just a simple, lightweight, Java
 console app I am working on to develop my
 engineering and coding skills in my free
 time.  It is peer-to-peer, so it does not
-use and servers.  The only way to currently
+use any servers.  The only way to currently
 message somebody is to know their IP
 address.  So it is really only suitable for
 use within the same LAN.  Of course, if
