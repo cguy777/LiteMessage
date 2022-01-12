@@ -1,0 +1,19 @@
+Warning!  This program does not currently
+encrypt any messages/data that are/is sent!
+
+Message Somebody:
+if you want to message somebody, select this.
+The other client has to be waiting for you
+by selecting "Receive Messages" in order for
+you have to know the other client's IP
+address for the session to be successfully
+established.
+
+Receive Messages:
+Select this if somebody will else be
+initiating the message session.  They have
+to know your IP address.
+
+To exit while you are messaging somebody, type
+cmd-exit and it will disconnect you from the
+other client.
