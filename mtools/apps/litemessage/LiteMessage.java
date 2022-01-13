@@ -51,7 +51,8 @@ public class LiteMessage {
 		MessagingControlModule cMod = null;
 		
 		SettingsModule sMod = new SettingsModule(console);
-		System.out.println(sMod.getSettings().userName);
+		System.out.println(sMod.getSettings().thisUser.getName());
+		System.out.println(sMod.getSettings().thisUser.getUID());
 		
 		//Main control loop
 		while(true) {
@@ -75,8 +76,7 @@ public class LiteMessage {
 			
 			//Change settings
 			case 2:
-				sMod.readSettingsFromFile();
-				sMod.run();
+				sMod.configSettingsFromConsole();
 				break;
 				
 			//Exit

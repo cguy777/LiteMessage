@@ -63,7 +63,7 @@ public class SettingsModule {
 		menu = new MMenu("Settings Menu.  Please make a selection...");
 		settings = new Settings();
 		
-		menu.addMenuItem("Set Username");
+		menu.addMenuItem("Change display name");
 		
 		//Initially read the settings
 		readSettingsFromFile();
@@ -78,11 +78,76 @@ public class SettingsModule {
 		try {
 			FileReader fReader = new FileReader("settings.cfg");
 			BufferedReader bReader = new BufferedReader(fReader);
-			settings.userName = bReader.readLine();
+			String selfContactInfo = bReader.readLine();
+			
+			String username = null;
+			String uid = null;
+			
+			int count = 0;
+			
+			//NEED TO ORGANIZE THE PARSING AND SETTING CODE BETTER
+			//Parse the Self Contact info and grab the user/display name
+			while(true) {
+				if(selfContactInfo.charAt(count) != ',') {
+					if(username == null)
+						username = String.valueOf(selfContactInfo.charAt(count));
+					else
+						username = username + String.valueOf(selfContactInfo.charAt(count));
+					
+				} else {
+					break;
+				}
+				count++;
+				
+			}
+			
+			//Advance the counter past the comma.
+			count++;
+			
+			///Grab the UID
+			while(true) {
+				//We'll read to the end of the line
+				if(count < (selfContactInfo.length())) {
+					if(uid == null)
+						uid = String.valueOf(selfContactInfo.charAt(count));
+					else
+						uid = uid + String.valueOf(selfContactInfo.charAt(count));
+					
+				} else {
+					break;
+				}
+				count++;
+				
+			}
+			
+			//if the name is the default value, we'll get a new name from the user.
+			if(username.matches("errnoname")) {
+				display.clear();
+				display.setBanner("Enter a display name...");
+				display.display();
+				settings.thisUser.setName(console.getInputString());
+			} else {
+				settings.thisUser.setName(username);
+			}
+			
+			//If the UID is the default value, we will generate a new one
+			if(uid.matches("UID1234567")) {
+				settings.thisUser.generateUID();
+			} else {
+				settings.thisUser.setUID(uid);
+			}
+			
 			bReader.close();
 			fReader.close();
+			
+			//If anything was default, it means it was changed.
+			//So we will write those changes to the settings.cfg file.
+			if(username.matches("errnoname") || uid.matches("UID1234567")) {
+				writeSettingsToFile();
+			}
+		
 		} catch (IOException e) {
-			System.err.println("Cannot access settings file!!! (settings.cfg)");
+			System.err.println("Cannot access settings file, or file is corrupt!!! (settings.cfg)");
 		}
 	}
 	
@@ -94,7 +159,7 @@ public class SettingsModule {
 			FileWriter fWriter = new FileWriter("settings.cfg");
 			BufferedWriter bWriter = new BufferedWriter(fWriter);
 			
-			bWriter.write(settings.userName);
+			bWriter.write(settings.thisUser.getName() + "," + settings.thisUser.getUID());
 			bWriter.newLine();
 		
 			bWriter.flush();
@@ -108,7 +173,7 @@ public class SettingsModule {
 	/**
 	 * Call this from the main menu.
 	 */
-	public void run() {
+	public void configSettingsFromConsole() {
 		menu.display();
 		
 		int selection = console.getInputInt();
@@ -118,10 +183,10 @@ public class SettingsModule {
 		//Set Username
 		case 0:
 			display.clear();
-			display.setBanner("Enter the username you would like displayed...");
+			display.setBanner("Enter a display name...");
 			display.display();
 			
-			settings.userName = console.getInputString();
+			settings.thisUser.setName(console.getInputString());
 		}
 		
 		

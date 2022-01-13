@@ -36,19 +36,61 @@
 
 package mtools.apps.litemessage;
 
+import java.net.InetAddress;
+
 /**
- * A class just to store settings
+ * Simple class for storing information related to another user/contact
  * @author Noah
  *
  */
-public class Settings {
-	Contact thisUser;
+public class Contact {
+	
+	private String name;
+	private InetAddress ipAddress;
+	private String uniqueID;
 	
 	/**
-	 * Sets the settings to the default values.  Might be useful if we have trouble
-	 * reading from our settings file
+	 * Sets everything to their default values
 	 */
-	public Settings() {
-		thisUser = new Contact();
+	public Contact() {
+		name = "errnoname";
+		ipAddress = null;
+		uniqueID = "UID1234567";
+	}
+	
+	/**
+	 * Call this to generate a unique ID for this contact.
+	 * This should really only be called once for the "Self" contact.
+	 */
+	public void generateUID() {
+		//Generate a somewhat random number up to 9,999,999
+		long uidL = (long) ((float) (System.currentTimeMillis() * Math.random()) % 10000000);
+		String uidS = Long.toString(uidL);
+		
+		uniqueID = "UID" + uidS;
+	}
+	
+	public void setName(String n) {
+		name = n;
+	}
+	
+	public void setIPAddress(InetAddress ip) {
+		ipAddress = ip;
+	}
+	
+	public void setUID(String uid) {
+		uniqueID = uid;
+	}
+	
+	public String getName() {
+		return name;
+	}
+	
+	public InetAddress getIPAddress() {
+		return ipAddress;
+	}
+	
+	public String getUID() {
+		return uniqueID;
 	}
 }
