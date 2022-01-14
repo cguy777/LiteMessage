@@ -1,19 +1,43 @@
 Warning!  This program does not currently
 encrypt any messages/data that are/is sent!
 
-Message Somebody:
+Message Somebody
+================
 if you want to message somebody, select this.
 The other client has to be waiting for you
-by selecting "Receive Messages" in order for
-you have to know the other client's IP
-address for the session to be successfully
-established.
+by selecting "Receive Messages".  If it's the
+first time messaging that person, you have to
+know their IP address.  However, if you've
+messaged them before, you can enter their
+display name.
 
-Receive Messages:
+Receive Messages
+================
 Select this if somebody will else be
 initiating the message session.  They have
-to know your IP address.
+to know your IP address, if it's their first
+time messaging you.  However, if you've
+messaged them before, they can enter your
+display name.
 
+Settings
+========
+Display Name:
+determines what will show up on other's screens.
+Also determines how your contact will be stored.
+
+Dynamic UID:
+Enabling dynamic UID will allow the IP address
+of a contact to be updated even if the computer's
+generated unique ID does not match.  In other words, 
+enabling this could easily allow somebody to
+impersonate another individual while chatting with
+you.  However, this is useful if your group switches
+between computers frequently.
+
+
+Special Commands While Chatting
+===============================
 To exit while you are messaging somebody, type
 cmd-exit and it will disconnect you from the
 other client.
