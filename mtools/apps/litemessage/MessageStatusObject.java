@@ -44,7 +44,7 @@ package mtools.apps.litemessage;
  */
 public class MessageStatusObject {
 
-	MessagingStatus mState;
+	private MessagingStatus mState;
 	
 	public MessageStatusObject() {
 		mState = MessagingStatus.NOT_MESSAGING;

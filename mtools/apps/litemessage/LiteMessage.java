@@ -49,10 +49,10 @@ public class LiteMessage {
 		MMenu menu = new MMenu();
 		MenuModule menuMod = new MenuModule(console, menu);
 		MessagingControlModule cMod = null;
-		
 		SettingsModule sMod = new SettingsModule(console);
-		System.out.println(sMod.getSettings().thisUser.getName());
-		System.out.println(sMod.getSettings().thisUser.getUID());
+		
+		ContactManager cMan = new ContactManager(sMod.getSettings());
+		cMan.readContacts();
 		
 		//Main control loop
 		while(true) {
@@ -64,13 +64,13 @@ public class LiteMessage {
 			switch(choice) {
 			//Message Somebody
 			case 0:
-				cMod = new MessagingControlModule(display);
+				cMod = new MessagingControlModule(display, sMod.getSettings().thisUser, cMan);
 				cMod.startInitiateMessageLogic();
 				break;
 			
 			//Receive Messages
 			case 1:
-				cMod = new MessagingControlModule(display);
+				cMod = new MessagingControlModule(display, sMod.getSettings().thisUser, cMan);
 				cMod.startReceiveMessageLogic();
 				break;
 			

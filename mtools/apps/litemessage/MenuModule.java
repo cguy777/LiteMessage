@@ -53,10 +53,10 @@ import mtools.io.*;
  */
 public class MenuModule implements IOModule {
 	
-	MenuState mState;
-	MMenu menu;
-	MConsole console;
-	int menuChoice;
+	private MenuState mState;
+	private MMenu menu;
+	private MConsole console;
+	private int menuChoice;
 
 	public MenuModule(MConsole con, MMenu m) {
 		menu = m;

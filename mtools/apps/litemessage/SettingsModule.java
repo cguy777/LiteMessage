@@ -51,10 +51,10 @@ import mtools.io.*;
  *
  */
 public class SettingsModule {
-	MConsole console;
-	MDisplay display;
-	MMenu menu;
-	Settings settings;
+	private MConsole console;
+	private MDisplay display;
+	private MMenu menu;
+	private Settings settings;
 	
 	
 	public SettingsModule(MConsole con) {
@@ -64,6 +64,7 @@ public class SettingsModule {
 		settings = new Settings();
 		
 		menu.addMenuItem("Change display name");
+		menu.addMenuItem("Enable/disable dynamic UID updates");
 		
 		//Initially read the settings
 		readSettingsFromFile();
@@ -80,6 +81,8 @@ public class SettingsModule {
 			BufferedReader bReader = new BufferedReader(fReader);
 			String selfContactInfo = bReader.readLine();
 			
+			boolean isBlank = false;
+			
 			String username = null;
 			String uid = null;
 			
@@ -88,6 +91,13 @@ public class SettingsModule {
 			//NEED TO ORGANIZE THE PARSING AND SETTING CODE BETTER
 			//Parse the Self Contact info and grab the user/display name
 			while(true) {
+				//If file is blank, set a default username.
+				if(selfContactInfo == null) {
+					username = "errnoname";
+					//If the first line is null, then the config is blank.
+					isBlank = true;
+					break;
+				}
 				if(selfContactInfo.charAt(count) != ',') {
 					if(username == null)
 						username = String.valueOf(selfContactInfo.charAt(count));
@@ -106,6 +116,13 @@ public class SettingsModule {
 			
 			///Grab the UID
 			while(true) {
+				//If file is blank, set a default UID.
+				//if(selfContactInfo == null) {
+				if(isBlank) {
+					uid = "1234567";
+					break;
+				}
+				
 				//We'll read to the end of the line
 				if(count < (selfContactInfo.length())) {
 					if(uid == null)
@@ -131,23 +148,55 @@ public class SettingsModule {
 			}
 			
 			//If the UID is the default value, we will generate a new one
-			if(uid.matches("UID1234567")) {
+			if(uid.matches("1234567")) {
 				settings.thisUser.generateUID();
 			} else {
 				settings.thisUser.setUID(uid);
 			}
 			
+			boolean dUIDUpdate;
+			String uidup = bReader.readLine();
+			//default behavior is false, unless explicitly stated to be true
+			if(isBlank) {
+				dUIDUpdate = false;
+			} else {
+				if(uidup.matches("true")) {
+					dUIDUpdate = true;
+				} else {
+					dUIDUpdate = false;
+				}
+			}
+			settings.dynamicUIDUpdates = dUIDUpdate;
+			
 			bReader.close();
 			fReader.close();
 			
-			//If anything was default, it means it was changed.
+			//If anything was default (or blank), it means it was changed.
 			//So we will write those changes to the settings.cfg file.
-			if(username.matches("errnoname") || uid.matches("UID1234567")) {
+			if(username.matches("errnoname") || uid.matches("1234567") || isBlank) {
 				writeSettingsToFile();
 			}
-		
+		//If we can't read settings.cfg, we'll try to create a default one.
 		} catch (IOException e) {
-			System.err.println("Cannot access settings file, or file is corrupt!!! (settings.cfg)");
+			System.err.println("Can not access settings file, or file is corrupt!!! (settings.cfg)");
+			try {
+				FileWriter fWriter = new FileWriter("settings.cfg");
+				BufferedWriter bWriter = new BufferedWriter(fWriter);
+				
+				settings.thisUser.setName("errnoname");
+				settings.thisUser.setUID("1234567");
+				settings.dynamicUIDUpdates = false;
+				
+				System.err.println("Default settings file has been created.");
+				bWriter.close();
+				fWriter.close();
+				
+				//We'll start over and make sure at least the defaults can be read.
+				readSettingsFromFile();
+				
+			} catch (IOException e1) {
+				System.err.println("Can not write default settings file.  Please check user and application permissions.");
+			}
 		}
 	}
 	
@@ -161,7 +210,13 @@ public class SettingsModule {
 			
 			bWriter.write(settings.thisUser.getName() + "," + settings.thisUser.getUID());
 			bWriter.newLine();
-		
+			
+			if(settings.dynamicUIDUpdates == true) {
+				bWriter.write("true");
+			} else {
+				bWriter.write("false");
+			}
+			
 			bWriter.flush();
 			bWriter.close();
 			fWriter.close();
@@ -187,8 +242,29 @@ public class SettingsModule {
 			display.display();
 			
 			settings.thisUser.setName(console.getInputString());
-		}
 		
+		//Enable/disable dynamic UID updates
+		case 1:
+			display.clear();
+			display.setBanner("Dynamic UID");
+			display.addLine("Enabling dynamic UID will allow the IP address of a contact to be updated "
+					+ "even if the computer's generated unique ID does not match.  In other words, "
+					+ "enabling this could easily allow somebody to impersonate another individual "
+					+ "while chatting with you.  However, this is useful if your group switches between "
+					+ "computers frequently.");
+			display.addLine(" ");
+			display.addLine("0. Enable");
+			display.addLine("1. Disable");
+			display.display();
+			
+			int choice = console.getInputInt();
+			
+			if(choice == 0) {
+				settings.dynamicUIDUpdates = true;
+			} else if(choice == 1) {
+				settings.dynamicUIDUpdates = false;
+			}
+		}
 		
 		//We write the settings back out to file.
 		writeSettingsToFile();

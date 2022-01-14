@@ -37,12 +37,22 @@
 package mtools.apps.litemessage;
 
 /**
- * A class just to store settings
+ * A class just to store settings.  {@link Contact} thisUser is a contact of this client.
+ * It contains the display name, unique ID, and IP address (when known).
+ * 
+ * dyanmicUIDUpdates is a boolean that determines if a contact's unique ID should
+ * be updated when a change is detected.  When true, if a new contact with the same name as an
+ * existing contact is detected, the contact is updated with the new UID.  When false, if a
+ * new contact with the same name is detected, it does not update the contact info.  This
+ * prevents somebody from spoofing somebody else's name, and then having their IP entered
+ * as the correct IP for the contact.  Can be used as a small layer of assurance and security.
+ * It is set to false by default for a default secure posture.
  * @author Noah
  *
  */
 public class Settings {
 	Contact thisUser;
+	boolean dynamicUIDUpdates;
 	
 	/**
 	 * Sets the settings to the default values.  Might be useful if we have trouble
@@ -50,5 +60,6 @@ public class Settings {
 	 */
 	public Settings() {
 		thisUser = new Contact();
+		dynamicUIDUpdates = false;
 	}
 }

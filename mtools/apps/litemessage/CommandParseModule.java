@@ -46,7 +46,7 @@ import java.net.Socket;
  */
 public class CommandParseModule {
 	
-	Socket socket;
+	private Socket socket;
 	
 	public CommandParseModule(Socket s) {
 		socket = s;

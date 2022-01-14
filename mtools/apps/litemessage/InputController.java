@@ -46,9 +46,9 @@ import mtools.io.*;
  *
  */
 public class InputController {
-	MConsole console;
-	TransmitModule tMod;
-	ReceiveModule rMod;
+	private MConsole console;
+	private TransmitModule tMod;
+	private ReceiveModule rMod;
 	
 	public InputController() {
 		console = new MConsole();

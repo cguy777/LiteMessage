@@ -55,15 +55,16 @@ import mtools.io.*;
 
 public class ReceiveModule extends Thread {
 	
-	MDisplay display;
-	MConsole console;
-	ServerSocket rxServerSocket;
-	Socket rxSocket;
-	DataInputStream rxStream;
-	CommandParseModule pMod;
-	String rxData;
-	int port;
-	MessageStatusObject mState;
+	private MDisplay display;
+	private MConsole console;
+	private ServerSocket rxServerSocket;
+	private Socket rxSocket;
+	private DataInputStream rxStream;
+	private CommandParseModule pMod;
+	private String rxData;
+	private int port;
+	private MessageStatusObject mState;
+	private Contact otherUser;
 	
 	/**
 	 * The constructor.  Most importantly, it constructs the {@link ServerSocket}.
@@ -78,6 +79,7 @@ public class ReceiveModule extends Thread {
 		console = con;
 		port = p;
 		mState = ms;
+		otherUser = new Contact();
 		
 		try {
 			rxServerSocket = new ServerSocket(port);
@@ -106,11 +108,17 @@ public class ReceiveModule extends Thread {
 	
 	/**
 	 * Waits for another client to reach out and establish
-	 * a connection.
+	 * a connection.  It also grabs info about the other
+	 * client and saves it to form the contact table.
 	 */
 	public void waitForConnection() {
 		try {
 			rxSocket = rxServerSocket.accept();
+			rxStream = new DataInputStream(rxSocket.getInputStream());
+			String otherUserData = rxStream.readUTF();
+			parseOtherUserData(otherUserData);
+			otherUser.setIPAddress(rxSocket.getInetAddress());
+			
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -140,6 +148,10 @@ public class ReceiveModule extends Thread {
 		return mState.getMessagingState();
 	}
 	
+	public Contact getContact() {
+		return otherUser;
+	}
+	
 	/**
 	 * Since we need to be able to display messages that come in at any time,
 	 * the {@link ReceieveModule} is run as a thread in the background.
@@ -155,8 +167,8 @@ public class ReceiveModule extends Thread {
 				//if(!rxServerSocket.isBound())
 				//rxSocket = rxServerSocket.accept();
 			
-				rxStream = new DataInputStream(rxSocket.getInputStream());
-			} catch (IOException e) {
+				//rxStream = new DataInputStream(rxSocket.getInputStream());
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		
@@ -173,7 +185,7 @@ public class ReceiveModule extends Thread {
 				//We'll use System.out instead of
 				//our Display class so we can keep
 				//a log of the messages on the screen.
-				System.out.println("Them: " + rxData);
+				System.out.println(otherUser.getName() + ": " + rxData);
 				
 				//If the exit command is received, we close connections and display a message.
 				if(pMod.evaluateText(rxData) == CommandType.EXIT) {
@@ -191,5 +203,47 @@ public class ReceiveModule extends Thread {
 				
 			}
 
+	}
+	
+	private void parseOtherUserData(String data) {
+		int count = 0;
+		String username = null;
+		String uid = null;
+		
+		//Grab the display name.
+		while(true) {
+			if(data.charAt(count) != ',') {
+				if(username == null)
+					username = String.valueOf(data.charAt(count));
+				else
+					username = username + String.valueOf(data.charAt(count));
+			} else {
+				break;
+			}
+			count++;
+			
+		}
+		
+		//Advance the counter past the comma.
+		count++;
+		
+		///Grab the UID
+		while(true) {
+			//We'll read to the end of the line
+			if(count < (data.length())) {
+				if(uid == null)
+					uid = String.valueOf(data.charAt(count));
+				else
+					uid = uid + String.valueOf(data.charAt(count));
+				
+			} else {
+				break;
+			}
+			count++;
+			
+		}
+		
+		otherUser.setName(username);
+		otherUser.setUID(uid);
 	}
 }

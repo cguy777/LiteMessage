@@ -51,14 +51,15 @@ import mtools.io.*;
  */
 public class TransmitModule {
 	
-	MDisplay display;
-	MConsole console;
-	Socket txSocket;
-	DataOutputStream txStream;
-	CommandParseModule pMod;
-	String txData;
-	int port;
-	MessageStatusObject mState;
+	private MDisplay display;
+	private MConsole console;
+	private Socket txSocket;
+	private DataOutputStream txStream;
+	private CommandParseModule pMod;
+	private String txData;
+	private int port;
+	private MessageStatusObject mState;
+	private Contact thisUser;
 	
 	/**
 	 * The constructor.  Most importantly, it constructs/establishes the {@link Socket}.
@@ -68,16 +69,21 @@ public class TransmitModule {
 	 * @param p
 	 * @param ms
 	 */
-	public TransmitModule(MDisplay dis, MConsole con, InetAddress add, int p, MessageStatusObject ms) {
+	public TransmitModule(MDisplay dis, MConsole con, InetAddress add, int p, MessageStatusObject ms, Contact c) {
 		display = dis;
 		console = con;
 		mState = ms;
+		thisUser = c;
 		
 		port = p;
 		try {
 			txSocket = new Socket(add, port);
 			txStream = new DataOutputStream(txSocket.getOutputStream());
 			pMod = new CommandParseModule(txSocket);
+			
+			//Send the other client info about us so they can create a contact.
+			txStream.writeUTF(thisUser.getName() + "," + thisUser.getUID());
+			
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

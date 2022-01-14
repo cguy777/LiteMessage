@@ -51,23 +51,27 @@ import mtools.io.MMenu;
  *
  */
 public class MessagingControlModule {
-	int INIT_STANDARD_PORT = 5676;
-	int ACCEPT_STANDARD_PORT = 5677;
+	private int INIT_STANDARD_PORT = 5676;
+	private int ACCEPT_STANDARD_PORT = 5677;
 	
-	MConsole console;
-	MDisplay display;
-	MMenu menu;
-	TransmitModule txMod;
-	ReceiveModule rxMod;
-	InetAddress distantAddress;
-	MessageStatusObject mState;
+	private MConsole console;
+	private MDisplay display;
+	private MMenu menu;
+	private TransmitModule txMod;
+	private ReceiveModule rxMod;
+	private InetAddress distantAddress;
+	private MessageStatusObject mState;
+	private Contact thisUser;
+	private ContactManager cMan;
 	
 	/**
 	 * The constructor.
 	 * @param dis
 	 */
-	public MessagingControlModule(MDisplay dis) {
+	public MessagingControlModule(MDisplay dis, Contact c, ContactManager cm) {
 		display = dis;
+		thisUser = c;
+		cMan = cm;
 		console = new MConsole();
 		menu = new MMenu();
 		mState = new MessageStatusObject();
@@ -81,17 +85,23 @@ public class MessagingControlModule {
 	 */
 	public void startInitiateMessageLogic() {
 		display.clear();
-		display.setBanner("Input IP address");
+		display.setBanner("Input contact name or IP address");
 		display.display();
 		
 		//We'll drop down a line and print a thing to indicate it's ready to type.
 		System.out.print("\n> ");
-		String addressFromUser = console.getInputString();
+		String input = console.getInputString();
 		InetAddress address = null;
 		
 		
 		try {
-			address = InetAddress.getByName(addressFromUser);
+			//We'll determine if the input is a contact or an IP address, and act accordingly.
+			Contact c = cMan.getContactByName(input);
+			if(c != null) {
+				address = c.getIPAddress();
+			} else {
+				address = InetAddress.getByName(input);
+			}
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
 		}
@@ -102,18 +112,20 @@ public class MessagingControlModule {
 		
 		//We initiate the TransmitModule first, and it's constructor will
 		//reach out and let the other client know that we are attempting to connect
-		txMod = new TransmitModule(display, console, address, INIT_STANDARD_PORT, mState);
+		txMod = new TransmitModule(display, console, address, INIT_STANDARD_PORT, mState, thisUser);
 		rxMod = new ReceiveModule(display, console, ACCEPT_STANDARD_PORT, mState);
 
 		//The other client will then reach back to us
 		//We will wait for the full circuit to be established.
 		rxMod.waitForConnection();
-		rxMod.start();
 		
-		display.setBanner("Connected");
+		rxMod.start();
+		display.setBanner("Connected with " + rxMod.getContact().getName());
 		display.display();
 		
 		mState.setMessagingState(MessagingStatus.INITIATED_MESSAGING);
+		
+		cMan.addContact(rxMod.getContact());
 	}
 	
 	/**
@@ -137,14 +149,15 @@ public class MessagingControlModule {
 		rxMod.waitForConnection();
 		address = rxMod.getBindedAddress();
 		
-		txMod = new TransmitModule(display, console, address, ACCEPT_STANDARD_PORT, mState);
+		txMod = new TransmitModule(display, console, address, ACCEPT_STANDARD_PORT, mState, thisUser);
 		
-		display.setBanner("Connected");
+		display.setBanner("Connected with " + rxMod.getContact().getName());
 		display.display();
 		
 		rxMod.start();
 		
 		mState.setMessagingState(MessagingStatus.ACCECPTED_MESSAGING);
+		cMan.addContact(rxMod.getContact());
 	}
 	
 	/**

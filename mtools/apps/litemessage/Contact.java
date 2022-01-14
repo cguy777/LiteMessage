@@ -55,7 +55,7 @@ public class Contact {
 	public Contact() {
 		name = "errnoname";
 		ipAddress = null;
-		uniqueID = "UID1234567";
+		uniqueID = "1234567";
 	}
 	
 	/**
@@ -67,7 +67,7 @@ public class Contact {
 		long uidL = (long) ((float) (System.currentTimeMillis() * Math.random()) % 10000000);
 		String uidS = Long.toString(uidL);
 		
-		uniqueID = "UID" + uidS;
+		uniqueID = uidS;
 	}
 	
 	public void setName(String n) {
