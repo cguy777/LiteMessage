@@ -95,8 +95,13 @@ public class LiteMessage {
 						cMod.sendData(data);
 					}
 				}
-			
-				cMod.clearConnections();
+				try {
+					cMod.clearConnections();
+				} catch(Exception e) {
+					//Not doing anything
+					//Just helps catch an exception caused by a inputting a bad IP address
+					//or contact name
+				}
 			}
 		
 		}

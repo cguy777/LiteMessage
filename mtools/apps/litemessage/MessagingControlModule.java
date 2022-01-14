@@ -102,8 +102,9 @@ public class MessagingControlModule {
 			} else {
 				address = InetAddress.getByName(input);
 			}
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
+		} catch (Exception e) {
+			System.err.println("Could not establish a connection.");
+			return;
 		}
 		
 		display.clear();
@@ -112,9 +113,13 @@ public class MessagingControlModule {
 		
 		//We initiate the TransmitModule first, and it's constructor will
 		//reach out and let the other client know that we are attempting to connect
-		txMod = new TransmitModule(display, console, address, INIT_STANDARD_PORT, mState, thisUser);
-		rxMod = new ReceiveModule(display, console, ACCEPT_STANDARD_PORT, mState);
-
+		try {
+			txMod = new TransmitModule(display, console, address, INIT_STANDARD_PORT, mState, thisUser);
+			rxMod = new ReceiveModule(display, console, ACCEPT_STANDARD_PORT, mState);
+		} catch(Exception e) {
+			System.err.println("Could not establish a connection.");
+			return;
+		}
 		//The other client will then reach back to us
 		//We will wait for the full circuit to be established.
 		rxMod.waitForConnection();
@@ -149,7 +154,12 @@ public class MessagingControlModule {
 		rxMod.waitForConnection();
 		address = rxMod.getBindedAddress();
 		
+		try {
 		txMod = new TransmitModule(display, console, address, ACCEPT_STANDARD_PORT, mState, thisUser);
+		} catch(Exception e) {
+			System.err.println("Error while reaching back to the peer initiating connection.");
+			return;
+		}
 		
 		display.setBanner("Connected with " + rxMod.getContact().getName());
 		display.display();
