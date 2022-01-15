@@ -79,34 +79,49 @@ public class MessagingControlModule {
 	
 	/**
 	 * Initiates a messaging session with another client.  The other client
-	 * has to be waiting for connections first.  This grabs the IP address
+	 * has to be waiting for connections first.  This grabs the IP address or contact
 	 * of the other client from the console, and then constructs the {@link TransmitModule}
 	 * and {@link ReceiveModule}
 	 */
 	public void startInitiateMessageLogic() {
 		display.clear();
-		display.setBanner("Input contact name or IP address");
+		display.clearBanner();
 		display.display();
 		
-		//Display all of the known contacts.
+		//Display all of the known contacts and assign them a number.
 		for(int i = 0; i < cMan.getNumContacts(); i++) {
-			System.out.println(cMan.getContacts().get(i).getName());
+			System.out.println(i + ". " + cMan.getContacts().get(i).getName());
 		}
 		
+		System.out.println("\nPlease select one of the contacts above, or enter and IP address...");
 		//We'll drop down a line and print a thing to indicate it's ready to type.
 		System.out.print("\n> ");
 		String input = console.getInputString();
 		InetAddress address = null;
+		int contactSelection;
 		
+		//Check for an actual number, and also if the selection is a valid contact selection.
+		try {
+			contactSelection = Integer.parseInt(input);
+			if(contactSelection > (cMan.getNumContacts() - 1) && contactSelection < 0) {
+				return;
+			}
+		} catch (NumberFormatException e) {
+			contactSelection = -1;
+		}
 		
 		try {
-			//We'll determine if the input is a contact or an IP address, and act accordingly.
-			Contact c = cMan.getContactByName(input);
-			if(c != null) {
-				address = c.getIPAddress();
-			} else {
+			Contact c;
+			if(contactSelection == -1) {
+				//Was not a valid contact selection
+				//We'll assume it's an IP or hostname
 				address = InetAddress.getByName(input);
+			} else {
+				//Was a valid contact selection
+				address = cMan.getContacts().get(contactSelection).getIPAddress();
 			}
+			
+			
 		} catch (Exception e) {
 			System.err.println("Could not establish a connection.");
 			return;
