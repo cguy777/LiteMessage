@@ -93,7 +93,7 @@ public class MessagingControlModule {
 			System.out.println(i + ". " + cMan.getContacts().get(i).getName());
 		}
 		
-		System.out.println("\nPlease select one of the contacts above, or enter and IP address...");
+		System.out.println("\nPlease select one of the contacts above, or enter an IP address...");
 		//We'll drop down a line and print a thing to indicate it's ready to type.
 		System.out.print("\n> ");
 		String input = console.getInputString();
@@ -120,7 +120,6 @@ public class MessagingControlModule {
 				//Was a valid contact selection
 				address = cMan.getContacts().get(contactSelection).getIPAddress();
 			}
-			
 			
 		} catch (Exception e) {
 			System.err.println("Could not establish a connection.");
