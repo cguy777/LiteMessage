@@ -182,6 +182,14 @@ public class ContactManager {
 		}
 	}
 	
+	/**
+	 * Returns the number of contacts.
+	 * @return
+	 */
+	public int getNumContacts() {
+		return contacts.size();
+	}
+	
 	public ArrayList<Contact> getContacts() {
 		return contacts;
 	}
@@ -232,14 +240,14 @@ public class ContactManager {
 	}
 	
 	/**
-	 * Returns a {@link Contact} who's name match String n.
-	 * Returns null if it can't be found.
+	 * Returns a {@link Contact} who's name matches String n.
+	 * Returns null if it can't be found.  Ignores case.
 	 * @param n
 	 * @return
 	 */
 	public Contact getContactByName(String n) {
 		for(int i = 0; i < contacts.size(); i++) {
-			if(contacts.get(i).getName().matches(n)) {
+			if(contacts.get(i).getName().compareToIgnoreCase(n) == 0) {
 				return contacts.get(i);
 			}
 		}

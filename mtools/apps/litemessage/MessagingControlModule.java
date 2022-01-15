@@ -88,6 +88,11 @@ public class MessagingControlModule {
 		display.setBanner("Input contact name or IP address");
 		display.display();
 		
+		//Display all of the known contacts.
+		for(int i = 0; i < cMan.getNumContacts(); i++) {
+			System.out.println(cMan.getContacts().get(i).getName());
+		}
+		
 		//We'll drop down a line and print a thing to indicate it's ready to type.
 		System.out.print("\n> ");
 		String input = console.getInputString();

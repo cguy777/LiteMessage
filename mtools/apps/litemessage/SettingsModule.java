@@ -242,7 +242,7 @@ public class SettingsModule {
 			display.display();
 			
 			settings.thisUser.setName(console.getInputString());
-		
+			break;
 		//Enable/disable dynamic UID updates
 		case 1:
 			display.clear();
@@ -264,6 +264,7 @@ public class SettingsModule {
 			} else if(choice == 1) {
 				settings.dynamicUIDUpdates = false;
 			}
+			break;
 		}
 		
 		//We write the settings back out to file.
