@@ -134,7 +134,7 @@ public class ContactManager {
 	/**
 	 * Reads contacts from file.
 	 */
-	public void readContacts() {
+	public void loadContacts() {
 		try {
 			FileReader fReader = new FileReader("contacts.cfg");
 			BufferedReader bReader = new BufferedReader(fReader);
@@ -161,7 +161,7 @@ public class ContactManager {
 		}
 	}
 	
-	public void writeContacts() {
+	public void saveContacts() {
 		try {
 			FileWriter fWriter = new FileWriter("contacts.cfg");
 			BufferedWriter bWriter = new BufferedWriter(fWriter);
@@ -195,7 +195,7 @@ public class ContactManager {
 	}
 	
 	/**
-	 * Adds a {@link Contact} to an {@link ArrayList}, and
+	 * Adds a {@link Contact} to {@link ArrayList} in alphabetical order, and
 	 * then writes that list to file.
 	 * @param c
 	 */
@@ -209,7 +209,7 @@ public class ContactManager {
 					contacts.get(i).setUID(c.getUID());
 					contacts.get(i).setIPAddress(c.getIPAddress());
 					//Write them to file now so we don't have to worry about it later.
-					writeContacts();
+					saveContacts();
 					return;
 				} else {
 					if(!contacts.get(i).getUID().matches(c.getUID())) {
@@ -227,16 +227,40 @@ public class ContactManager {
 				contacts.get(i).setName(c.getName());
 				contacts.get(i).setIPAddress(c.getIPAddress());
 				//We'll write the contacts to file now so we don't have to worry about it later
-				writeContacts();
+				saveContacts();
 				return;
 			}
 		}
 		
-		//If we can't find a matching UID, we'll just add it.
-		contacts.add(c);
+		//If we can't find a matching UID or name, we'll just add it alphabetically.
+		if(contacts.size() < 1) {
+			contacts.add(c);
+		} else {
+			int count = 0;
+			
+			while(true) {
+				if(count < contacts.size()) {
+					if(contacts.get(count).getName().compareToIgnoreCase(c.getName()) < 0) {
+						//If c's name is alphabetically later, we will keep searching
+						count++;
+					
+					} else if(contacts.get(count).getName().compareToIgnoreCase(c.getName()) > 0) {
+						//If c's name is alphabetically earlier, insert in it's place
+						contacts.add(count, c);
+						break;
+					}
+				} else {
+					//We've reached the end of the list, so we will
+					//just add it to the end because we have determined
+					//it is alphabetically last at this point.
+					contacts.add(c);
+					break;
+				}
+			}
+		}
 		
 		//We'll write the contacts to file now so we don't have to worry about it later
-		writeContacts();
+		saveContacts();
 	}
 	
 	/**

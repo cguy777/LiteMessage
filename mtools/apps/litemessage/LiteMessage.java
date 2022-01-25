@@ -52,7 +52,7 @@ public class LiteMessage {
 		SettingsModule sMod = new SettingsModule(console);
 		
 		ContactManager cMan = new ContactManager(sMod.getSettings());
-		cMan.readContacts();
+		cMan.loadContacts();
 		
 		//Main control loop
 		while(true) {
