@@ -140,7 +140,7 @@ public class SettingsModule {
 			//if the name is the default value, we'll get a new name from the user.
 			if(username.matches("errnoname")) {
 				display.clear();
-				display.setBanner("Enter a display name...");
+				display.setBanner("Enter a display name.  Do not use any commas!!!");
 				display.display();
 				settings.thisUser.setName(console.getInputString());
 			} else {
@@ -238,7 +238,7 @@ public class SettingsModule {
 		//Set Username
 		case 0:
 			display.clear();
-			display.setBanner("Enter a display name...");
+			display.setBanner("Enter a display name.  Do not use any commas!!!");
 			display.display();
 			
 			settings.thisUser.setName(console.getInputString());
