@@ -65,6 +65,7 @@ public class SettingsModule {
 		
 		menu.addMenuItem("Change display name");
 		menu.addMenuItem("Enable/disable dynamic UID updates");
+		menu.addMenuItem("Go back");
 		
 		//Initially read the settings
 		readSettingsFromFile();
@@ -281,6 +282,10 @@ public class SettingsModule {
 			} else if(choice == 1) {
 				settings.dynamicUIDUpdates = false;
 			}
+			break;
+			
+		//Go back to the main menu
+		case 2:
 			break;
 		}
 		
