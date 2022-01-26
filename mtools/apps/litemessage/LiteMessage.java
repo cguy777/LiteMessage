@@ -47,9 +47,9 @@ public class LiteMessage {
 		display.setDisplayReverse();
 		MConsole console = new MConsole();
 		MMenu menu = new MMenu();
-		MenuModule menuMod = new MenuModule(console, menu);
 		MessagingControlModule cMod = null;
 		SettingsModule sMod = new SettingsModule(console);
+		MenuModule menuMod = new MenuModule(console, menu, sMod.getSettings().thisUser.getName());
 		
 		ContactManager cMan = new ContactManager(sMod.getSettings());
 		cMan.loadContacts();

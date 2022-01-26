@@ -57,10 +57,12 @@ public class MenuModule implements IOModule {
 	private MMenu menu;
 	private MConsole console;
 	private int menuChoice;
+	private String displayName;
 
-	public MenuModule(MConsole con, MMenu m) {
+	public MenuModule(MConsole con, MMenu m, String name) {
 		menu = m;
 		console = con;
+		displayName = name;
 	}
 	
 	public void startMenuControlModule() {
@@ -72,7 +74,7 @@ public class MenuModule implements IOModule {
 	 */
 	public void displayMainMenu() {
 		menu.clearMenu();
-		menu.setBanner("Welcome to LiteMessage.  Please make a selection...");
+		menu.setBanner("Welcome to LiteMessage, " + displayName + ".  Please make a selection...");
 		menu.addMenuItem("Message Somebody");
 		menu.addMenuItem("Receive Messages");
 		menu.addMenuItem("Change Settings");
