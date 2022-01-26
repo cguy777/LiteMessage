@@ -174,7 +174,7 @@ public class MessagingControlModule {
 		address = rxMod.getBindedAddress();
 		
 		try {
-		txMod = new TransmitModule(display, console, address, ACCEPT_STANDARD_PORT, mState, thisUser);
+			txMod = new TransmitModule(display, console, address, ACCEPT_STANDARD_PORT, mState, thisUser);
 		} catch(Exception e) {
 			System.err.println("Error while reaching back to the peer initiating connection.");
 			return;
