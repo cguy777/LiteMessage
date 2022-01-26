@@ -190,10 +190,8 @@ public class ReceiveModule extends Thread {
 				//If the exit command is received, we close connections and display a message.
 				if(pMod.evaluateText(rxData) == CommandType.EXIT) {
 					closeConnection();
-					display.clear();
-					display.setBanner("Session ended.  Press enter to return to the Main Menu...");
-					display.display();
 					
+					System.out.println("\nSession ended.  Press enter to return to the Main Menu...");
 					
 					break;
 				}
