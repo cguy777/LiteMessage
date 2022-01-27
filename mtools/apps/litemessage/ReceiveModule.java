@@ -163,15 +163,7 @@ public class ReceiveModule extends Thread {
 	public void run() {
 
 			pMod = new CommandParseModule(rxSocket);
-			try {
-				//if(!rxServerSocket.isBound())
-				//rxSocket = rxServerSocket.accept();
 			
-				//rxStream = new DataInputStream(rxSocket.getInputStream());
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		
 			while(rxSocket.isConnected()) {
 			
 				try {
