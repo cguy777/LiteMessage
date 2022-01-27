@@ -12,10 +12,7 @@ public class MainGUI extends JFrame {
 	private ContactManager cMan;
 	
 	public MainGUI() {
-		
 
-		
-		this.setTitle("LiteMessage");
 		this.setVisible(true);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setSize(400, 500);
@@ -23,6 +20,8 @@ public class MainGUI extends JFrame {
 		
 		MConsole console = new MConsole();
 		SettingsModule sMod = new SettingsModule(console, false);
+		
+		this.setTitle("LiteMessage - " + sMod.getSettings().thisUser.getName());
 		
 		cMan = new ContactManager(sMod.getSettings());
 		cMan.loadContacts();
