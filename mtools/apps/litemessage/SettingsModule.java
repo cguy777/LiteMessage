@@ -55,6 +55,9 @@ public class SettingsModule {
 	private MDisplay display;
 	private MMenu menu;
 	private Settings settings;
+	private String username;
+	private String uid;
+	private boolean isBlank;
 	
 	
 	public SettingsModule(MConsole con) {
@@ -67,8 +70,31 @@ public class SettingsModule {
 		menu.addMenuItem("Enable/disable dynamic UID updates");
 		menu.addMenuItem("Go back");
 		
+		username = null;
+		uid = null;
+		isBlank = false;
+		
 		//Initially read the settings
 		readSettingsFromFile();
+	}
+	
+	private void getDisplayNameFromConsole() {
+		while(true) {
+			display.clear();
+			display.setBanner("Enter a display name.  Do not use any commas!!!");
+			display.display();
+		
+			String name = console.getInputString();
+			if(name.contains(",") || name == "") {
+				continue;
+			}
+			settings.thisUser.setName(name);
+			break;
+		}
+	}
+	
+	private void createInitialSettingsFromConsole() {
+		
 	}
 	
 	/**
@@ -82,10 +108,7 @@ public class SettingsModule {
 			BufferedReader bReader = new BufferedReader(fReader);
 			String selfContactInfo = bReader.readLine();
 			
-			boolean isBlank = false;
-			
-			String username = null;
-			String uid = null;
+			isBlank = false;
 			
 			int count = 0;
 			
@@ -140,19 +163,8 @@ public class SettingsModule {
 			
 			//if the name is the default value, we'll get a new name from the user.
 			if(username.matches("errnoname")) {
+				getDisplayNameFromConsole();
 				
-				while(true) {
-					display.clear();
-					display.setBanner("Enter a display name.  Do not use any commas!!!");
-					display.display();
-				
-					String name = console.getInputString();
-					if(name.contains(",") || name == "") {
-						continue;
-					}
-					settings.thisUser.setName(name);
-					break;
-				}
 			} else {
 				settings.thisUser.setName(username);
 			}
@@ -236,7 +248,7 @@ public class SettingsModule {
 	}
 	
 	/**
-	 * Call this from the main menu.
+	 * Call this from the console main menu.
 	 */
 	public void configSettingsFromConsole() {
 		menu.display();
