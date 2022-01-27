@@ -45,7 +45,6 @@ import java.util.ArrayList;
 
 import javax.swing.JOptionPane;
 
-import mtools.apps.litemessage.gui.DisplayNameDialog;
 import mtools.io.*;
 
 /**
@@ -84,38 +83,7 @@ public class SettingsModule {
 		readSettingsFromFile();
 	}
 	
-	private void getDisplayNameFromConsole() {
-		while(true) {
-			display.clear();
-			display.setBanner("Enter a display name.  Do not use any commas!!!");
-			display.display();
-		
-			String name = console.getInputString();
-			if(name.contains(",") || name == "") {
-				continue;
-			}
-			settings.thisUser.setName(name);
-			break;
-		}
-	}
-	
-	private void getDisplayNameFromGUI() {
-		//DisplayNameDialog dnd = new DisplayNameDialog();
-		settings.thisUser.setName(JOptionPane.showInputDialog(null, "Enter display name.  Do not use commas."));
-	}
-	
-	/**
-	 * This will grab the display name from either the GUI
-	 * or console, depending on the isConsoleBased flag.
-	 */
-	private void getDisplayName() {		
-		if(isConsoleBased) {
-			getDisplayNameFromConsole();
-		} else {
-			getDisplayNameFromGUI();
-		}
-		
-	}
+
 	
 	/**
 	 * Reads the settings from the file and configures out {@link Settings} object to match.
@@ -183,9 +151,7 @@ public class SettingsModule {
 			
 			//if the name is the default value, we'll get a new name from the user.
 			if(username.matches("errnoname")) {
-				while(settings.thisUser.getName() == null || settings.thisUser.getName().matches("errnoname")) {
-					getDisplayName();
-				}
+				getDisplayName();
 				
 			} else {
 				settings.thisUser.setName(username);
@@ -329,5 +295,65 @@ public class SettingsModule {
 	
 	public Settings getSettings() {
 		return settings;
+	}
+	
+	
+	
+	//******************************
+	//Internal private methods below
+	//******************************
+	
+	
+	
+	/**
+	 * This will grab the display name from either the GUI
+	 * or console, depending on the isConsoleBased flag.
+	 */
+	private void getDisplayName() {		
+		if(isConsoleBased) {
+			getDisplayNameFromConsole();
+		} else {
+			getDisplayNameFromGUI();
+		}
+		
+	}
+	
+	/**
+	 * Prompts the user for their display name through the console.
+	 */
+	private void getDisplayNameFromConsole() {
+		while(true) {
+			display.clear();
+			display.setBanner("Enter a display name.  Do not use any commas!!!");
+			display.display();
+		
+			String name = console.getInputString();
+			
+			if(name.contains(",") || name.matches(""))
+				continue;
+				
+			settings.thisUser.setName(name);
+			break;
+		}
+	}
+	
+	/**
+	 * Provides a dialog box asking the user to enter their display name.
+	 */
+	private void getDisplayNameFromGUI() {
+		while(settings.thisUser.getName() == null || settings.thisUser.getName().matches("errnoname")) {
+			String name = JOptionPane.showInputDialog(null, "Enter display name.  Do not use commas.");
+			
+			//Check to make sure the user didn't just click cancel.
+			if(name == null)
+				continue;
+
+			//Check to make sure they didn't enter any commas or weird stuff.
+			if(name.contains(",") || name.matches(""))
+				continue;
+
+			settings.thisUser.setName(name);
+			break;
+		}
 	}
 }
