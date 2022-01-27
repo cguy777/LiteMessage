@@ -48,7 +48,7 @@ public class LiteMessage {
 		MConsole console = new MConsole();
 		MMenu menu = new MMenu();
 		MessagingControlModule cMod = null;
-		SettingsModule sMod = new SettingsModule(console);
+		SettingsModule sMod = new SettingsModule(console, true);
 		MenuModule menuMod = new MenuModule(console, menu, sMod.getSettings().thisUser.getName());
 		
 		ContactManager cMan = new ContactManager(sMod.getSettings());

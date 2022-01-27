@@ -22,7 +22,7 @@ public class MainGUI extends JFrame {
 		this.setResizable(false);
 		
 		MConsole console = new MConsole();
-		SettingsModule sMod = new SettingsModule(console);
+		SettingsModule sMod = new SettingsModule(console, false);
 		
 		cMan = new ContactManager(sMod.getSettings());
 		cMan.loadContacts();

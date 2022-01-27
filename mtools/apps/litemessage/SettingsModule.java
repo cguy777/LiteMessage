@@ -43,6 +43,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import javax.swing.JOptionPane;
+
+import mtools.apps.litemessage.gui.DisplayNameDialog;
 import mtools.io.*;
 
 /**
@@ -58,10 +61,13 @@ public class SettingsModule {
 	private String username;
 	private String uid;
 	private boolean isBlank;
+	private boolean isConsoleBased;
 	
 	
-	public SettingsModule(MConsole con) {
+	public SettingsModule(MConsole con, boolean consoleBased) {
 		console = con;
+		isConsoleBased = consoleBased;
+		
 		display = new MDisplay();
 		menu = new MMenu("Settings Menu.  Please make a selection...");
 		settings = new Settings();
@@ -93,7 +99,21 @@ public class SettingsModule {
 		}
 	}
 	
-	private void createInitialSettingsFromConsole() {
+	private void getDisplayNameFromGUI() {
+		//DisplayNameDialog dnd = new DisplayNameDialog();
+		settings.thisUser.setName(JOptionPane.showInputDialog(null, "Enter display name.  Do not use commas."));
+	}
+	
+	/**
+	 * This will grab the display name from either the GUI
+	 * or console, depending on the isConsoleBased flag.
+	 */
+	private void getDisplayName() {		
+		if(isConsoleBased) {
+			getDisplayNameFromConsole();
+		} else {
+			getDisplayNameFromGUI();
+		}
 		
 	}
 	
@@ -163,7 +183,9 @@ public class SettingsModule {
 			
 			//if the name is the default value, we'll get a new name from the user.
 			if(username.matches("errnoname")) {
-				getDisplayNameFromConsole();
+				while(settings.thisUser.getName() == null || settings.thisUser.getName().matches("errnoname")) {
+					getDisplayName();
+				}
 				
 			} else {
 				settings.thisUser.setName(username);
