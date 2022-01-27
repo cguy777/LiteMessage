@@ -51,7 +51,7 @@ package mtools.apps.litemessage;
  *
  */
 public class Settings {
-	Contact thisUser;
+	public Contact thisUser;
 	boolean dynamicUIDUpdates;
 	
 	/**
