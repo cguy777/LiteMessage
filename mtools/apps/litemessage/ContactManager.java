@@ -277,4 +277,12 @@ public class ContactManager {
 		}
 		return null;
 	}
+	
+	/**
+	 * Returns the contact info of this user.
+	 * @return
+	 */
+	public Contact getSelfContact() {
+		return settings.thisUser;
+	}
 }
