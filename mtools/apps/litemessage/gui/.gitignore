@@ -3,3 +3,7 @@
 /MainGUI.class
 /MessagingGUI$SendButtonAction.class
 /MessagingGUI.class
+/MessagingGUI$CloseWindowAction.class
+/MessagingGUI$TextAdded.class
+/MessagingGUI$TextAddedEvent.class
+/MainGUI$ContactSomebodyNewAction.class

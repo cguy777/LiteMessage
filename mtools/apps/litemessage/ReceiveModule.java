@@ -167,7 +167,7 @@ public class ReceiveModule extends Thread {
 	@Override
 	public void run() {
 
-			pMod = new CommandParseModule(rxSocket);
+			pMod = new CommandParseModule();
 			
 			while(rxSocket.isConnected()) {
 			
@@ -191,6 +191,19 @@ public class ReceiveModule extends Thread {
 				
 			}
 
+	}
+	
+	/**
+	 * Method for grabbing a message from the other peer manually.  Mainly used for testing.
+	 * @return
+	 */
+	public String getText() {
+		try {
+			rxData = rxStream.readUTF();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return rxData;
 	}
 	
 	private void parseOtherUserData(String data) {

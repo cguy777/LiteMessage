@@ -44,7 +44,9 @@ import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 
 import mtools.apps.litemessage.Contact;
 import mtools.apps.litemessage.ContactManager;
@@ -55,7 +57,9 @@ public class MainGUI extends JFrame {
 	
 	private ContactManager cMan;
 	private JList<String> contactList;
+	private JScrollPane contactScroll;
 	private JButton messageButton;
+	private JButton contactSomebodyNew;
 	
 	public MainGUI() {
 
@@ -84,8 +88,10 @@ public class MainGUI extends JFrame {
 		contactList = new JList<String>(s);
 		
 		contactList.setSize(100, 500);
-		contactList.setBounds(10, 10, 120, 300);
-		this.add(contactList);
+		//contactList.setBounds(10, 10, 120, 300);
+		contactScroll = new JScrollPane(contactList);
+		contactScroll.setBounds(10, 10, 120, 300);
+		this.add(contactScroll);
 		
 		
 		//Connect To Button
@@ -94,6 +100,12 @@ public class MainGUI extends JFrame {
 		messageButton.setBounds(10, 320, 120, 20);
 		messageButton.addActionListener(new ConnectButtonAction());
 		this.add(messageButton);
+		
+		contactSomebodyNew = new JButton("Not Listed");
+		contactSomebodyNew.setVisible(true);
+		contactSomebodyNew.setBounds(10, 350, 120, 20);
+		contactSomebodyNew.addActionListener(new ContactSomebodyNewAction());
+		this.add(contactSomebodyNew);
 		
 		
 		
@@ -112,18 +124,34 @@ public class MainGUI extends JFrame {
 			MessagingGUI mGUI;
 			
 			try {
-				
 				selectedContact = cMan.getContactByName(contactList.getSelectedValue());
 				mGUI = new MessagingGUI(selectedContact, cMan);
-			
 			} catch(Exception ex) {
 				//Nothing is selected.  So do nothing.
 				return;
-			}
-			
-			
-		}
+			}	
+		}	
+	}
+	
+	private class ContactSomebodyNewAction implements ActionListener {
+
+		MessagingGUI mGUI;
 		
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			try {
+				String address = JOptionPane.showInputDialog("Enter an IP address or hostname");
+				
+				//Quick input validation.
+				if(address.matches("") || address == null) {
+					JOptionPane.showMessageDialog(null, "Nothing was entered!", "Error", JOptionPane.ERROR_MESSAGE);;
+					return;
+				}
+				mGUI = new MessagingGUI(address, cMan);
+			} catch(Exception ex) {
+				ex.printStackTrace();
+			}
+		}
 	}
 }
 

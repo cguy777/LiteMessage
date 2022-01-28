@@ -39,12 +39,18 @@ package mtools.apps.litemessage.gui;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ContainerEvent;
+import java.awt.event.ContainerListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.event.CaretEvent;
+import javax.swing.event.CaretListener;
 
 import mtools.apps.litemessage.Contact;
 import mtools.apps.litemessage.ContactManager;
@@ -63,6 +69,7 @@ public class MessagingGUI extends JFrame implements TextDisplayObject {
 	private MessagingControlModule mcm;
 	
 	private JTextArea convoHistory;
+	JScrollPane convoScroll;
 	private JTextArea composeArea;
 	private JButton sendButton;
 	
@@ -72,14 +79,24 @@ public class MessagingGUI extends JFrame implements TextDisplayObject {
 
 		buildGUI();
 		mcm.startInitiateMessageLogicFromGUI(contact);
+
+		this.setTitle(mcm.getConnectedContact().getName());
+	}
+	
+	public MessagingGUI(String ipAddress, ContactManager cm) {
+		mcm = new MessagingControlModule(new MDisplay(), this, cm);
+
+		buildGUI();
+		mcm.startInitiateMessageLogicFromGUI(ipAddress);
+		
+		this.setTitle(mcm.getConnectedContact().getName());
 	}
 	
 	private void buildGUI() {
 		this.setLayout(new BorderLayout(10, 10));
 		this.setSize(250, 350);
-		//this.setResizable(false);
 		this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		this.setTitle(contact.getName());
+		this.addWindowListener(new CloseWindowAction());
 		
 		
 		//Displays the conversation
@@ -87,7 +104,7 @@ public class MessagingGUI extends JFrame implements TextDisplayObject {
 		convoHistory.setEditable(false);
 		convoHistory.setWrapStyleWord(true);
 		convoHistory.setLineWrap(true);
-		JScrollPane convoScroll = new JScrollPane(convoHistory);
+		convoScroll = new JScrollPane(convoHistory);
 		this.add(convoScroll, BorderLayout.CENTER);
 		
 		
@@ -117,6 +134,8 @@ public class MessagingGUI extends JFrame implements TextDisplayObject {
 	@Override
 	public void print(String s) {
 		convoHistory.append(s + "\n");
+		convoScroll.getVerticalScrollBar().setValue(convoScroll.getVerticalScrollBar().getMaximum());
+		
 	}
 	
 	@Override
@@ -130,8 +149,51 @@ public class MessagingGUI extends JFrame implements TextDisplayObject {
 		public void actionPerformed(ActionEvent e) {
 			String message = composeArea.getText();
 			mcm.sendData(message);
-			convoHistory.append("You: " + message + "\n");
+			print("You: " + message);
 			composeArea.setText("");
+			
+			
 		}
 	}
+	
+	private class CloseWindowAction implements WindowListener {
+
+		@Override
+		public void windowClosed(WindowEvent e) {
+			mcm.sendData("cmd-exit");
+			mcm.clearConnections();
+		}
+		
+		@Override
+		public void windowOpened(WindowEvent e) {
+			
+		}
+
+		@Override
+		public void windowClosing(WindowEvent e) {
+
+		}
+
+		@Override
+		public void windowIconified(WindowEvent e) {
+			
+		}
+
+		@Override
+		public void windowDeiconified(WindowEvent e) {
+			
+		}
+
+		@Override
+		public void windowActivated(WindowEvent e) {
+			
+		}
+
+		@Override
+		public void windowDeactivated(WindowEvent e) {
+			
+		}
+		
+	}
+
 }

@@ -42,5 +42,9 @@ public interface TextDisplayObject {
 	 * @param s
 	 */
 	public void print(String s);
+	
+	/**
+	 * What should occur if a window is closed that is displaying text
+	 */
 	public void tearDown();
 }

@@ -204,6 +204,51 @@ public class MessagingControlModule {
 	}
 	
 	/**
+	 * To be called only from the GUI variant.
+	 * Initiates a messaging session with another client.  The other client
+	 * has to be waiting for connections first.  This then constructs the {@link TransmitModule}
+	 * and {@link ReceiveModule}
+	 * 
+	 * @param ipAddress the IP Address we want to make a connection with.
+	 */
+	public void startInitiateMessageLogicFromGUI(String ipAddress) {
+		InetAddress address = null;
+		
+		try {
+			address = InetAddress.getByName(ipAddress);
+		} catch (Exception e) {
+			System.err.println("Could not establish a connection.");
+			JOptionPane.showMessageDialog(null, "Could not establish connection", "Error", JOptionPane.ERROR_MESSAGE);
+			displayObject.tearDown();
+			return;
+		}
+
+		displayObject.print("Making Connection...");
+		
+		//We initiate the TransmitModule first, and it's constructor will
+		//reach out and let the other client know that we are attempting to connect
+		try {
+			txMod = new TransmitModule(display, console, address, INIT_STANDARD_PORT, mState, cMan.getSelfContact());
+			rxMod = new ReceiveModule(display, console, displayObject, ACCEPT_STANDARD_PORT, mState);
+		} catch(Exception e) {
+			System.err.println("Could not establish a connection.");
+			JOptionPane.showMessageDialog(null, "Could not establish connection", "Error", JOptionPane.ERROR_MESSAGE);
+			displayObject.tearDown();
+			return;
+		}
+		//The other client will then reach back to us
+		//We will wait for the full circuit to be established.
+		rxMod.waitForConnection();
+		rxMod.start();
+		
+		displayObject.print("Connected with " + rxMod.getContact().getName() + "\n");
+		
+		mState.setMessagingState(MessagingStatus.INITIATED_MESSAGING);
+		
+		cMan.addContact(rxMod.getContact());
+	}
+	
+	/**
 	 * Waits for a messaging session to be initiated
 	 * from another client.  The other client has to reach out AFTER
 	 * This method has been called.  This constructs the {@link ReceiveModule},
@@ -241,6 +286,60 @@ public class MessagingControlModule {
 	}
 	
 	/**
+	 * Used for testing.
+	 */
+	public void startTestServerLogic() {
+		display.clear();
+		display.setBanner("Awaiting Connection...");
+		display.display();
+		
+		InetAddress address = null;
+		
+		//We construct the ReceiveModule and then wait for a connection before
+		//Constructing the TransmitModule.
+		rxMod = new ReceiveModule(display, console, displayObject, INIT_STANDARD_PORT, mState);
+		rxMod.waitForConnection();
+		address = rxMod.getBindedAddress();
+		
+		try {
+			txMod = new TransmitModule(display, console, address, ACCEPT_STANDARD_PORT, mState, thisUser);
+		} catch(Exception e) {
+			System.err.println("Error while reaching back to the peer initiating connection.");
+			return;
+		}
+		
+		display.setBanner("Connected with " + rxMod.getContact().getName());
+		display.display();
+		
+		
+		
+		
+		mState.setMessagingState(MessagingStatus.ACCECPTED_MESSAGING);
+		cMan.addContact(rxMod.getContact());
+		
+		String message;
+		CommandParseModule cpm = new CommandParseModule();
+		
+		
+		while(true) {
+			try {
+				message = rxMod.getText();
+			
+				if(cpm.evaluateText(message) == CommandType.EXIT) {
+					clearConnections();
+					return;
+				}
+			
+				System.out.println(message);
+				txMod.sendData(message);
+			} catch(Exception e) {
+				e.printStackTrace();
+				return;
+			}
+		}
+	}
+	
+	/**
 	 * closes all of the sockets/connections.
 	 */
 	public void clearConnections() {
@@ -255,6 +354,14 @@ public class MessagingControlModule {
 	
 	public MessageStatusObject getMessageStateObject() {
 		return mState;
+	}
+	
+	/**
+	 * Returns the contact of who we are currently connected with.
+	 * @return
+	 */
+	public Contact getConnectedContact() {
+		return rxMod.getContact();
 	}
 
 	/**

@@ -78,7 +78,7 @@ public class TransmitModule {
 		port = p;
 		txSocket = new Socket(add, port);
 		txStream = new DataOutputStream(txSocket.getOutputStream());
-		pMod = new CommandParseModule(txSocket);
+		pMod = new CommandParseModule();
 			
 		//Send the other client info about us so they can create a contact.
 		txStream.writeUTF(thisUser.getName() + "," + thisUser.getUID());

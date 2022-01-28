@@ -35,33 +35,30 @@
  */
 
 package mtools.apps.litemessage;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.net.Socket;
 
-/**
- * A simple class that looks for special commands while in a messaging session.
- * @author Noah
- *
- */
-public class CommandParseModule {
-	
-	public CommandParseModule() {
+import mtools.io.MConsole;
+import mtools.io.MDisplay;
+import mtools.io.MMenu;
+
+public class LiteMessageTestServer {
+	public static void main(String[] args) {
+		MDisplay display = new MDisplay("Messaging App", 5);
+		display.setDisplayReverse();
+		MConsole console = new MConsole();
+		MMenu menu = new MMenu();
+		MessagingControlModule cMod = null;
+		SettingsModule sMod = new SettingsModule(console, true);
+		MenuModule menuMod = new MenuModule(console, menu, sMod.getSettings().thisUser.getName());
 		
-	}
-	
-	/**
-	 * Parses a string and then determines if it was a special command or not.
-	 * @param text
-	 * @return
-	 */
-	public CommandType evaluateText(String text) {
-		switch(text) {
+		ContactManager cMan = new ContactManager(sMod.getSettings());
+		cMan.loadContacts();
 		
-		case "cmd-exit":
-			return CommandType.EXIT;	
+		ConsoleTextDisplay ctd = new ConsoleTextDisplay();
+		
+		//Main control loop
+		while(true) {
+			cMod = new MessagingControlModule(display, ctd, cMan);
+			cMod.startTestServerLogic();
 		}
-			
-		return CommandType.DO_NOTHING;
 	}
 }
