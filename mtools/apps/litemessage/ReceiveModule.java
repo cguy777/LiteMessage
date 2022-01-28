@@ -42,6 +42,8 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+import javax.swing.JTextArea;
+
 import mtools.io.*;
 
 
@@ -65,6 +67,8 @@ public class ReceiveModule extends Thread {
 	private int port;
 	private MessageStatusObject mState;
 	private Contact otherUser;
+	private JTextArea convoHistory;
+	private TextDisplayObject displayObject;
 	
 	/**
 	 * The constructor.  Most importantly, it constructs the {@link ServerSocket}.
@@ -74,12 +78,13 @@ public class ReceiveModule extends Thread {
 	 * @param p
 	 * @param ms
 	 */
-	public ReceiveModule(MDisplay dis, MConsole con, int p, MessageStatusObject ms) {
+	public ReceiveModule(MDisplay dis, MConsole con, TextDisplayObject tdo, int p, MessageStatusObject ms) {
 		display = dis;
 		console = con;
 		port = p;
 		mState = ms;
 		otherUser = new Contact();
+		displayObject = tdo;
 		
 		try {
 			rxServerSocket = new ServerSocket(port);
@@ -172,24 +177,17 @@ public class ReceiveModule extends Thread {
 					closeConnection();
 					break;
 				}
-				
-				//Print the received message
-				//We'll use System.out instead of
-				//our Display class so we can keep
-				//a log of the messages on the screen.
-				System.out.println(otherUser.getName() + ": " + rxData);
+
+				displayObject.print(otherUser.getName() + ": " + rxData);
 				
 				//If the exit command is received, we close connections and display a message.
 				if(pMod.evaluateText(rxData) == CommandType.EXIT) {
 					closeConnection();
 					
-					System.out.println("\nSession ended.  Press enter to return to the Main Menu...");
+					displayObject.print("\nSession ended.");
 					
 					break;
 				}
-				
-				//We'll print a thing to indicate it's ready to type.
-				System.out.print("> ");
 				
 			}
 

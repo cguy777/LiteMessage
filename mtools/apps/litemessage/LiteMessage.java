@@ -54,6 +54,8 @@ public class LiteMessage {
 		ContactManager cMan = new ContactManager(sMod.getSettings());
 		cMan.loadContacts();
 		
+		ConsoleTextDisplay ctd = new ConsoleTextDisplay();
+		
 		//Main control loop
 		while(true) {
 			menuMod.displayMainMenu();
@@ -64,13 +66,13 @@ public class LiteMessage {
 			switch(choice) {
 			//Message Somebody
 			case 0:
-				cMod = new MessagingControlModule(display, cMan);
+				cMod = new MessagingControlModule(display, ctd, cMan);
 				cMod.startInitiateMessageLogic();
 				break;
 			
 			//Receive Messages
 			case 1:
-				cMod = new MessagingControlModule(display, cMan);
+				cMod = new MessagingControlModule(display, ctd, cMan);
 				cMod.startReceiveMessageLogic();
 				break;
 			

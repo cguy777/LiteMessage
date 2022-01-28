@@ -39,6 +39,9 @@ package mtools.apps.litemessage;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
+import javax.swing.JOptionPane;
+import javax.swing.JTextArea;
+
 import mtools.io.MConsole;
 import mtools.io.MDisplay;
 import mtools.io.MMenu;
@@ -63,18 +66,20 @@ public class MessagingControlModule {
 	private MessageStatusObject mState;
 	private Contact thisUser;
 	private ContactManager cMan;
+	TextDisplayObject displayObject;
 	
 	/**
-	 * The console constructor.
+	 * The constructor.
 	 * @param dis
 	 */
-	public MessagingControlModule(MDisplay dis, ContactManager cm) {
+	public MessagingControlModule(MDisplay dis, TextDisplayObject tdo, ContactManager cm) {
 		display = dis;
 		cMan = cm;
 		thisUser = cMan.getSelfContact();
 		console = new MConsole();
 		menu = new MMenu();
 		mState = new MessageStatusObject();
+		displayObject = tdo;
 	}
 	
 	/**
@@ -134,7 +139,7 @@ public class MessagingControlModule {
 		//reach out and let the other client know that we are attempting to connect
 		try {
 			txMod = new TransmitModule(display, console, address, INIT_STANDARD_PORT, mState, thisUser);
-			rxMod = new ReceiveModule(display, console, ACCEPT_STANDARD_PORT, mState);
+			rxMod = new ReceiveModule(display, console, displayObject, ACCEPT_STANDARD_PORT, mState);
 		} catch(Exception e) {
 			System.err.println("Could not establish a connection.");
 			return;
@@ -168,29 +173,30 @@ public class MessagingControlModule {
 			address = contact.getIPAddress();
 		} catch (Exception e) {
 			System.err.println("Could not establish a connection.");
+			JOptionPane.showMessageDialog(null, "Could not establish connection", "Error", JOptionPane.ERROR_MESSAGE);
+			displayObject.tearDown();
 			return;
 		}
-		
-		display.clear();
-		display.setBanner("Making Connection...");
-		display.display();
+
+		displayObject.print("Making Connection...");
 		
 		//We initiate the TransmitModule first, and it's constructor will
 		//reach out and let the other client know that we are attempting to connect
 		try {
 			txMod = new TransmitModule(display, console, address, INIT_STANDARD_PORT, mState, cMan.getSelfContact());
-			rxMod = new ReceiveModule(display, console, ACCEPT_STANDARD_PORT, mState);
+			rxMod = new ReceiveModule(display, console, displayObject, ACCEPT_STANDARD_PORT, mState);
 		} catch(Exception e) {
 			System.err.println("Could not establish a connection.");
+			JOptionPane.showMessageDialog(null, "Could not establish connection", "Error", JOptionPane.ERROR_MESSAGE);
+			displayObject.tearDown();
 			return;
 		}
 		//The other client will then reach back to us
 		//We will wait for the full circuit to be established.
 		rxMod.waitForConnection();
-		
 		rxMod.start();
-		display.setBanner("Connected with " + rxMod.getContact().getName());
-		display.display();
+		
+		displayObject.print("Connected with " + rxMod.getContact().getName() + "\n");
 		
 		mState.setMessagingState(MessagingStatus.INITIATED_MESSAGING);
 		
@@ -214,7 +220,7 @@ public class MessagingControlModule {
 		
 		//We construct the ReceiveModule and then wait for a connection before
 		//Constructing the TransmitModule.
-		rxMod = new ReceiveModule(display, console, INIT_STANDARD_PORT, mState);
+		rxMod = new ReceiveModule(display, console, displayObject, INIT_STANDARD_PORT, mState);
 		rxMod.waitForConnection();
 		address = rxMod.getBindedAddress();
 		
