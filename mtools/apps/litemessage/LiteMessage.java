@@ -64,13 +64,13 @@ public class LiteMessage {
 			switch(choice) {
 			//Message Somebody
 			case 0:
-				cMod = new MessagingControlModule(display, sMod.getSettings().thisUser, cMan);
+				cMod = new MessagingControlModule(display, cMan);
 				cMod.startInitiateMessageLogic();
 				break;
 			
 			//Receive Messages
 			case 1:
-				cMod = new MessagingControlModule(display, sMod.getSettings().thisUser, cMan);
+				cMod = new MessagingControlModule(display, cMan);
 				cMod.startReceiveMessageLogic();
 				break;
 			
