@@ -65,13 +65,13 @@ public class MessagingControlModule {
 	private ContactManager cMan;
 	
 	/**
-	 * The constructor.
+	 * The console constructor.
 	 * @param dis
 	 */
-	public MessagingControlModule(MDisplay dis, Contact c, ContactManager cm) {
+	public MessagingControlModule(MDisplay dis, ContactManager cm) {
 		display = dis;
-		thisUser = c;
 		cMan = cm;
+		thisUser = cMan.getSelfContact();
 		console = new MConsole();
 		menu = new MMenu();
 		mState = new MessageStatusObject();
@@ -134,6 +134,51 @@ public class MessagingControlModule {
 		//reach out and let the other client know that we are attempting to connect
 		try {
 			txMod = new TransmitModule(display, console, address, INIT_STANDARD_PORT, mState, thisUser);
+			rxMod = new ReceiveModule(display, console, ACCEPT_STANDARD_PORT, mState);
+		} catch(Exception e) {
+			System.err.println("Could not establish a connection.");
+			return;
+		}
+		//The other client will then reach back to us
+		//We will wait for the full circuit to be established.
+		rxMod.waitForConnection();
+		
+		rxMod.start();
+		display.setBanner("Connected with " + rxMod.getContact().getName());
+		display.display();
+		
+		mState.setMessagingState(MessagingStatus.INITIATED_MESSAGING);
+		
+		cMan.addContact(rxMod.getContact());
+	}
+	
+	
+	/**
+	 * To be called only from the GUI variant.
+	 * Initiates a messaging session with another client.  The other client
+	 * has to be waiting for connections first.  This then constructs the {@link TransmitModule}
+	 * and {@link ReceiveModule}
+	 * 
+	 * @param contact the contact we want to make a connection with
+	 */
+	public void startInitiateMessageLogicFromGUI(Contact contact) {
+		InetAddress address = null;
+		
+		try {
+			address = contact.getIPAddress();
+		} catch (Exception e) {
+			System.err.println("Could not establish a connection.");
+			return;
+		}
+		
+		display.clear();
+		display.setBanner("Making Connection...");
+		display.display();
+		
+		//We initiate the TransmitModule first, and it's constructor will
+		//reach out and let the other client know that we are attempting to connect
+		try {
+			txMod = new TransmitModule(display, console, address, INIT_STANDARD_PORT, mState, cMan.getSelfContact());
 			rxMod = new ReceiveModule(display, console, ACCEPT_STANDARD_PORT, mState);
 		} catch(Exception e) {
 			System.err.println("Could not establish a connection.");
