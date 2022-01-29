@@ -59,6 +59,7 @@ public class LiteMessageTestServer {
 		while(true) {
 			cMod = new MessagingControlModule(display, ctd, cMan);
 			cMod.startTestServerLogic();
+			cMod.clearConnections();
 		}
 	}
 }
