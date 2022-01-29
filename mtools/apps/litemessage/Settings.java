@@ -52,7 +52,7 @@ package mtools.apps.litemessage;
  */
 public class Settings {
 	public Contact thisUser;
-	boolean dynamicUIDUpdates;
+	public boolean dynamicUIDUpdates;
 	
 	/**
 	 * Sets the settings to the default values.  Might be useful if we have trouble
