@@ -7,3 +7,15 @@
 /MessagingGUI$TextAdded.class
 /MessagingGUI$TextAddedEvent.class
 /MainGUI$ContactSomebodyNewAction.class
+/ConnectionManager.class
+/ReceiveMessageHandler.class
+/SettingsGUI.class
+/MainGUI$LiteMenuBar.class
+/MainGUI$MainMenuBar.class
+/MainMenuBar.class
+/MainMenuBar$exitAction.class
+/MainMenuBar$aboutAction.class
+/MainMenuBar$settingsAction.class
+/SettingsGUI$saveAction.class
+/SettingsGUI$CancelAction.class
+/SettingsGUI$SaveAction.class
