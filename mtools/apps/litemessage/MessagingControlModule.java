@@ -279,6 +279,31 @@ public class MessagingControlModule {
 		cMan.addContact(rxMod.getContact());
 	}
 	
+	public void startReceiveMessageLogicFromGUI() {
+		
+		InetAddress address = null;
+		
+		//We construct the ReceiveModule and then wait for a connection before
+		//Constructing the TransmitModule.
+		rxMod = new ReceiveModule(displayObject, INIT_STANDARD_PORT, mState);
+		rxMod.waitForConnection();
+		address = rxMod.getBindedAddress();
+		
+		
+		
+		try {
+			txMod = new TransmitModule(address, ACCEPT_STANDARD_PORT, mState, thisUser);
+		} catch(Exception e) {
+			System.err.println("Error while reaching back to the peer initiating connection.");
+			return;
+		}
+		
+		rxMod.start();
+		
+		mState.setMessagingState(MessagingStatus.ACCECPTED_MESSAGING);
+		cMan.addContact(rxMod.getContact());
+	}
+	
 	/**
 	 * Used for testing.
 	 */

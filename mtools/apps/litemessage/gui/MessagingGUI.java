@@ -65,37 +65,54 @@ public class MessagingGUI extends JFrame implements TextDisplayObject {
 	private JTextArea convoHistory;
 	JScrollPane convoScroll;
 	private JTextArea composeArea;
-	private JButton sendButton;
+	private JButton sendButton;	
 	
 	/**
-	 * Use this one when we are connecting to a known contact.
+	 * The constructor.  Constructs the Messaging GUI. 
+	 * However, the window will not be visible until we call
+	 * one of the {@link initiateMessaging()} methods.  Or 
+	 * you can call {@link waitForessagig()} and it will be
+	 * made visible when somebody reaches to us.
+	 */
+	public MessagingGUI() {
+		buildGUI();
+	}
+	
+	/**
+	 * Initiates a messaging session with a known contact.  Also makes
+	 * the GUI window visible.
 	 * @param c
 	 * @param cm
 	 */
-	public MessagingGUI(Contact c, ContactManager cm) {
+	public void initiateMessaging(Contact c, ContactManager cm) {
+		this.setVisible(true);
 		contact = c;
 		mcm = new MessagingControlModule(new MDisplay(), this, cm);
-
-		buildGUI();
 		mcm.startInitiateMessageLogicFromGUI(contact);
-
 		this.setTitle(mcm.getConnectedContact().getName());
 	}
 	
-	
 	/**
-	 * Use this one when we are connecting to another peer
-	 * based off of an IP address or hostname.
+	 * Initiates a messaging session with an unknown through the use of an
+	 * IP address or hostname.  Also makes the GUI window visible.
 	 * @param ipAddress
 	 * @param cm
 	 */
-	public MessagingGUI(String ipAddress, ContactManager cm) {
+	public void initiateMessaging(String ipAddress, ContactManager cm) {
+		this.setVisible(true);
 		mcm = new MessagingControlModule(new MDisplay(), this, cm);
-
-		buildGUI();
 		mcm.startInitiateMessageLogicFromGUI(ipAddress);
-		
 		this.setTitle(mcm.getConnectedContact().getName());
+		contact = mcm.getConnectedContact();
+	}
+	
+	public void waitForMessaging(ContactManager cm) {
+		mcm = new MessagingControlModule(new MDisplay(), this, cm);
+		mcm.startReceiveMessageLogic();
+		this.setVisible(true);
+		this.setTitle(mcm.getConnectedContact().getName());
+		
+		this.print("Connected with " + mcm.getConnectedContact().getName() + "\n");
 	}
 	
 	private void buildGUI() {
@@ -106,7 +123,7 @@ public class MessagingGUI extends JFrame implements TextDisplayObject {
 		
 		
 		//Displays the conversation
-		convoHistory = new JTextArea(3, 10);
+		convoHistory = new JTextArea(10, 10);
 		convoHistory.setEditable(false);
 		convoHistory.setWrapStyleWord(true);
 		convoHistory.setLineWrap(true);
@@ -121,7 +138,7 @@ public class MessagingGUI extends JFrame implements TextDisplayObject {
 		
 		//Where you type the message
 		
-		composeArea = new JTextArea(4, 10);
+		composeArea = new JTextArea(3, 10);
 		composeArea.setLineWrap(true);
 		composeArea.setWrapStyleWord(true);
 		JScrollPane composeScroll = new JScrollPane(composeArea);
@@ -133,8 +150,6 @@ public class MessagingGUI extends JFrame implements TextDisplayObject {
 		sendButton.setSize(80, 30);
 		sendButton.addActionListener(new SendButtonAction());
 		lowerPanel.add(sendButton, BorderLayout.EAST);
-		
-		this.setVisible(true);
 	}
 	
 	@Override
@@ -154,11 +169,12 @@ public class MessagingGUI extends JFrame implements TextDisplayObject {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			String message = composeArea.getText();
-			mcm.sendData(message);
-			print("You: " + message);
-			composeArea.setText("");
-			
-			
+			//Don't want to process a blank message.
+			if(!message.matches("")) {
+				mcm.sendData(message);
+				print("You: " + message);
+				composeArea.setText("");
+			}
 		}
 	}
 	

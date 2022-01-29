@@ -39,6 +39,7 @@ package mtools.apps.litemessage.gui;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.net.BindException;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -55,15 +56,22 @@ import mtools.io.MConsole;
 public class MainGUI extends JFrame {
 	
 	private ContactManager cMan;
+	private SettingsModule sMod;
 	private JList<String> contactList;
 	private JScrollPane contactScroll;
 	private JButton messageButton;
 	private JButton contactSomebodyNew;
 	
 	public MainGUI() {
+		sMod = new SettingsModule(new MConsole(), false);
+		
+		cMan = new ContactManager(sMod.getSettings());
+		cMan.loadContacts();
 		
 		buildGUI();
 		
+		ReceiveMessageHandler rmh = new ReceiveMessageHandler(cMan);
+		rmh.start();
 	}
 	
 	/**
@@ -86,15 +94,13 @@ public class MainGUI extends JFrame {
 		this.setResizable(false);
 		this.setLayout(null);
 		
-		MConsole console = new MConsole();
-		SettingsModule sMod = new SettingsModule(console, false);
+		
 		
 		this.setTitle("LiteMessage - " + sMod.getSettings().thisUser.getName());
 		
 		
 		//Contacts List
-		cMan = new ContactManager(sMod.getSettings());
-		cMan.loadContacts();
+
 		
 		contactList = new JList<String>();
 		updateContactList();
@@ -138,7 +144,8 @@ public class MainGUI extends JFrame {
 			
 			try {
 				selectedContact = cMan.getContactByName(contactList.getSelectedValue());
-				mGUI = new MessagingGUI(selectedContact, cMan);
+				mGUI = new MessagingGUI();
+				mGUI.initiateMessaging(selectedContact, cMan);
 				
 				//There might have been a change to the contact list, so we'll update it.
 				updateContactList();
@@ -163,7 +170,8 @@ public class MainGUI extends JFrame {
 					JOptionPane.showMessageDialog(null, "Nothing was entered!", "Error", JOptionPane.ERROR_MESSAGE);;
 					return;
 				}
-				mGUI = new MessagingGUI(address, cMan);
+				mGUI = new MessagingGUI();
+				mGUI.initiateMessaging(address, cMan);
 				
 				//If it's somebody new, there should be a new contact to list, so we'll update it.
 				updateContactList();
