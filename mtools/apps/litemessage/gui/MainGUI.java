@@ -36,9 +36,7 @@
 
 package mtools.apps.litemessage.gui;
 
-import java.awt.BorderLayout;
 import java.awt.Insets;
-import java.awt.LayoutManager;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -46,7 +44,6 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 import mtools.apps.litemessage.Contact;
@@ -62,7 +59,6 @@ public class MainGUI extends JFrame {
 	private JScrollPane contactScroll;
 	private JButton messageButton;
 	private JButton contactSomebodyNew;
-	private MessagingControlModule cMod;
 	
 	public MainGUI() {
 		

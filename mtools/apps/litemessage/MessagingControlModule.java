@@ -38,15 +38,9 @@ package mtools.apps.litemessage;
 
 import java.io.IOException;
 import java.net.InetAddress;
-import java.net.UnknownHostException;
-
 import javax.swing.JOptionPane;
-import javax.swing.JTextArea;
-
-import mtools.apps.litemessage.gui.MessagingGUI;
 import mtools.io.MConsole;
 import mtools.io.MDisplay;
-import mtools.io.MMenu;
 
 /**
  * this is the brain of the messaging app.  It initiates, and manages
@@ -61,10 +55,8 @@ public class MessagingControlModule {
 	
 	private MConsole console;
 	private MDisplay display;
-	private MMenu menu;
 	private TransmitModule txMod;
 	private ReceiveModule rxMod;
-	private InetAddress distantAddress;
 	private MessageStatusObject mState;
 	private Contact thisUser;
 	private ContactManager cMan;
@@ -79,7 +71,6 @@ public class MessagingControlModule {
 		cMan = cm;
 		thisUser = cMan.getSelfContact();
 		console = new MConsole();
-		menu = new MMenu();
 		mState = new MessageStatusObject();
 		displayObject = tdo;
 	}
@@ -118,7 +109,6 @@ public class MessagingControlModule {
 		}
 		
 		try {
-			Contact c;
 			if(contactSelection == -1) {
 				//Was not a valid contact selection
 				//We'll assume it's an IP or hostname
@@ -140,8 +130,8 @@ public class MessagingControlModule {
 		//We initiate the TransmitModule first, and it's constructor will
 		//reach out and let the other client know that we are attempting to connect
 		try {
-			txMod = new TransmitModule(display, console, address, INIT_STANDARD_PORT, mState, thisUser);
-			rxMod = new ReceiveModule(display, console, displayObject, ACCEPT_STANDARD_PORT, mState);
+			txMod = new TransmitModule(address, INIT_STANDARD_PORT, mState, thisUser);
+			rxMod = new ReceiveModule(displayObject, ACCEPT_STANDARD_PORT, mState);
 		} catch(Exception e) {
 			System.err.println("Could not establish a connection.");
 			return;
@@ -185,8 +175,8 @@ public class MessagingControlModule {
 		//We initiate the TransmitModule first, and it's constructor will
 		//reach out and let the other client know that we are attempting to connect
 		try {
-			txMod = new TransmitModule(display, console, address, INIT_STANDARD_PORT, mState, cMan.getSelfContact());
-			rxMod = new ReceiveModule(display, console, displayObject, ACCEPT_STANDARD_PORT, mState);
+			txMod = new TransmitModule(address, INIT_STANDARD_PORT, mState, cMan.getSelfContact());
+			rxMod = new ReceiveModule(displayObject, ACCEPT_STANDARD_PORT, mState);
 		} catch(Exception e) {
 			System.err.println("Could not establish a connection.");
 			JOptionPane.showMessageDialog(null, "Could not establish connection", "Error", JOptionPane.ERROR_MESSAGE);
@@ -230,8 +220,8 @@ public class MessagingControlModule {
 		//We initiate the TransmitModule first, and it's constructor will
 		//reach out and let the other client know that we are attempting to connect
 		try {
-			txMod = new TransmitModule(display, console, address, INIT_STANDARD_PORT, mState, cMan.getSelfContact());
-			rxMod = new ReceiveModule(display, console, displayObject, ACCEPT_STANDARD_PORT, mState);
+			txMod = new TransmitModule(address, INIT_STANDARD_PORT, mState, cMan.getSelfContact());
+			rxMod = new ReceiveModule(displayObject, ACCEPT_STANDARD_PORT, mState);
 		} catch(Exception e) {
 			System.err.println("Could not establish a connection.");
 			JOptionPane.showMessageDialog(null, "Could not establish connection", "Error", JOptionPane.ERROR_MESSAGE);
@@ -267,14 +257,14 @@ public class MessagingControlModule {
 		
 		//We construct the ReceiveModule and then wait for a connection before
 		//Constructing the TransmitModule.
-		rxMod = new ReceiveModule(display, console, displayObject, INIT_STANDARD_PORT, mState);
+		rxMod = new ReceiveModule(displayObject, INIT_STANDARD_PORT, mState);
 		rxMod.waitForConnection();
 		address = rxMod.getBindedAddress();
 		
 		
 		
 		try {
-			txMod = new TransmitModule(display, console, address, ACCEPT_STANDARD_PORT, mState, thisUser);
+			txMod = new TransmitModule(address, ACCEPT_STANDARD_PORT, mState, thisUser);
 		} catch(Exception e) {
 			System.err.println("Error while reaching back to the peer initiating connection.");
 			return;
@@ -301,12 +291,12 @@ public class MessagingControlModule {
 		
 		//We construct the ReceiveModule and then wait for a connection before
 		//Constructing the TransmitModule.
-		rxMod = new ReceiveModule(display, console, displayObject, INIT_STANDARD_PORT, mState);
+		rxMod = new ReceiveModule(displayObject, INIT_STANDARD_PORT, mState);
 		rxMod.waitForConnection();
 		address = rxMod.getBindedAddress();
 		
 		try {
-			txMod = new TransmitModule(display, console, address, ACCEPT_STANDARD_PORT, mState, thisUser);
+			txMod = new TransmitModule(address, ACCEPT_STANDARD_PORT, mState, thisUser);
 		} catch(Exception e) {
 			System.err.println("Error while reaching back to the peer initiating connection.");
 			e.printStackTrace();

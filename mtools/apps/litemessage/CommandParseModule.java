@@ -35,9 +35,6 @@
  */
 
 package mtools.apps.litemessage;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.net.Socket;
 
 /**
  * A simple class that looks for special commands while in a messaging session.

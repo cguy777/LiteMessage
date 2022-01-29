@@ -35,7 +35,6 @@
  */
 
 package mtools.apps.litemessage;
-import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.InetAddress;
@@ -51,12 +50,9 @@ import mtools.io.*;
  */
 public class TransmitModule {
 	
-	private MDisplay display;
-	private MConsole console;
 	private Socket txSocket;
 	private DataOutputStream txStream;
 	private CommandParseModule pMod;
-	private String txData;
 	private int port;
 	private MessageStatusObject mState;
 	private Contact thisUser;
@@ -69,9 +65,7 @@ public class TransmitModule {
 	 * @param p
 	 * @param ms
 	 */
-	public TransmitModule(MDisplay dis, MConsole con, InetAddress add, int p, MessageStatusObject ms, Contact c) throws IOException {
-		display = dis;
-		console = con;
+	public TransmitModule(InetAddress add, int p, MessageStatusObject ms, Contact c) throws IOException {
 		mState = ms;
 		thisUser = c;
 		

@@ -36,15 +36,10 @@
 
 package mtools.apps.litemessage;
 import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-
-import javax.swing.JTextArea;
-
-import mtools.io.*;
 
 
 /**
@@ -57,8 +52,6 @@ import mtools.io.*;
 
 public class ReceiveModule extends Thread {
 	
-	private MDisplay display;
-	private MConsole console;
 	private ServerSocket rxServerSocket;
 	private Socket rxSocket;
 	private DataInputStream rxStream;
@@ -67,20 +60,16 @@ public class ReceiveModule extends Thread {
 	private int port;
 	private MessageStatusObject mState;
 	private Contact otherUser;
-	private JTextArea convoHistory;
 	private TextDisplayObject displayObject;
 	
 	/**
 	 * The constructor.  Most importantly, it constructs the {@link ServerSocket}.
 	 * You must call waitForConnection() after it is constructed.
-	 * @param dis
 	 * @param con
 	 * @param p
 	 * @param ms
 	 */
-	public ReceiveModule(MDisplay dis, MConsole con, TextDisplayObject tdo, int p, MessageStatusObject ms) {
-		display = dis;
-		console = con;
+	public ReceiveModule(TextDisplayObject tdo, int p, MessageStatusObject ms) {
 		port = p;
 		mState = ms;
 		otherUser = new Contact();

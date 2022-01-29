@@ -35,9 +35,6 @@
  */
 
 package mtools.apps.litemessage;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-
 import mtools.io.*;
 
 public class LiteMessage {
