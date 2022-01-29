@@ -36,12 +36,14 @@
 
 package mtools.apps.litemessage;
 
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 import javax.swing.JOptionPane;
 import javax.swing.JTextArea;
 
+import mtools.apps.litemessage.gui.MessagingGUI;
 import mtools.io.MConsole;
 import mtools.io.MDisplay;
 import mtools.io.MMenu;
@@ -249,7 +251,7 @@ public class MessagingControlModule {
 	}
 	
 	/**
-	 * Waits for a messaging session to be initiated
+	 * For use with the console.  Waits for a messaging session to be initiated
 	 * from another client.  The other client has to reach out AFTER
 	 * This method has been called.  This constructs the {@link ReceiveModule},
 	 * and then grabs the IP address of the other client from the {@link ServerSocket}
@@ -268,6 +270,8 @@ public class MessagingControlModule {
 		rxMod = new ReceiveModule(display, console, displayObject, INIT_STANDARD_PORT, mState);
 		rxMod.waitForConnection();
 		address = rxMod.getBindedAddress();
+		
+		
 		
 		try {
 			txMod = new TransmitModule(display, console, address, ACCEPT_STANDARD_PORT, mState, thisUser);
@@ -305,6 +309,7 @@ public class MessagingControlModule {
 			txMod = new TransmitModule(display, console, address, ACCEPT_STANDARD_PORT, mState, thisUser);
 		} catch(Exception e) {
 			System.err.println("Error while reaching back to the peer initiating connection.");
+			e.printStackTrace();
 			return;
 		}
 		
@@ -322,20 +327,21 @@ public class MessagingControlModule {
 		
 		
 		while(true) {
+			
 			try {
 				message = rxMod.getText();
-			
-				if(cpm.evaluateText(message) == CommandType.EXIT) {
-					clearConnections();
-					return;
-				}
-			
-				System.out.println(message);
-				txMod.sendData(message);
-			} catch(Exception e) {
-				e.printStackTrace();
+			} catch(IOException e) {
+				clearConnections();
 				return;
 			}
+			
+			if(cpm.evaluateText(message) == CommandType.EXIT) {
+				clearConnections();
+				return;
+			}
+			
+			System.out.println(message);
+			txMod.sendData(message);
 		}
 	}
 	

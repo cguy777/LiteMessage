@@ -196,14 +196,19 @@ public class ReceiveModule extends Thread {
 	/**
 	 * Method for grabbing a message from the other peer manually.  Mainly used for testing.
 	 * @return
+	 * @throws IOException 
 	 */
-	public String getText() {
-		try {
-			rxData = rxStream.readUTF();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+	public String getText() throws IOException {
+		rxData = rxStream.readUTF();
 		return rxData;
+	}
+	
+	/**
+	 * Returns the connected {@link Socket}
+	 * @return
+	 */
+	public Socket getSocket() {
+		return rxSocket;
 	}
 	
 	private void parseOtherUserData(String data) {
