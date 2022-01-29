@@ -51,7 +51,7 @@ import mtools.io.*;
  * @author Noah
  *
  */
-public class MenuModule implements IOModule {
+public class MenuModule {
 	
 	private MenuState mState;
 	private MMenu menu;
@@ -116,7 +116,6 @@ public class MenuModule implements IOModule {
 		return menuChoice;
 	}
 	
-	@Override
 	public void sendData(String s) {
 		menuChoice = console.getInputInt();
 	}
