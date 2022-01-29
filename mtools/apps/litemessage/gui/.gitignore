@@ -19,3 +19,7 @@
 /SettingsGUI$saveAction.class
 /SettingsGUI$CancelAction.class
 /SettingsGUI$SaveAction.class
+/MainMenuBar$SettingsAction.class
+/MainMenuBar$ExitAction.class
+/MainMenuBar$AboutAction.class
+/MainMenuBar$RemoveContactAction.class

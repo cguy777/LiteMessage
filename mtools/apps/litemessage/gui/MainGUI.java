@@ -36,6 +36,7 @@
 
 package mtools.apps.litemessage.gui;
 
+import java.awt.Font;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -58,12 +59,13 @@ import mtools.io.MConsole;
 
 public class MainGUI extends JFrame {
 	
-	private ContactManager cMan;
-	private SettingsModule sMod;
-	private JList<String> contactList;
-	private JScrollPane contactScroll;
-	private JButton messageButton;
-	private JButton contactSomebodyNew;
+	public ContactManager cMan;
+	public SettingsModule sMod;
+	public JList<String> contactList;
+	public JScrollPane contactScroll;
+	public JButton messageButton;
+	public JButton contactSomebodyNew;
+	public JButton removeContact;
 	
 	public MainGUI() {
 		sMod = new SettingsModule(new MConsole(), false);
@@ -92,14 +94,11 @@ public class MainGUI extends JFrame {
 	
 	private void buildGUI() {
 		//Main GUI Frame
-		this.setJMenuBar(new MainMenuBar(sMod));
+		this.setJMenuBar(new MainMenuBar(this));
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setSize(400, 500);
 		this.setResizable(false);
-		this.setLayout(null);
-		
-		
-		
+		this.setLayout(null);		
 		this.setTitle("LiteMessage - " + sMod.getSettings().thisUser.getName());
 		
 		
@@ -110,6 +109,7 @@ public class MainGUI extends JFrame {
 		updateContactList();
 		
 		contactList.setSize(100, 500);
+		contactList.setFont(new Font(contactList.getFont().getName(), Font.BOLD, 15));
 		contactScroll = new JScrollPane(contactList);
 		contactScroll.setBounds(10, 10, 200, 300);
 		this.add(contactScroll);
