@@ -37,6 +37,7 @@
 package mtools.apps.litemessage.gui;
 
 import java.awt.BorderLayout;
+import java.awt.Insets;
 import java.awt.LayoutManager;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -50,6 +51,7 @@ import javax.swing.JScrollPane;
 
 import mtools.apps.litemessage.Contact;
 import mtools.apps.litemessage.ContactManager;
+import mtools.apps.litemessage.MessagingControlModule;
 import mtools.apps.litemessage.SettingsModule;
 import mtools.io.MConsole;
 
@@ -60,9 +62,28 @@ public class MainGUI extends JFrame {
 	private JScrollPane contactScroll;
 	private JButton messageButton;
 	private JButton contactSomebodyNew;
+	private MessagingControlModule cMod;
 	
 	public MainGUI() {
-
+		
+		buildGUI();
+		
+	}
+	
+	/**
+	 * Used to update the contact list GUI component when need.
+	 */
+	public void updateContactList() {
+		String[] s = new String[cMan.getNumContacts()];
+		
+		for(int i = 0; i<cMan.getContacts().size(); i++) {
+			s[i] = cMan.getContacts().get(i).getName();
+		}
+		
+		contactList.setListData(s);
+	}
+	
+	private void buildGUI() {
 		//Main GUI Frame
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setSize(400, 500);
@@ -79,31 +100,28 @@ public class MainGUI extends JFrame {
 		cMan = new ContactManager(sMod.getSettings());
 		cMan.loadContacts();
 		
-		String[] s = new String[cMan.getNumContacts()];
-		
-		for(int i = 0; i<cMan.getContacts().size(); i++) {
-			s[i] = cMan.getContacts().get(i).getName();
-		}
-		
-		contactList = new JList<String>(s);
+		contactList = new JList<String>();
+		updateContactList();
 		
 		contactList.setSize(100, 500);
-		//contactList.setBounds(10, 10, 120, 300);
 		contactScroll = new JScrollPane(contactList);
-		contactScroll.setBounds(10, 10, 120, 300);
+		contactScroll.setBounds(10, 10, 200, 300);
 		this.add(contactScroll);
 		
 		
 		//Connect To Button
 		messageButton = new JButton("Connect To...");
 		messageButton.setVisible(true);
-		messageButton.setBounds(10, 320, 120, 20);
+		messageButton.setBounds(10, 320, 95, 20);
 		messageButton.addActionListener(new ConnectButtonAction());
+		messageButton.setMargin(new Insets(0, 0, 0, 0));
 		this.add(messageButton);
 		
+		
+		//Not Listed Button
 		contactSomebodyNew = new JButton("Not Listed");
 		contactSomebodyNew.setVisible(true);
-		contactSomebodyNew.setBounds(10, 350, 120, 20);
+		contactSomebodyNew.setBounds(115, 320, 95, 20);
 		contactSomebodyNew.addActionListener(new ContactSomebodyNewAction());
 		this.add(contactSomebodyNew);
 		
@@ -112,7 +130,6 @@ public class MainGUI extends JFrame {
 		
 		
 		this.setVisible(true);
-		
 	}
 	
 	private class ConnectButtonAction implements ActionListener {
@@ -126,6 +143,9 @@ public class MainGUI extends JFrame {
 			try {
 				selectedContact = cMan.getContactByName(contactList.getSelectedValue());
 				mGUI = new MessagingGUI(selectedContact, cMan);
+				
+				//There might have been a change to the contact list, so we'll update it.
+				updateContactList();
 			} catch(Exception ex) {
 				//Nothing is selected.  So do nothing.
 				return;
@@ -148,6 +168,9 @@ public class MainGUI extends JFrame {
 					return;
 				}
 				mGUI = new MessagingGUI(address, cMan);
+				
+				//If it's somebody new, there should be a new contact to list, so we'll update it.
+				updateContactList();
 			} catch(Exception ex) {
 				ex.printStackTrace();
 			}
