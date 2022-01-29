@@ -73,6 +73,11 @@ public class MessagingGUI extends JFrame implements TextDisplayObject {
 	private JTextArea composeArea;
 	private JButton sendButton;
 	
+	/**
+	 * Use this one when we are connecting to a known contact.
+	 * @param c
+	 * @param cm
+	 */
 	public MessagingGUI(Contact c, ContactManager cm) {
 		contact = c;
 		mcm = new MessagingControlModule(new MDisplay(), this, cm);
@@ -83,6 +88,13 @@ public class MessagingGUI extends JFrame implements TextDisplayObject {
 		this.setTitle(mcm.getConnectedContact().getName());
 	}
 	
+	
+	/**
+	 * Use this one when we are connecting to another peer
+	 * based off of an IP address or hostname.
+	 * @param ipAddress
+	 * @param cm
+	 */
 	public MessagingGUI(String ipAddress, ContactManager cm) {
 		mcm = new MessagingControlModule(new MDisplay(), this, cm);
 
