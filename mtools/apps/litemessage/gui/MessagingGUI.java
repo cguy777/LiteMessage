@@ -86,6 +86,7 @@ public class MessagingGUI extends JFrame implements TextDisplayObject {
 	 */
 	public void initiateMessaging(Contact c, ContactManager cm) {
 		this.setVisible(true);
+		this.setTitle("Connecting...");
 		contact = c;
 		mcm = new MessagingControlModule(new MDisplay(), this, cm);
 		mcm.startInitiateMessageLogicFromGUI(contact);
@@ -100,6 +101,7 @@ public class MessagingGUI extends JFrame implements TextDisplayObject {
 	 */
 	public void initiateMessaging(String ipAddress, ContactManager cm) {
 		this.setVisible(true);
+		this.setTitle("Connecting...");
 		mcm = new MessagingControlModule(new MDisplay(), this, cm);
 		mcm.startInitiateMessageLogicFromGUI(ipAddress);
 		this.setTitle(mcm.getConnectedContact().getName());
