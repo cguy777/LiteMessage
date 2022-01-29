@@ -60,7 +60,11 @@ public class SettingsModule {
 	private boolean isBlank;
 	private boolean isConsoleBased;
 	
-	
+	/**
+	 * The constructor.  Also loads the settings into memory upon construction.
+	 * @param con
+	 * @param consoleBased
+	 */
 	public SettingsModule(MConsole con, boolean consoleBased) {
 		console = con;
 		isConsoleBased = consoleBased;
