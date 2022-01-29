@@ -44,6 +44,9 @@ import java.net.BindException;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JList;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 
@@ -89,6 +92,7 @@ public class MainGUI extends JFrame {
 	
 	private void buildGUI() {
 		//Main GUI Frame
+		this.setJMenuBar(new MainMenuBar(sMod));
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setSize(400, 500);
 		this.setResizable(false);
