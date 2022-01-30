@@ -36,6 +36,6 @@
 
 package mtools.apps.litemessage;
 
-public enum MessagingStatus {
+public enum MessagingState {
 	INITIATED_MESSAGING, AWAITING_MESSAGING, ACCECPTED_MESSAGING, NOT_MESSAGING
 }
