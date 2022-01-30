@@ -34,14 +34,18 @@
  * IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package mtools.apps.litemessage.gui;
+package mtools.apps.litemessage;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+
+import mtools.apps.litemessage.gui.SessionInfo;
 
 /**
  * Used for keeping track of what connections are established and what
@@ -60,9 +64,57 @@ public class ConnectionManager {
 	ArrayList<Socket> sockets;
 	ArrayList<ServerSocket> serverSockets;
 	
+	SessionInfo sessionInfo;
+	
 	public ConnectionManager() {
 		sockets = new ArrayList<Socket>();
 		serverSockets = new ArrayList<ServerSocket>();
+		
+		sessionInfo = new SessionInfo();
+	}
+	
+	public StreamBundle initSessionNegotiation(InetAddress ipAddress) throws IOException {
+		Socket initSocket = new Socket(ipAddress, INIT_STANDARD_PORT);
+		DataInputStream initInputStream = new DataInputStream(initSocket.getInputStream());
+		
+		String port = initInputStream.readUTF();
+		int portNumber = 0;
+		
+		try {
+			portNumber = Integer.parseInt(port);
+			initInputStream.close();
+			initSocket.close();
+		} catch(Exception e) {
+			System.err.println("Error while negotiating connection.");
+			e.printStackTrace();
+			return null;
+		}
+		
+		Socket dataSocket = createSocket(ipAddress, portNumber);
+		return new StreamBundle(dataSocket);
+	}
+	
+	public StreamBundle waitForSessionNegotiation() throws IOException {
+		ServerSocket serverSocket = new ServerSocket(INIT_STANDARD_PORT);
+		Socket initSocket = serverSocket.accept();
+		DataOutputStream initStream = new DataOutputStream(initSocket.getOutputStream());
+		
+		ServerSocket tempServerSocket = createUsableServerSocket();
+		
+		try {
+			initStream.writeUTF(String.valueOf(tempServerSocket.getLocalPort()));
+			initStream.close();
+			initSocket.close();
+			serverSocket.close();
+		} catch(Exception e) {
+			System.err.println("Error while negotiating connection.");
+			e.printStackTrace();
+			return null;
+		}
+		
+		Socket dataSocket = tempServerSocket.accept();
+		addSocketToList(dataSocket);
+		return new StreamBundle(dataSocket);
 	}
 	
 	/**
@@ -112,6 +164,14 @@ public class ConnectionManager {
 	}
 	
 	/**
+	 * Adds an already created socket to the sockets array list.
+	 * @param socket
+	 */
+	public void addSocketToList(Socket socket) {
+		sockets.add(socket);
+	}
+	
+	/**
 	 * Searches through ephemeral ports until an open one is available.  It then creates
 	 * and returns a server socket using that port.  It also adds that server socket to 
 	 * the server socket array list.  Will return null if a usable port can't be found.
@@ -136,7 +196,7 @@ public class ConnectionManager {
 		}
 		
 		System.out.println("Found port " + (FIRST_DYNAMIC_PORT + portOffset));
-		serverSockets.add(newServerSocket);
+		//serverSockets.add(newServerSocket);
 		return newServerSocket;
 	}
 	
@@ -242,8 +302,7 @@ public class ConnectionManager {
 		}
 	}
 	
-	public static void main(String[]args) {
+	public static void main(String[]args) throws UnknownHostException, IOException {
 		ConnectionManager cm = new ConnectionManager();
 	}
-	
 }
