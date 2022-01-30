@@ -43,6 +43,12 @@ package mtools.apps.litemessage.gui;
  *
  */
 public class ConnectionManager {
+	
+	private int INIT_STANDARD_PORT = 5676;
+	private int ACCEPT_STANDARD_PORT = 5677;
+	
+	private int offset;
+	
 	public ConnectionManager() {
 		
 	}
