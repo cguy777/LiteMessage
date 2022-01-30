@@ -285,6 +285,15 @@ public class ContactManager {
 	}
 	
 	/**
+	 * Removes a contact by referencing it with it's index/position.
+	 * @param index
+	 */
+	public void removeContact(int index) {
+		contacts.remove(index);
+		saveContacts();
+	}
+	
+	/**
 	 * Returns a {@link Contact} who's name matches String n.
 	 * Returns null if it can't be found.  Ignores case.
 	 * @param n
