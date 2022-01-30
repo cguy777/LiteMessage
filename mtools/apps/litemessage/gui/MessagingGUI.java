@@ -37,8 +37,11 @@
 package mtools.apps.litemessage.gui;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import javax.swing.JButton;
@@ -62,6 +65,7 @@ public class MessagingGUI extends JFrame implements TextDisplayObject {
 	private Contact contact;
 	private MessagingControlModule mcm;
 	
+	private JPanel mainPanel;
 	private JTextArea convoHistory;
 	JScrollPane convoScroll;
 	private JTextArea composeArea;
@@ -118,10 +122,12 @@ public class MessagingGUI extends JFrame implements TextDisplayObject {
 	}
 	
 	private void buildGUI() {
-		this.setLayout(new BorderLayout(10, 10));
+		this.setLayout(new BorderLayout(0, 0));
 		this.setSize(250, 350);
 		this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		this.addWindowListener(new CloseWindowAction());
+		mainPanel = new JPanel(new BorderLayout(10, 10));
+		this.add(mainPanel);
 		
 		
 		//Displays the conversation
@@ -130,7 +136,7 @@ public class MessagingGUI extends JFrame implements TextDisplayObject {
 		convoHistory.setWrapStyleWord(true);
 		convoHistory.setLineWrap(true);
 		convoScroll = new JScrollPane(convoHistory);
-		this.add(convoScroll, BorderLayout.CENTER);
+		mainPanel.add(convoScroll, BorderLayout.CENTER);
 		
 		
 		//Everything below the convo display
@@ -143,6 +149,7 @@ public class MessagingGUI extends JFrame implements TextDisplayObject {
 		composeArea = new JTextArea(3, 10);
 		composeArea.setLineWrap(true);
 		composeArea.setWrapStyleWord(true);
+		composeArea.addKeyListener(new EnterKeyAction());
 		JScrollPane composeScroll = new JScrollPane(composeArea);
 		lowerPanel.add(composeScroll, BorderLayout.CENTER);
 		
@@ -178,6 +185,34 @@ public class MessagingGUI extends JFrame implements TextDisplayObject {
 				composeArea.setText("");
 			}
 		}
+	}
+	
+	private class EnterKeyAction implements KeyListener {
+
+		@Override
+		public void keyPressed(KeyEvent e) {
+			if(e.getKeyCode() == 10) {
+				String message = composeArea.getText();
+				//Don't want to process a blank message.
+				if(!message.matches("")) {
+					mcm.sendData(message);
+					print("You: " + message);
+				}
+			}
+		}
+
+		@Override
+		public void keyReleased(KeyEvent e) {
+			if(e.getKeyCode() == 10) {
+				composeArea.setText("");
+			}
+		}
+		
+		@Override
+		public void keyTyped(KeyEvent e) {
+			
+		}
+		
 	}
 	
 	private class CloseWindowAction implements WindowListener {
