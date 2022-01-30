@@ -13,10 +13,7 @@ import mtools.apps.litemessage.ContactManager;
 import mtools.apps.litemessage.SettingsModule;
 
 public class MainMenuBar extends JMenuBar {
-	
-	SettingsModule sMod;
-	ContactManager cMan;
-	JList<String> contactList;
+	MainGUI mGUI;
 	
 	private JMenu fileMenu;
 	private JMenuItem settingsMenuItem;
@@ -28,9 +25,7 @@ public class MainMenuBar extends JMenuBar {
 	
 	public MainMenuBar(MainGUI mg) {
 		
-		sMod = mg.sMod;
-		cMan = mg.cMan;
-		contactList = mg.contactList;
+		mGUI = mg;		
 		
 		//*********
 		//File menu
@@ -43,6 +38,7 @@ public class MainMenuBar extends JMenuBar {
 		removeContactItem = new JMenuItem("Remove Contact");
 		removeContactItem.addActionListener(new RemoveContactAction());
 		fileMenu.add(settingsMenuItem);
+		fileMenu.add(removeContactItem);
 		fileMenu.add(exitMenuItem);
 		
 		
@@ -62,7 +58,7 @@ public class MainMenuBar extends JMenuBar {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			SettingsGUI sGUI = new SettingsGUI(sMod);
+			SettingsGUI sGUI = new SettingsGUI(mGUI.sMod);
 		}
 	}
 	
@@ -70,7 +66,14 @@ public class MainMenuBar extends JMenuBar {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
+			String contact = mGUI.contactList.getSelectedValue();
 			
+			//Do nothing if we get a bad selection
+			if(contact == null || contact.matches(""))
+				return;
+			
+			mGUI.cMan.removeContact(contact);
+			mGUI.updateContactList();
 		}
 	}
 	
