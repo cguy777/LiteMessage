@@ -63,7 +63,7 @@ import mtools.io.MDisplay;
 public class MessagingGUI extends JFrame implements TextDisplayObject {
 	
 	private Contact contact;
-	private MessagingControlModule mcm;
+	public MessagingControlModule mcm;
 	
 	private JPanel mainPanel;
 	private JTextArea convoHistory;
@@ -117,8 +117,10 @@ public class MessagingGUI extends JFrame implements TextDisplayObject {
 		mcm.startReceiveMessageLogic();
 		this.setVisible(true);
 		this.setTitle(mcm.getConnectedContact().getName());
-		
-		this.print("Connected with " + mcm.getConnectedContact().getName() + "\n");
+	}
+	
+	public void clearConnections() {
+		mcm.clearConnections();
 	}
 	
 	private void buildGUI() {
