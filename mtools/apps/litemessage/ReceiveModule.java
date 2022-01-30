@@ -120,7 +120,7 @@ public class ReceiveModule extends Thread {
 	
 	/**
 	 * closes both the {@link Socket} and {@link ServerSocket}
-	 * It also sets the the messaging state to {@link MessagingStatus.NOT_MESSAGING}
+	 * It also sets the the messaging state to {@link MessagingState.NOT_MESSAGING}
 	 */
 	public void closeConnection() {
 		try {
@@ -131,14 +131,14 @@ public class ReceiveModule extends Thread {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		mState.setMessagingState(MessagingStatus.NOT_MESSAGING);
+		mState.setMessagingState(MessagingState.NOT_MESSAGING);
 	}
 	
 	/**
 	 * Returns the current messaging state.  Used for general program control.
 	 * @return
 	 */
-	public MessagingStatus getConnectionState() {
+	public MessagingState getConnectionState() {
 		return mState.getMessagingState();
 	}
 	
