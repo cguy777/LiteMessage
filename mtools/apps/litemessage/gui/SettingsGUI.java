@@ -7,6 +7,7 @@ import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
@@ -16,6 +17,7 @@ public class SettingsGUI extends JFrame {
 	
 	SettingsModule sMod;
 	
+	JLabel nameLabel;
 	JTextField displayName;
 	JCheckBox dynamicUID;
 	JButton saveButton;
@@ -32,11 +34,15 @@ public class SettingsGUI extends JFrame {
 		this.setTitle("LiteMessage - Settings");
 		this.setType(Type.UTILITY);
 		
-		//Display name field
+		//Display name label and field
+		nameLabel = new JLabel("Display Name");
+		nameLabel.setBounds(10, 10, 80, 25);
+		nameLabel.setVisible(true);
 		displayName = new JTextField(sMod.getSettings().thisUser.getName(), 30);
-		displayName.setBounds(10, 10, 200, 25);
+		displayName.setBounds(90, 10, 120, 25);
 		displayName.setVisible(true);
 		displayName.setToolTipText("Display name.  Can not include commas.");
+		this.add(nameLabel);
 		this.add(displayName);
 		
 		//Dynamic UID check box
@@ -46,7 +52,7 @@ public class SettingsGUI extends JFrame {
 		this.add(dynamicUID);
 		
 		//Save button
-		saveButton = new JButton("Save and Close");
+		saveButton = new JButton("Save");
 		saveButton.setBounds(10, 70, 95, 30);
 		saveButton.setVisible(true);
 		saveButton.setMargin(new Insets(0, 0, 0, 0));
@@ -80,7 +86,7 @@ public class SettingsGUI extends JFrame {
 			
 			//If this is the case, we will not do anything except inform the user the error of their ways.
 			if(displayName.getText().contains(",") || displayName.getText().matches("")) {
-				JOptionPane.showMessageDialog(null, "Display cannot be blank, and must not contain commas!", "Error", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(null, "Display name cannot be blank, and must not contain commas!", "Error", JOptionPane.ERROR_MESSAGE);
 				return;
 			}
 			
