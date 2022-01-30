@@ -263,14 +263,36 @@ public class ContactManager {
 	}
 	
 	/**
+	 * Removes the contact who's name is passed to the method.
+	 * This is case sensitive.  If the name is not found, it does nothing.
+	 * @param name
+	 */
+	public void removeContact(String name) {
+		
+		int count = 0;
+		while(!name.contentEquals(contacts.get(count).getName())) {
+			count++;
+			if(count >= contacts.size()) {
+				return;
+			}
+		}
+		
+		//We've iterated integer 'count' to the correct location, so now we will remove it.
+		contacts.remove(count);
+		
+		//Since we deleted a contact, we need to save it.
+		saveContacts();
+	}
+	
+	/**
 	 * Returns a {@link Contact} who's name matches String n.
 	 * Returns null if it can't be found.  Ignores case.
 	 * @param n
 	 * @return
 	 */
-	public Contact getContactByName(String n) {
+	public Contact getContactByName(String name) {
 		for(int i = 0; i < contacts.size(); i++) {
-			if(contacts.get(i).getName().compareToIgnoreCase(n) == 0) {
+			if(contacts.get(i).getName().compareToIgnoreCase(name) == 0) {
 				return contacts.get(i);
 			}
 		}
