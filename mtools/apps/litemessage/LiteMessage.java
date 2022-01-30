@@ -75,7 +75,7 @@ public class LiteMessage {
 			
 			//Change settings
 			case 2:
-				sMod.configSettingsFromConsole();
+				sMod.configSettingsFromConsole(cMan);
 				break;
 				
 			//Exit
@@ -86,11 +86,11 @@ public class LiteMessage {
 			
 			//Save ourselves some exception trouble by checking if things were initialized or not
 			if(cMod != null) {
-				while(cMod.getMessagingState() != MessagingStatus.NOT_MESSAGING) {
+				while(cMod.getMessagingState() != MessagingState.NOT_MESSAGING) {
 					//We'll print a thing to indicate it's ready to type.
 					System.out.print("> ");
 					String data = console.getInputString();
-					if(cMod.getMessagingState() != MessagingStatus.NOT_MESSAGING) {
+					if(cMod.getMessagingState() != MessagingState.NOT_MESSAGING) {
 						cMod.sendData(data);
 					}
 				}
