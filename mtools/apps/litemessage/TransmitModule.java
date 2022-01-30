@@ -91,10 +91,10 @@ public class TransmitModule {
 		}
 		//We want to make sure that this gets set or we could have issues
 		//with controlling the logic of the program.
-		mState.setMessagingState(MessagingStatus.NOT_MESSAGING);
+		mState.setMessagingState(MessagingState.NOT_MESSAGING);
 	}
 	
-	public MessagingStatus getConnectionState() {
+	public MessagingState getConnectionState() {
 		return mState.getMessagingState();
 	}
 	
