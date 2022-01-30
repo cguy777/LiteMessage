@@ -144,7 +144,7 @@ public class MessagingControlModule {
 		display.setBanner("Connected with " + rxMod.getContact().getName());
 		display.display();
 		
-		mState.setMessagingState(MessagingStatus.INITIATED_MESSAGING);
+		mState.setMessagingState(MessagingState.INITIATED_MESSAGING);
 		
 		cMan.addContact(rxMod.getContact());
 	}
@@ -190,7 +190,7 @@ public class MessagingControlModule {
 		
 		displayObject.print("Connected with " + rxMod.getContact().getName() + "\n");
 		
-		mState.setMessagingState(MessagingStatus.INITIATED_MESSAGING);
+		mState.setMessagingState(MessagingState.INITIATED_MESSAGING);
 		
 		cMan.addContact(rxMod.getContact());
 	}
@@ -235,7 +235,7 @@ public class MessagingControlModule {
 		
 		displayObject.print("Connected with " + rxMod.getContact().getName() + "\n");
 		
-		mState.setMessagingState(MessagingStatus.INITIATED_MESSAGING);
+		mState.setMessagingState(MessagingState.INITIATED_MESSAGING);
 		
 		cMan.addContact(rxMod.getContact());
 	}
@@ -275,7 +275,7 @@ public class MessagingControlModule {
 		
 		rxMod.start();
 		
-		mState.setMessagingState(MessagingStatus.ACCECPTED_MESSAGING);
+		mState.setMessagingState(MessagingState.ACCECPTED_MESSAGING);
 		cMan.addContact(rxMod.getContact());
 	}
 	
@@ -300,7 +300,7 @@ public class MessagingControlModule {
 		
 		rxMod.start();
 		
-		mState.setMessagingState(MessagingStatus.ACCECPTED_MESSAGING);
+		mState.setMessagingState(MessagingState.ACCECPTED_MESSAGING);
 		cMan.addContact(rxMod.getContact());
 	}
 	
@@ -334,7 +334,7 @@ public class MessagingControlModule {
 		
 		
 		
-		mState.setMessagingState(MessagingStatus.ACCECPTED_MESSAGING);
+		mState.setMessagingState(MessagingState.ACCECPTED_MESSAGING);
 		cMan.addContact(rxMod.getContact());
 		
 		String message;
@@ -366,10 +366,10 @@ public class MessagingControlModule {
 	public void clearConnections() {
 		txMod.closeConnection();
 		rxMod.closeConnection();
-		mState.setMessagingState(MessagingStatus.NOT_MESSAGING);
+		mState.setMessagingState(MessagingState.NOT_MESSAGING);
 	}
 	
-	public MessagingStatus getMessagingState() {
+	public MessagingState getMessagingState() {
 		return mState.getMessagingState();
 	}
 	
