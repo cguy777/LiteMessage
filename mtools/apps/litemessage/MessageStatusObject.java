@@ -37,24 +37,24 @@
 package mtools.apps.litemessage;
 
 /**
- * A simple class that contains a {@link MessagingStatus} enum that can be passed
+ * A simple class that contains a {@link MessagingState} enum that can be passed
  * around and updated as the program changes states.
  * @author Noah
  *
  */
 public class MessageStatusObject {
 
-	private MessagingStatus mState;
+	private MessagingState mState;
 	
 	public MessageStatusObject() {
-		mState = MessagingStatus.NOT_MESSAGING;
+		mState = MessagingState.NOT_MESSAGING;
 	}
 	
-	public void setMessagingState(MessagingStatus ms) {
+	public void setMessagingState(MessagingState ms) {
 		mState = ms;
 	}
 	
-	public MessagingStatus getMessagingState() {
+	public MessagingState getMessagingState() {
 		return mState;
 	}
 	
