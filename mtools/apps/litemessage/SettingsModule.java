@@ -75,6 +75,7 @@ public class SettingsModule {
 		
 		menu.addMenuItem("Change display name");
 		menu.addMenuItem("Enable/disable dynamic UID updates");
+		menu.addMenuItem("Delete Contact");
 		menu.addMenuItem("Go back");
 		
 		username = null;
@@ -240,7 +241,7 @@ public class SettingsModule {
 	/**
 	 * Call this from the console main menu.
 	 */
-	public void configSettingsFromConsole() {
+	public void configSettingsFromConsole(ContactManager cm) {
 		menu.display();
 		
 		int selection = console.getInputInt();
@@ -253,6 +254,7 @@ public class SettingsModule {
 				display.clear();
 				display.setBanner("Enter a display name.  Do not use any commas!!!");
 				display.display();
+				System.out.print("> ");
 			
 				String name = console.getInputString();
 				if(name.contains(",") || name == "") {
@@ -263,6 +265,7 @@ public class SettingsModule {
 			}
 					
 			break;
+		
 		//Enable/disable dynamic UID updates
 		case 1:
 			display.clear();
@@ -277,6 +280,8 @@ public class SettingsModule {
 			display.addLine("1. Disable");
 			display.display();
 			
+			System.out.print("> ");
+			
 			int choice = console.getInputInt();
 			
 			if(choice == 0) {
@@ -285,9 +290,33 @@ public class SettingsModule {
 				settings.dynamicUIDUpdates = false;
 			}
 			break;
+		
+		//Remove Contact
+		case 2:
+			display.clear();
+			System.out.println("Delete Contact\n");
+			for(int i = 0; i<cm.getNumContacts(); i++) {
+				System.out.println(i + ". " + cm.getContacts().get(i).getName());
+			}
+			
+			System.out.print("\nPlease select the contact you wish to delete.\n> ");
+			
+			int contact = 0;
+			
+			try {
+				contact = console.getInputInt();
+			} catch(Exception e) {
+				return;
+			}
+			
+			if(contact < cm.getNumContacts() && contact >= 0) {
+				cm.removeContact(contact);
+			}
+			
+			break;
 			
 		//Go back to the main menu
-		case 2:
+		case 3:
 			break;
 		}
 		
