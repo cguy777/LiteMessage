@@ -244,7 +244,12 @@ public class SettingsModule {
 	public void configSettingsFromConsole(ContactManager cm) {
 		menu.display();
 		
-		int selection = console.getInputInt();
+		int selection = 0;
+		try {
+			selection = console.getInputInt();
+		} catch(Exception e) {
+			return;
+		}
 		
 		switch(selection) {
 		
@@ -278,11 +283,18 @@ public class SettingsModule {
 			display.addLine(" ");
 			display.addLine("0. Enable");
 			display.addLine("1. Disable");
+			display.addLine("2. Return to main menu");
 			display.display();
 			
 			System.out.print("> ");
 			
-			int choice = console.getInputInt();
+			int choice = 0;
+			
+			try {
+				choice = console.getInputInt();
+			} catch(Exception e) {
+				return;
+			}
 			
 			if(choice == 0) {
 				settings.dynamicUIDUpdates = true;
