@@ -37,20 +37,36 @@
 package mtools.apps.litemessage.gui;
 
 import mtools.apps.litemessage.ContactManager;
+import mtools.apps.litemessage.MessagingState;
 
 public class ReceiveMessageHandler extends Thread {
 	
-	private MainGUI mGUI;
+	private MainGUI mainGUI;
 	
 	public ReceiveMessageHandler(MainGUI mg) {
-		mGUI = mg;
+		mainGUI = mg;
 	}
 
 	@Override
 	public void run() {
-		MessagingGUI messagingGUI = new MessagingGUI();
-		messagingGUI.waitForMessaging(mGUI.cMan);
-		mGUI.updateContactList();
+		while(true) {
+			MessagingGUI messagingGUI = new MessagingGUI();
+			messagingGUI.waitForMessaging(mainGUI.cMan);
+			mainGUI.updateContactList();
+			
+			//While we are supposedly engaged in a chat session we will
+			//loop and check once a second to see if it is still on going
+			while(true) {
+				if(messagingGUI.mcm.getMessageStateObject().getMessagingState() == MessagingState.NOT_MESSAGING)
+					break;
+				
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+		}
 	}
 
 }
