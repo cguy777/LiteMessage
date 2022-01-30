@@ -36,24 +36,24 @@
 
 package mtools.apps.litemessage.gui;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Font;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.net.BindException;
-
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JList;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.LookAndFeel;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 
 import mtools.apps.litemessage.Contact;
 import mtools.apps.litemessage.ContactManager;
-import mtools.apps.litemessage.MessagingControlModule;
 import mtools.apps.litemessage.SettingsModule;
 import mtools.io.MConsole;
 
@@ -61,11 +61,13 @@ public class MainGUI extends JFrame {
 	
 	public ContactManager cMan;
 	public SettingsModule sMod;
+	
 	public JList<String> contactList;
-	public JScrollPane contactScroll;
+	public JScrollPane contactScroll;	
+	public JPanel mainPanel;
+	public JPanel lowerPanel;
 	public JButton messageButton;
 	public JButton contactSomebodyNew;
-	public JButton removeContact;
 	
 	public MainGUI() {
 		sMod = new SettingsModule(new MConsole(), false);
@@ -73,14 +75,20 @@ public class MainGUI extends JFrame {
 		cMan = new ContactManager(sMod.getSettings());
 		cMan.loadContacts();
 		
+		try {
+			UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
+		} catch (Exception e) {
+			//If we can't use, then oh well.  It works fine in the steel look and feel too.
+		}
+		
 		buildGUI();
 		
-		ReceiveMessageHandler rmh = new ReceiveMessageHandler(cMan);
+		ReceiveMessageHandler rmh = new ReceiveMessageHandler(this);
 		rmh.start();
 	}
 	
 	/**
-	 * Used to update the contact list GUI component when need.
+	 * Used to update the contact list GUI component when needed.
 	 */
 	public void updateContactList() {
 		String[] s = new String[cMan.getNumContacts()];
@@ -94,45 +102,44 @@ public class MainGUI extends JFrame {
 	
 	private void buildGUI() {
 		//Main GUI Frame
-		this.setJMenuBar(new MainMenuBar(this));
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		this.setSize(400, 500);
-		this.setResizable(false);
-		this.setLayout(null);		
+		this.setJMenuBar(new MainMenuBar(this));
+		this.setSize(230, 300);
 		this.setTitle("LiteMessage - " + sMod.getSettings().thisUser.getName());
+		mainPanel = new JPanel(new BorderLayout(10, 10));
+		this.add(mainPanel);
 		
 		
 		//Contacts List
-
-		
 		contactList = new JList<String>();
 		updateContactList();
 		
-		contactList.setSize(100, 500);
+		contactList.setSize(100, 100);
 		contactList.setFont(new Font(contactList.getFont().getName(), Font.BOLD, 15));
 		contactScroll = new JScrollPane(contactList);
 		contactScroll.setBounds(10, 10, 200, 300);
-		this.add(contactScroll);
+		mainPanel.add(contactScroll, BorderLayout.CENTER);
 		
-		
+		//Lower panel
+		lowerPanel = new JPanel(new BorderLayout(10, 10));
+		mainPanel.add(lowerPanel, BorderLayout.SOUTH);
+				
 		//Connect To Button
 		messageButton = new JButton("Connect To...");
 		messageButton.setVisible(true);
-		messageButton.setBounds(10, 320, 95, 20);
+		messageButton.setBounds(0, 0, 95, 20);
 		messageButton.addActionListener(new ConnectButtonAction());
 		messageButton.setMargin(new Insets(0, 0, 0, 0));
-		this.add(messageButton);
+		lowerPanel.add(messageButton, BorderLayout.WEST);
 		
 		
 		//Not Listed Button
 		contactSomebodyNew = new JButton("Not Listed");
 		contactSomebodyNew.setVisible(true);
-		contactSomebodyNew.setBounds(115, 320, 95, 20);
+		contactSomebodyNew.setBounds(0, 0, 95, 20);
 		contactSomebodyNew.addActionListener(new ContactSomebodyNewAction());
-		this.add(contactSomebodyNew);
-		
-		
-		
+		lowerPanel.add(contactSomebodyNew, BorderLayout.EAST);
+	
 		
 		
 		this.setVisible(true);
@@ -167,13 +174,13 @@ public class MainGUI extends JFrame {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			try {
-				String address = JOptionPane.showInputDialog("Enter an IP address or hostname");
+				String address = JOptionPane.showInputDialog(null, "Enter an IP address or hostname", "Connect to...", JOptionPane.QUESTION_MESSAGE);
 				
 				//Quick input validation.
-				if(address.matches("") || address == null) {
-					JOptionPane.showMessageDialog(null, "Nothing was entered!", "Error", JOptionPane.ERROR_MESSAGE);;
+				if(address == null || address.matches("")) {
 					return;
 				}
+				
 				mGUI = new MessagingGUI();
 				mGUI.initiateMessaging(address, cMan);
 				
