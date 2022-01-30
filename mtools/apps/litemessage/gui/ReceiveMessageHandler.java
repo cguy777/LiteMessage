@@ -40,16 +40,17 @@ import mtools.apps.litemessage.ContactManager;
 
 public class ReceiveMessageHandler extends Thread {
 	
-	private ContactManager cMan;
+	private MainGUI mGUI;
 	
-	public ReceiveMessageHandler(ContactManager cm) {
-		cMan = cm;
+	public ReceiveMessageHandler(MainGUI mg) {
+		mGUI = mg;
 	}
 
 	@Override
 	public void run() {
-		MessagingGUI mGUI = new MessagingGUI();
-		mGUI.waitForMessaging(cMan);
+		MessagingGUI messagingGUI = new MessagingGUI();
+		messagingGUI.waitForMessaging(mGUI.cMan);
+		mGUI.updateContactList();
 	}
 
 }
