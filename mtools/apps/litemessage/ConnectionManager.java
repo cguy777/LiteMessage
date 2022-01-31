@@ -55,11 +55,10 @@ import mtools.apps.litemessage.gui.SessionInfo;
  */
 public class ConnectionManager {
 	
-	private final int INIT_STANDARD_PORT = 5676;
-	private final int ACCEPT_STANDARD_PORT = 5677;
+	private int INIT_STANDARD_PORT = 5676;
 	
-	private final int FIRST_DYNAMIC_PORT = 49152;
-	private final int LAST_DYNAMIC_PORT = 65535;
+	private int FIRST_DYNAMIC_PORT = 49152;
+	private int LAST_DYNAMIC_PORT = 65535;
 	
 	ArrayList<Socket> sockets;
 	ArrayList<ServerSocket> serverSockets;
@@ -73,6 +72,21 @@ public class ConnectionManager {
 		sessionInfo = new SessionInfo();
 	}
 	
+	public void setStandardPort(int newPortNumber) {
+		INIT_STANDARD_PORT = newPortNumber;
+	}
+	
+	public void setHandOffPortRange(int lowPort, int highPort) {
+		FIRST_DYNAMIC_PORT = lowPort;
+		LAST_DYNAMIC_PORT = highPort;
+	}
+	
+	/**
+	 * Attempts to initiate a connection with another device by initially 
+	 * @param ipAddress
+	 * @return
+	 * @throws IOException
+	 */
 	public StreamBundle initSessionNegotiation(InetAddress ipAddress) throws IOException {
 		Socket initSocket = new Socket(ipAddress, INIT_STANDARD_PORT);
 		DataInputStream initInputStream = new DataInputStream(initSocket.getInputStream());
@@ -95,24 +109,27 @@ public class ConnectionManager {
 	}
 	
 	public StreamBundle waitForSessionNegotiation() throws IOException {
-		ServerSocket serverSocket = new ServerSocket(INIT_STANDARD_PORT);
-		Socket initSocket = serverSocket.accept();
+		ServerSocket tempServerSocket = new ServerSocket(INIT_STANDARD_PORT);
+		Socket initSocket = tempServerSocket.accept();
+		tempServerSocket.close();
+		
 		DataOutputStream initStream = new DataOutputStream(initSocket.getOutputStream());
 		
-		ServerSocket tempServerSocket = createUsableServerSocket();
+		tempServerSocket = createUsableServerSocket();
 		
 		try {
 			initStream.writeUTF(String.valueOf(tempServerSocket.getLocalPort()));
 			initStream.close();
 			initSocket.close();
-			serverSocket.close();
 		} catch(Exception e) {
 			System.err.println("Error while negotiating connection.");
 			e.printStackTrace();
+			tempServerSocket.close();
 			return null;
 		}
 		
 		Socket dataSocket = tempServerSocket.accept();
+		tempServerSocket.close();
 		addSocketToList(dataSocket);
 		return new StreamBundle(dataSocket);
 	}
@@ -187,7 +204,6 @@ public class ConnectionManager {
 				if(FIRST_DYNAMIC_PORT + portOffset > LAST_DYNAMIC_PORT)
 					return null;
 				
-				System.out.println("Trying port " + (FIRST_DYNAMIC_PORT + portOffset));
 				newServerSocket = new ServerSocket(FIRST_DYNAMIC_PORT + portOffset);
 
 			} catch (IOException e) {

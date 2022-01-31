@@ -38,49 +38,46 @@ package mtools.apps.litemessage;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.SocketException;
+
 import javax.swing.JOptionPane;
 import mtools.io.MConsole;
 import mtools.io.MDisplay;
 
 /**
- * this is the brain of the messaging app.  It initiates, and manages
- * the connections to other clients.  It is also responsible for passing
- * messages typed in the console to the {@link TransmitModule}.
+ * this is used to control data flow in a single chat session.
  * @author Noah
  *
  */
-public class MessagingControlModule {
-	private int INIT_STANDARD_PORT = 5676;
-	private int ACCEPT_STANDARD_PORT = 5677;
+public class MessagingControlModule extends Thread {
 	
-	private MConsole console;
 	private MDisplay display;
-	private TransmitModule txMod;
-	private ReceiveModule rxMod;
 	private MessageStatusObject mState;
 	private Contact thisUser;
+	private Contact otherUser;
 	private ContactManager cMan;
+	CommandParseModule cpm;
+	MConsole console;
 	TextDisplayObject displayObject;
+	ConnectionManager connectionMan;
+	StreamBundle sBundle;
 	
 	/**
 	 * The constructor.
 	 * @param dis
 	 */
-	public MessagingControlModule(MDisplay dis, TextDisplayObject tdo, ContactManager cm) {
+	public MessagingControlModule(MDisplay dis, TextDisplayObject tdo, MConsole con, ConnectionManager conMan, ContactManager cm) {
 		display = dis;
 		cMan = cm;
 		thisUser = cMan.getSelfContact();
-		console = new MConsole();
+		otherUser = new Contact();
 		mState = new MessageStatusObject();
+		cpm = new CommandParseModule();
 		displayObject = tdo;
+		console = con;
+		connectionMan = conMan;
 	}
 	
-	/**
-	 * Initiates a messaging session with another client.  The other client
-	 * has to be waiting for connections first.  This grabs the IP address or contact
-	 * of the other client from the console, and then constructs the {@link TransmitModule}
-	 * and {@link ReceiveModule}
-	 */
 	public void startInitiateMessageLogic() {
 		display.clear();
 		display.clearBanner();
@@ -130,23 +127,34 @@ public class MessagingControlModule {
 		//We initiate the TransmitModule first, and it's constructor will
 		//reach out and let the other client know that we are attempting to connect
 		try {
-			txMod = new TransmitModule(address, INIT_STANDARD_PORT, mState, thisUser);
-			rxMod = new ReceiveModule(displayObject, ACCEPT_STANDARD_PORT, mState);
+			sBundle = connectionMan.initSessionNegotiation(address);
 		} catch(Exception e) {
 			System.err.println("Could not establish a connection.");
 			return;
 		}
-		//The other client will then reach back to us
-		//We will wait for the full circuit to be established.
-		rxMod.waitForConnection();
 		
-		rxMod.start();
-		display.setBanner("Connected with " + rxMod.getContact().getName());
+		
+		
+		try {
+			//Send the info about ourselves
+			sBundle.writeUTFData(thisUser.getName() + "," + thisUser.getUID());
+			//Grab the info about the other user.
+			parseOtherUserData(sBundle.readUTFData());
+			otherUser.setIPAddress(sBundle.getSocket().getInetAddress());
+		} catch (IOException e) {
+			System.err.println("Had issue either sending our user info, or receiving their user info.");
+			e.printStackTrace();
+		}
+		
+		
+		this.start();
+		
+		display.setBanner("Connected with " + otherUser.getName());
 		display.display();
 		
 		mState.setMessagingState(MessagingState.INITIATED_MESSAGING);
 		
-		cMan.addContact(rxMod.getContact());
+		cMan.addContact(otherUser);
 	}
 	
 	
@@ -170,29 +178,37 @@ public class MessagingControlModule {
 			return;
 		}
 
-		displayObject.print("Making Connection...");
+		displayObject.println("Making Connection...");
 		
 		//We initiate the TransmitModule first, and it's constructor will
 		//reach out and let the other client know that we are attempting to connect
 		try {
-			txMod = new TransmitModule(address, INIT_STANDARD_PORT, mState, cMan.getSelfContact());
-			rxMod = new ReceiveModule(displayObject, ACCEPT_STANDARD_PORT, mState);
+			sBundle = connectionMan.initSessionNegotiation(address);
 		} catch(Exception e) {
 			System.err.println("Could not establish a connection.");
 			JOptionPane.showMessageDialog(null, "Could not establish connection", "Error", JOptionPane.ERROR_MESSAGE);
 			displayObject.tearDown();
 			return;
 		}
-		//The other client will then reach back to us
-		//We will wait for the full circuit to be established.
-		rxMod.waitForConnection();
-		rxMod.start();
 		
-		displayObject.print("Connected with " + rxMod.getContact().getName() + "\n");
+		try {
+			//Send the info about ourselves
+			sBundle.writeUTFData(thisUser.getName() + "," + thisUser.getUID());
+			//Grab the info about the other user.
+			parseOtherUserData(sBundle.readUTFData());
+			otherUser.setIPAddress(sBundle.getSocket().getInetAddress());
+		} catch (IOException e) {
+			System.err.println("Had issue either sending our user info, or receiving their user info.");
+			e.printStackTrace();
+		}
+		
+		this.start();
+		
+		displayObject.println("Connected with " + otherUser.getName() + "\n");
 		
 		mState.setMessagingState(MessagingState.INITIATED_MESSAGING);
 		
-		cMan.addContact(rxMod.getContact());
+		cMan.addContact(otherUser);
 	}
 	
 	/**
@@ -215,29 +231,37 @@ public class MessagingControlModule {
 			return;
 		}
 
-		displayObject.print("Making Connection...");
+		displayObject.println("Making Connection...");
 		
 		//We initiate the TransmitModule first, and it's constructor will
 		//reach out and let the other client know that we are attempting to connect
 		try {
-			txMod = new TransmitModule(address, INIT_STANDARD_PORT, mState, cMan.getSelfContact());
-			rxMod = new ReceiveModule(displayObject, ACCEPT_STANDARD_PORT, mState);
+			sBundle = connectionMan.initSessionNegotiation(address);
 		} catch(Exception e) {
 			System.err.println("Could not establish a connection.");
 			JOptionPane.showMessageDialog(null, "Could not establish connection", "Error", JOptionPane.ERROR_MESSAGE);
 			displayObject.tearDown();
 			return;
 		}
-		//The other client will then reach back to us
-		//We will wait for the full circuit to be established.
-		rxMod.waitForConnection();
-		rxMod.start();
 		
-		displayObject.print("Connected with " + rxMod.getContact().getName() + "\n");
+		try {
+			//Send the info about ourselves
+			sBundle.writeUTFData(thisUser.getName() + "," + thisUser.getUID());
+			//Grab the info about the other user.
+			parseOtherUserData(sBundle.readUTFData());
+			otherUser.setIPAddress(sBundle.getSocket().getInetAddress());
+		} catch (IOException e) {
+			System.err.println("Had issue either sending our user info, or receiving their user info.");
+			e.printStackTrace();
+		}
+		
+		this.start();
+		
+		displayObject.println("Connected with " + otherUser.getName() + "\n");
 		
 		mState.setMessagingState(MessagingState.INITIATED_MESSAGING);
 		
-		cMan.addContact(rxMod.getContact());
+		cMan.addContact(otherUser);
 	}
 	
 	/**
@@ -249,93 +273,93 @@ public class MessagingControlModule {
 	 * completes the comms circuit.
 	 */
 	public void startReceiveMessageLogic() {
-		display.clear();
-		display.setBanner("Awaiting Connection...");
-		display.display();
 		
-		InetAddress address = null;
-		
-		//We construct the ReceiveModule and then wait for a connection before
-		//Constructing the TransmitModule.
-		rxMod = new ReceiveModule(displayObject, INIT_STANDARD_PORT, mState);
-		rxMod.waitForConnection();
-		address = rxMod.getBindedAddress();
-		
-		
+		displayObject.println("Awaiting Connection...");
 		
 		try {
-			txMod = new TransmitModule(address, ACCEPT_STANDARD_PORT, mState, thisUser);
+			sBundle = connectionMan.waitForSessionNegotiation();
 		} catch(Exception e) {
 			System.err.println("Error while reaching back to the peer initiating connection.");
 			return;
 		}
 		
-		display.setBanner("Connected with " + rxMod.getContact().getName());
+		try {
+			//Grab the info about the other user.
+			parseOtherUserData(sBundle.readUTFData());
+			otherUser.setIPAddress(sBundle.getSocket().getInetAddress());
+			//Send the info about ourselves
+			sBundle.writeUTFData(thisUser.getName() + "," + thisUser.getUID());
+		} catch (IOException e) {
+			System.err.println("Had issue either sending our user info, or receiving their user info.");
+			e.printStackTrace();
+		}
+		
+		this.start();
+		
+		display.setBanner("Connected with " + otherUser.getName());
 		display.display();
 		
-		rxMod.start();
-		
 		mState.setMessagingState(MessagingState.ACCECPTED_MESSAGING);
-		cMan.addContact(rxMod.getContact());
+		cMan.addContact(otherUser);
 	}
 	
 	public void startReceiveMessageLogicFromGUI() {
-		
-		InetAddress address = null;
-		
-		//We construct the ReceiveModule and then wait for a connection before
-		//Constructing the TransmitModule.
-		rxMod = new ReceiveModule(displayObject, INIT_STANDARD_PORT, mState);
-		rxMod.waitForConnection();
-		address = rxMod.getBindedAddress();
-		
-		
-		
+				
 		try {
-			txMod = new TransmitModule(address, ACCEPT_STANDARD_PORT, mState, thisUser);
+			sBundle = connectionMan.waitForSessionNegotiation();
 		} catch(Exception e) {
 			System.err.println("Error while reaching back to the peer initiating connection.");
 			return;
 		}
 		
-		rxMod.start();
+		try {
+			//Grab the info about the other user.
+			parseOtherUserData(sBundle.readUTFData());
+			otherUser.setIPAddress(sBundle.getSocket().getInetAddress());
+			//Send the info about ourselves
+			sBundle.writeUTFData(thisUser.getName() + "," + thisUser.getUID());
+		} catch (IOException e) {
+			System.err.println("Had issue either sending our user info, or receiving their user info.");
+			e.printStackTrace();
+		}
+		
+		this.start();
+		
+		displayObject.println("Connected with " + otherUser.getName());
 		
 		mState.setMessagingState(MessagingState.ACCECPTED_MESSAGING);
-		cMan.addContact(rxMod.getContact());
+		cMan.addContact(otherUser);
 	}
 	
 	/**
 	 * Used for testing.
 	 */
 	public void startTestServerLogic() {
-		display.clear();
-		display.setBanner("Awaiting Connection...");
-		display.display();
 		
-		InetAddress address = null;
-		
-		//We construct the ReceiveModule and then wait for a connection before
-		//Constructing the TransmitModule.
-		rxMod = new ReceiveModule(displayObject, INIT_STANDARD_PORT, mState);
-		rxMod.waitForConnection();
-		address = rxMod.getBindedAddress();
+		System.out.println("Awaiting Connection...");
 		
 		try {
-			txMod = new TransmitModule(address, ACCEPT_STANDARD_PORT, mState, thisUser);
+			sBundle = connectionMan.waitForSessionNegotiation();
 		} catch(Exception e) {
 			System.err.println("Error while reaching back to the peer initiating connection.");
-			e.printStackTrace();
 			return;
 		}
 		
-		display.setBanner("Connected with " + rxMod.getContact().getName());
-		display.display();
+		try {
+			//Grab the info about the other user.
+			parseOtherUserData(sBundle.readUTFData());
+			otherUser.setIPAddress(sBundle.getSocket().getInetAddress());
+			//Send the info about ourselves
+			sBundle.writeUTFData(thisUser.getName() + "," + thisUser.getUID());
+		} catch (IOException e) {
+			System.err.println("Had issue either sending our user info, or receiving their user info.");
+			e.printStackTrace();
+		}
 		
-		
-		
+		System.out.println("Connected with " + otherUser.getName());
 		
 		mState.setMessagingState(MessagingState.ACCECPTED_MESSAGING);
-		cMan.addContact(rxMod.getContact());
+		cMan.addContact(otherUser);
 		
 		String message;
 		CommandParseModule cpm = new CommandParseModule();
@@ -344,19 +368,24 @@ public class MessagingControlModule {
 		while(true) {
 			
 			try {
-				message = rxMod.getText();
+				message = sBundle.readUTFData();
 			} catch(IOException e) {
 				clearConnections();
 				return;
 			}
+			
+			System.out.println(otherUser.getName() + " said: " + message);
 			
 			if(cpm.evaluateText(message) == CommandType.EXIT) {
 				clearConnections();
 				return;
 			}
 			
-			System.out.println(message);
-			txMod.sendData(message);
+			try {
+				sBundle.writeUTFData(message);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 	
@@ -364,8 +393,14 @@ public class MessagingControlModule {
 	 * closes all of the sockets/connections.
 	 */
 	public void clearConnections() {
-		txMod.closeConnection();
-		rxMod.closeConnection();
+		
+		try {
+			sBundle.closeStreams();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		connectionMan.closeSocket(sBundle.getSocket());
+		
 		mState.setMessagingState(MessagingState.NOT_MESSAGING);
 	}
 	
@@ -382,7 +417,7 @@ public class MessagingControlModule {
 	 * @return
 	 */
 	public Contact getConnectedContact() {
-		return rxMod.getContact();
+		return otherUser;
 	}
 
 	/**
@@ -392,6 +427,78 @@ public class MessagingControlModule {
 	 * @param s
 	 */
 	public void sendData(String s) {
-		txMod.sendData(s);
+		try {
+			sBundle.writeUTFData(s);
+		} catch(Exception e) {
+			System.err.println("LiteMessage: could not send data...");
+		}
+		
+		if(cpm.evaluateText(s) == CommandType.EXIT) {
+			clearConnections();
+		}
+	}
+	
+	@Override
+	public void run() {
+		String rxData = null;
+		while(true) {
+			try {
+				rxData = sBundle.readUTFData();
+			} catch (SocketException se) {
+				System.out.println("Connection was reset...\nThe session has ended...");
+				return;
+			} catch (IOException e) {
+				System.out.println("The session has ended...");
+				return;
+			}
+			
+			displayObject.println(otherUser.getName() + ": " + rxData);
+			
+			if(cpm.evaluateText(rxData) == CommandType.EXIT) {
+				clearConnections();
+			}
+		}
+	}
+	
+	private void parseOtherUserData(String data) {
+		int count = 0;
+		String username = null;
+		String uid = null;
+		
+		//Grab the display name.
+		while(true) {
+			if(data.charAt(count) != ',') {
+				if(username == null)
+					username = String.valueOf(data.charAt(count));
+				else
+					username = username + String.valueOf(data.charAt(count));
+			} else {
+				break;
+			}
+			count++;
+			
+		}
+		
+		//Advance the counter past the comma.
+		count++;
+		
+		///Grab the UID
+		while(true) {
+			//We'll read to the end of the line
+			if(count < (data.length())) {
+				if(uid == null)
+					uid = String.valueOf(data.charAt(count));
+				else
+					uid = uid + String.valueOf(data.charAt(count));
+				
+			} else {
+				break;
+			}
+			count++;
+			
+		}
+		
+		otherUser.setName(username);
+		otherUser.setUID(uid);
 	}
 }
