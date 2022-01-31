@@ -34,18 +34,25 @@
  * IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package mtools.apps.litemessage;
+package mtools.apps.litemessage.control.logic;
 
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.SocketException;
 
 import javax.swing.JOptionPane;
+
+import mtools.apps.litemessage.Contact;
+import mtools.apps.litemessage.ContactManager;
+import mtools.apps.litemessage.MessagingState;
+import mtools.apps.litemessage.TextDisplayObject;
+import mtools.apps.litemessage.networking.ConnectionManager;
+import mtools.apps.litemessage.networking.StreamBundle;
 import mtools.io.MConsole;
 import mtools.io.MDisplay;
 
 /**
- * this is used to control data flow in a single chat session.
+ * This is used to control data flow in a single chat session.
  * @author Noah
  *
  */
@@ -152,7 +159,7 @@ public class MessagingControlModule extends Thread {
 		display.setBanner("Connected with " + otherUser.getName());
 		display.display();
 		
-		mState.setMessagingState(MessagingState.INITIATED_MESSAGING);
+		mState.setMessagingState(MessagingState.CURRENTLY_MESSAGING);
 		
 		cMan.addContact(otherUser);
 	}
@@ -206,7 +213,7 @@ public class MessagingControlModule extends Thread {
 		
 		displayObject.println("Connected with " + otherUser.getName() + "\n");
 		
-		mState.setMessagingState(MessagingState.INITIATED_MESSAGING);
+		mState.setMessagingState(MessagingState.CURRENTLY_MESSAGING);
 		
 		cMan.addContact(otherUser);
 	}
@@ -259,7 +266,7 @@ public class MessagingControlModule extends Thread {
 		
 		displayObject.println("Connected with " + otherUser.getName() + "\n");
 		
-		mState.setMessagingState(MessagingState.INITIATED_MESSAGING);
+		mState.setMessagingState(MessagingState.CURRENTLY_MESSAGING);
 		
 		cMan.addContact(otherUser);
 	}
@@ -299,7 +306,7 @@ public class MessagingControlModule extends Thread {
 		display.setBanner("Connected with " + otherUser.getName());
 		display.display();
 		
-		mState.setMessagingState(MessagingState.ACCECPTED_MESSAGING);
+		mState.setMessagingState(MessagingState.CURRENTLY_MESSAGING);
 		cMan.addContact(otherUser);
 	}
 	
@@ -327,7 +334,7 @@ public class MessagingControlModule extends Thread {
 		
 		displayObject.println("Connected with " + otherUser.getName());
 		
-		mState.setMessagingState(MessagingState.ACCECPTED_MESSAGING);
+		mState.setMessagingState(MessagingState.CURRENTLY_MESSAGING);
 		cMan.addContact(otherUser);
 	}
 	
@@ -358,7 +365,7 @@ public class MessagingControlModule extends Thread {
 		
 		System.out.println("Connected with " + otherUser.getName());
 		
-		mState.setMessagingState(MessagingState.ACCECPTED_MESSAGING);
+		mState.setMessagingState(MessagingState.CURRENTLY_MESSAGING);
 		cMan.addContact(otherUser);
 		
 		String message;
@@ -427,6 +434,10 @@ public class MessagingControlModule extends Thread {
 	 * @param s
 	 */
 	public void sendData(String s) {
+		//Don't do anything if we aren't currently connected with anybody
+		if(mState.getMessagingState() != MessagingState.CURRENTLY_MESSAGING)
+			return;
+			
 		try {
 			sBundle.writeUTFData(s);
 		} catch(Exception e) {
@@ -435,6 +446,7 @@ public class MessagingControlModule extends Thread {
 		
 		if(cpm.evaluateText(s) == CommandType.EXIT) {
 			clearConnections();
+			displayObject.tearDown();
 		}
 	}
 	
@@ -445,18 +457,23 @@ public class MessagingControlModule extends Thread {
 			try {
 				rxData = sBundle.readUTFData();
 			} catch (SocketException se) {
-				System.out.println("Connection was reset...\nThe session has ended...");
+				displayObject.println("Connection was reset.  You have been disconnected...");
+				clearConnections();
 				return;
 			} catch (IOException e) {
-				System.out.println("The session has ended...");
+				displayObject.println("You have been disconnected...");
+				clearConnections();
+				return;
+			}
+			
+			if(cpm.evaluateText(rxData) == CommandType.EXIT) {
+				clearConnections();
+				
+				displayObject.println(otherUser.getName() + " has left...");
 				return;
 			}
 			
 			displayObject.println(otherUser.getName() + ": " + rxData);
-			
-			if(cpm.evaluateText(rxData) == CommandType.EXIT) {
-				clearConnections();
-			}
 		}
 	}
 	

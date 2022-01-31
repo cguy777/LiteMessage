@@ -36,9 +36,9 @@
 
 package mtools.apps.litemessage.gui;
 
-import mtools.apps.litemessage.ConnectionManager;
 import mtools.apps.litemessage.ContactManager;
 import mtools.apps.litemessage.MessagingState;
+import mtools.apps.litemessage.networking.ConnectionManager;
 
 public class ReceiveMessageHandler extends Thread {
 	

@@ -34,31 +34,14 @@
  * IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package mtools.apps.litemessage;
+package mtools.apps.litemessage.control.logic;
 
 /**
- * A simple class that looks for special commands while in a messaging session.
+ * The different types of commands that will be determined
+ * by the {@link CommandParseModule}
  * @author Noah
  *
  */
-public class CommandParseModule {
-	
-	public CommandParseModule() {
-		
-	}
-	
-	/**
-	 * Parses a string and then determines if it was a special command or not.
-	 * @param text
-	 * @return
-	 */
-	public CommandType evaluateText(String text) {
-		switch(text) {
-		
-		case "cmd-exit":
-			return CommandType.EXIT;	
-		}
-			
-		return CommandType.DO_NOTHING;
-	}
+public enum CommandType {
+	DO_NOTHING, EXIT;
 }

@@ -34,7 +34,7 @@
  * IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package mtools.apps.litemessage;
+package mtools.apps.litemessage.control.logic;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -43,6 +43,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import javax.swing.JOptionPane;
 
+import mtools.apps.litemessage.ContactManager;
 import mtools.io.*;
 
 /**

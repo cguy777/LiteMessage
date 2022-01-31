@@ -34,28 +34,31 @@
  * IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package mtools.apps.litemessage;
+package mtools.apps.litemessage.control.logic;
 
 /**
- * A simple class that contains a {@link MessagingState} enum that can be passed
- * around and updated as the program changes states.
+ * A simple class that looks for special commands while in a messaging session.
  * @author Noah
  *
  */
-public class MessageStatusObject {
-
-	private MessagingState mState;
+public class CommandParseModule {
 	
-	public MessageStatusObject() {
-		mState = MessagingState.NOT_MESSAGING;
+	public CommandParseModule() {
+		
 	}
 	
-	public void setMessagingState(MessagingState ms) {
-		mState = ms;
+	/**
+	 * Parses a string and then determines if it was a special command or not.
+	 * @param text
+	 * @return
+	 */
+	public CommandType evaluateText(String text) {
+		switch(text) {
+		
+		case "cmd-exit":
+			return CommandType.EXIT;	
+		}
+			
+		return CommandType.DO_NOTHING;
 	}
-	
-	public MessagingState getMessagingState() {
-		return mState;
-	}
-	
 }

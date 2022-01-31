@@ -34,30 +34,30 @@
  * IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package mtools.apps.litemessage;
+package mtools.apps.litemessage.control.logic;
 
-import mtools.io.MConsole;
-import mtools.io.MDisplay;
+import mtools.apps.litemessage.MessagingState;
 
-public class LiteMessageTestServer {
-	public static void main(String[] args) {
-		MDisplay display = new MDisplay("Messaging App", 5);
-		display.setDisplayReverse();
-		MConsole console = new MConsole();
-		MessagingControlModule cMod = null;
-		SettingsModule sMod = new SettingsModule(console, true);
-		
-		ContactManager cMan = new ContactManager(sMod.getSettings());
-		cMan.loadContacts();
-		
-		ConsoleTextDisplay ctd = new ConsoleTextDisplay();
-		
-		ConnectionManager connectionMan = new ConnectionManager();
-		
-		//Main control loop
-		while(true) {
-			cMod = new MessagingControlModule(display, ctd, console, connectionMan, cMan);
-			cMod.startTestServerLogic();
-		}
+/**
+ * A simple class that contains a {@link MessagingState} enum that can be passed
+ * around and updated as the program changes states.
+ * @author Noah
+ *
+ */
+public class MessageStatusObject {
+
+	private MessagingState mState;
+	
+	public MessageStatusObject() {
+		mState = MessagingState.NOT_MESSAGING;
 	}
+	
+	public void setMessagingState(MessagingState ms) {
+		mState = ms;
+	}
+	
+	public MessagingState getMessagingState() {
+		return mState;
+	}
+	
 }

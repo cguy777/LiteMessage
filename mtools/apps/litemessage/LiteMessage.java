@@ -35,6 +35,9 @@
  */
 
 package mtools.apps.litemessage;
+import mtools.apps.litemessage.control.logic.MessagingControlModule;
+import mtools.apps.litemessage.control.logic.SettingsModule;
+import mtools.apps.litemessage.networking.ConnectionManager;
 import mtools.io.*;
 
 public class LiteMessage {

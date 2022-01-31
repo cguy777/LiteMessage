@@ -51,11 +51,15 @@ import javax.swing.JScrollPane;
 import javax.swing.LookAndFeel;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.plaf.metal.DefaultMetalTheme;
+import javax.swing.plaf.metal.MetalLookAndFeel;
+import javax.swing.plaf.metal.MetalTheme;
+import javax.swing.plaf.metal.OceanTheme;
 
-import mtools.apps.litemessage.ConnectionManager;
 import mtools.apps.litemessage.Contact;
 import mtools.apps.litemessage.ContactManager;
-import mtools.apps.litemessage.SettingsModule;
+import mtools.apps.litemessage.control.logic.SettingsModule;
+import mtools.apps.litemessage.networking.ConnectionManager;
 import mtools.io.MConsole;
 
 public class MainGUI extends JFrame {
@@ -83,7 +87,6 @@ public class MainGUI extends JFrame {
 		try {
 			UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
 		} catch (Exception e) {
-			//If we can't use, then oh well.  It works fine in the steel look and feel too.
 		}
 		
 		buildGUI();
@@ -111,7 +114,7 @@ public class MainGUI extends JFrame {
 		this.setJMenuBar(new MainMenuBar(this));
 		this.setSize(230, 300);
 		this.setTitle("LiteMessage - " + sMod.getSettings().thisUser.getName());
-		mainPanel = new JPanel(new BorderLayout(10, 10));
+		mainPanel = new JPanel(new BorderLayout(5, 5));
 		this.add(mainPanel);
 		
 		
@@ -121,18 +124,19 @@ public class MainGUI extends JFrame {
 		
 		contactList.setSize(100, 100);
 		contactList.setFont(new Font(contactList.getFont().getName(), Font.BOLD, 15));
+		contactList.setBackground(new Color(0xf0f0f0));
 		contactScroll = new JScrollPane(contactList);
-		contactScroll.setBounds(10, 10, 200, 300);
+		contactScroll.setSize(200, 300);
 		mainPanel.add(contactScroll, BorderLayout.CENTER);
 		
 		//Lower panel
-		lowerPanel = new JPanel(new BorderLayout(10, 10));
+		lowerPanel = new JPanel(new BorderLayout(5, 5));
 		mainPanel.add(lowerPanel, BorderLayout.SOUTH);
 				
 		//Connect To Button
 		messageButton = new JButton("Connect To...");
 		messageButton.setVisible(true);
-		messageButton.setBounds(0, 0, 95, 20);
+		messageButton.setSize(95, 30);
 		messageButton.addActionListener(new ConnectButtonAction());
 		messageButton.setMargin(new Insets(0, 0, 0, 0));
 		lowerPanel.add(messageButton, BorderLayout.WEST);
@@ -141,7 +145,7 @@ public class MainGUI extends JFrame {
 		//Not Listed Button
 		contactSomebodyNew = new JButton("Not Listed");
 		contactSomebodyNew.setVisible(true);
-		contactSomebodyNew.setBounds(0, 0, 95, 20);
+		contactSomebodyNew.setSize(95, 30);
 		contactSomebodyNew.addActionListener(new ContactSomebodyNewAction());
 		lowerPanel.add(contactSomebodyNew, BorderLayout.EAST);
 	

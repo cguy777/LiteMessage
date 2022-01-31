@@ -44,6 +44,8 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 
+import mtools.apps.litemessage.control.logic.Settings;
+
 public class ContactManager {
 	private ArrayList<Contact> contacts;
 	private Settings settings;

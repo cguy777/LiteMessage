@@ -34,7 +34,7 @@
  * IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package mtools.apps.litemessage;
+package mtools.apps.litemessage.networking;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -44,8 +44,6 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-
-import mtools.apps.litemessage.gui.SessionInfo;
 
 /**
  * Used for keeping track of what connections are established and what
@@ -61,28 +59,35 @@ public class ConnectionManager {
 	private int LAST_DYNAMIC_PORT = 65535;
 	
 	ArrayList<Socket> sockets;
-	ArrayList<ServerSocket> serverSockets;
-	
-	SessionInfo sessionInfo;
 	
 	public ConnectionManager() {
 		sockets = new ArrayList<Socket>();
-		serverSockets = new ArrayList<ServerSocket>();
-		
-		sessionInfo = new SessionInfo();
 	}
 	
+	/**
+	 * Changes the port that the dynamic sockets are negotiated over.  Default is 5676.
+	 * @param newPortNumber
+	 */
 	public void setStandardPort(int newPortNumber) {
 		INIT_STANDARD_PORT = newPortNumber;
 	}
 	
-	public void setHandOffPortRange(int lowPort, int highPort) {
+	/**
+	 * Changes the port range that the dynamic sockets can be created over.  Default values
+	 * are the IANA ephemeral port range (49152-65535).
+	 * @param lowPort
+	 * @param highPort
+	 */
+	public void setDynamicPortRange(int lowPort, int highPort) {
 		FIRST_DYNAMIC_PORT = lowPort;
 		LAST_DYNAMIC_PORT = highPort;
 	}
 	
 	/**
-	 * Attempts to initiate a connection with another device by initially 
+	 * Attempts to initiate a connection with another device by reaching out and connecting
+	 * on a predetermined port.  The default port is 5676.  It will then negotiate for
+	 * a new port that is, by default, within the IANA ephemeral port range (49152-65535).
+	 * A {@link StreamBundle} is then returned based off of this new socket connection.
 	 * @param ipAddress
 	 * @return
 	 * @throws IOException
@@ -104,10 +109,19 @@ public class ConnectionManager {
 			return null;
 		}
 		
-		Socket dataSocket = createSocket(ipAddress, portNumber);
+		Socket dataSocket = new Socket(ipAddress, portNumber);
+		sockets.add(dataSocket);
 		return new StreamBundle(dataSocket);
 	}
 	
+	/**
+	 * Waits for a connection on a predetermined port.  The default port is 5676.  It will
+	 * then negotiate for a new port that is, by default, within the IANA ephemeral port
+	 * range (49152-65535). A {@link StreamBundle} is then returned based off of this new
+	 * socket connection.
+	 * @return
+	 * @throws IOException
+	 */
 	public StreamBundle waitForSessionNegotiation() throws IOException {
 		ServerSocket tempServerSocket = new ServerSocket(INIT_STANDARD_PORT);
 		Socket initSocket = tempServerSocket.accept();
@@ -130,7 +144,7 @@ public class ConnectionManager {
 		
 		Socket dataSocket = tempServerSocket.accept();
 		tempServerSocket.close();
-		addSocketToList(dataSocket);
+		sockets.add(dataSocket);
 		return new StreamBundle(dataSocket);
 	}
 	
@@ -160,41 +174,11 @@ public class ConnectionManager {
 	}
 	
 	/**
-	 * Returns the ArrayList of currently active server sockets.
+	 * Searches through ephemeral/dynamic ports until an open one is available.  It then creates
+	 * and returns a server socket using that port.  Will return null if a usable port can't be found.
 	 * @return
 	 */
-	public ArrayList<ServerSocket> getServerSockets() {
-		return serverSockets;
-	}
-	
-	/**
-	 * 
-	 * @param ipAddress
-	 * @param portNumber
-	 * @return
-	 * @throws IOException
-	 */
-	public Socket createSocket(InetAddress ipAddress, int portNumber) throws IOException {
-		Socket newSocket = new Socket(ipAddress, portNumber);
-		sockets.add(newSocket);
-		return newSocket;
-	}
-	
-	/**
-	 * Adds an already created socket to the sockets array list.
-	 * @param socket
-	 */
-	public void addSocketToList(Socket socket) {
-		sockets.add(socket);
-	}
-	
-	/**
-	 * Searches through ephemeral ports until an open one is available.  It then creates
-	 * and returns a server socket using that port.  It also adds that server socket to 
-	 * the server socket array list.  Will return null if a usable port can't be found.
-	 * @return
-	 */
-	public ServerSocket createUsableServerSocket() {
+	private ServerSocket createUsableServerSocket() {
 		ServerSocket newServerSocket = null;
 		
 		int portOffset = 0;
@@ -211,8 +195,8 @@ public class ConnectionManager {
 			}
 		}
 		
-		System.out.println("Found port " + (FIRST_DYNAMIC_PORT + portOffset));
-		//serverSockets.add(newServerSocket);
+		//Re-implement commented line below to a log
+		//System.out.println("Found port " + (FIRST_DYNAMIC_PORT + portOffset));
 		return newServerSocket;
 	}
 	
@@ -253,45 +237,6 @@ public class ConnectionManager {
 			}
 		}
 	}
-	
-	/**
-	 * Closes the server socket that is connected to the referenced IP address, and then removes it from the 
-	 * active server socket array list.
-	 * @param ipAddress
-	 */
-	public void closeServerSocket(InetAddress remoteIPAddress) {
-		for(int i = 0; i<serverSockets.size(); i++) {
-			if(serverSockets.get(i).getLocalSocketAddress().equals(remoteIPAddress)) {
-				try {
-					serverSockets.get(i).close();
-					serverSockets.remove(i);
-				} catch(IOException e) {
-					e.printStackTrace();
-				}
-				break;
-			}
-		}
-	}
-	
-	/**
-	 * Closes the server socket that matches the server socket that is passed, and then removes it from the 
-	 * active server socket array list.
-	 * @param ss
-	 */
-	public void closeServerSocket(ServerSocket ss) {
-		for(int i = 0; i<serverSockets.size(); i++) {
-			if(serverSockets.get(i) == ss) {
-				try {
-					serverSockets.get(i).close();
-					serverSockets.remove(i);
-				} catch(IOException e) {
-					e.printStackTrace();
-				}
-				break;
-			}
-		}
-	}
-	
 	
 	/**
 	 * for testing

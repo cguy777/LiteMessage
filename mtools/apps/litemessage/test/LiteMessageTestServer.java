@@ -34,14 +34,35 @@
  * IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package mtools.apps.litemessage;
+package mtools.apps.litemessage.test;
 
-/**
- * The different types of commands that will be determined
- * by the {@link CommandParseModule}
- * @author Noah
- *
- */
-public enum CommandType {
-	DO_NOTHING, EXIT;
+import mtools.apps.litemessage.ConsoleTextDisplay;
+import mtools.apps.litemessage.ContactManager;
+import mtools.apps.litemessage.control.logic.MessagingControlModule;
+import mtools.apps.litemessage.control.logic.SettingsModule;
+import mtools.apps.litemessage.networking.ConnectionManager;
+import mtools.io.MConsole;
+import mtools.io.MDisplay;
+
+public class LiteMessageTestServer {
+	public static void main(String[] args) {
+		MDisplay display = new MDisplay("Messaging App", 5);
+		display.setDisplayReverse();
+		MConsole console = new MConsole();
+		MessagingControlModule cMod = null;
+		SettingsModule sMod = new SettingsModule(console, true);
+		
+		ContactManager cMan = new ContactManager(sMod.getSettings());
+		cMan.loadContacts();
+		
+		ConsoleTextDisplay ctd = new ConsoleTextDisplay();
+		
+		ConnectionManager connectionMan = new ConnectionManager();
+		
+		//Main control loop
+		while(true) {
+			cMod = new MessagingControlModule(display, ctd, console, connectionMan, cMan);
+			cMod.startTestServerLogic();
+		}
+	}
 }

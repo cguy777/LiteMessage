@@ -50,11 +50,12 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
-import mtools.apps.litemessage.ConnectionManager;
 import mtools.apps.litemessage.Contact;
 import mtools.apps.litemessage.ContactManager;
-import mtools.apps.litemessage.MessagingControlModule;
+import mtools.apps.litemessage.MessagingState;
 import mtools.apps.litemessage.TextDisplayObject;
+import mtools.apps.litemessage.control.logic.MessagingControlModule;
+import mtools.apps.litemessage.networking.ConnectionManager;
 import mtools.io.MConsole;
 import mtools.io.MDisplay;
 
@@ -121,7 +122,7 @@ public class MessagingGUI extends JFrame implements TextDisplayObject {
 	
 	public void waitForMessaging(ContactManager cm) {
 		mcm = new MessagingControlModule(new MDisplay(), this, null, connectionMan, cm);
-		mcm.startReceiveMessageLogic();
+		mcm.startReceiveMessageLogicFromGUI();
 		this.setVisible(true);
 		this.setTitle(mcm.getConnectedContact().getName());
 	}
@@ -144,6 +145,7 @@ public class MessagingGUI extends JFrame implements TextDisplayObject {
 		convoHistory.setEditable(false);
 		convoHistory.setWrapStyleWord(true);
 		convoHistory.setLineWrap(true);
+		convoHistory.setBackground(new Color(0xf0f0f0));
 		convoScroll = new JScrollPane(convoHistory);
 		mainPanel.add(convoScroll, BorderLayout.CENTER);
 		
@@ -159,6 +161,7 @@ public class MessagingGUI extends JFrame implements TextDisplayObject {
 		composeArea.setLineWrap(true);
 		composeArea.setWrapStyleWord(true);
 		composeArea.addKeyListener(new EnterKeyAction());
+		composeArea.setBackground(new Color(0xf0f0f0));
 		JScrollPane composeScroll = new JScrollPane(composeArea);
 		lowerPanel.add(composeScroll, BorderLayout.CENTER);
 		
@@ -186,6 +189,11 @@ public class MessagingGUI extends JFrame implements TextDisplayObject {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
+			
+			//If we aren't currently chatting, don't do anything
+			if(mcm.getMessagingState() != MessagingState.CURRENTLY_MESSAGING)
+				return;
+			
 			String message = composeArea.getText();
 			//Don't want to process a blank message.
 			if(!message.matches("")) {
@@ -200,6 +208,11 @@ public class MessagingGUI extends JFrame implements TextDisplayObject {
 
 		@Override
 		public void keyPressed(KeyEvent e) {
+			
+			//If we aren't currently chatting, don't do anything
+			if(mcm.getMessagingState() != MessagingState.CURRENTLY_MESSAGING)
+				return;
+			
 			if(e.getKeyCode() == 10) {
 				String message = composeArea.getText();
 				//Don't want to process a blank message.
@@ -212,6 +225,11 @@ public class MessagingGUI extends JFrame implements TextDisplayObject {
 
 		@Override
 		public void keyReleased(KeyEvent e) {
+			
+			//If we aren't currently chatting, don't do anything
+			if(mcm.getMessagingState() != MessagingState.CURRENTLY_MESSAGING)
+				return;
+			
 			if(e.getKeyCode() == 10) {
 				composeArea.setText("");
 			}
