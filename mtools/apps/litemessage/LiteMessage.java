@@ -45,6 +45,7 @@ public class LiteMessage {
 		MConsole console = new MConsole();
 		MMenu menu = new MMenu();
 		MessagingControlModule cMod = null;
+		ConnectionManager connectionMan = new ConnectionManager();
 		SettingsModule sMod = new SettingsModule(console, true);
 		MenuModule menuMod = new MenuModule(console, menu, sMod.getSettings().thisUser.getName());
 		
@@ -63,13 +64,13 @@ public class LiteMessage {
 			switch(choice) {
 			//Message Somebody
 			case 0:
-				cMod = new MessagingControlModule(display, ctd, cMan);
+				cMod = new MessagingControlModule(display, ctd, console, connectionMan, cMan);
 				cMod.startInitiateMessageLogic();
 				break;
 			
 			//Receive Messages
 			case 1:
-				cMod = new MessagingControlModule(display, ctd, cMan);
+				cMod = new MessagingControlModule(display, ctd, console, connectionMan, cMan);
 				cMod.startReceiveMessageLogic();
 				break;
 			

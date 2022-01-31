@@ -52,11 +52,12 @@ public class LiteMessageTestServer {
 		
 		ConsoleTextDisplay ctd = new ConsoleTextDisplay();
 		
+		ConnectionManager connectionMan = new ConnectionManager();
+		
 		//Main control loop
 		while(true) {
-			cMod = new MessagingControlModule(display, ctd, cMan);
+			cMod = new MessagingControlModule(display, ctd, console, connectionMan, cMan);
 			cMod.startTestServerLogic();
-			cMod.clearConnections();
 		}
 	}
 }

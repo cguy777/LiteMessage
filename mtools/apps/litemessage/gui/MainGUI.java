@@ -52,6 +52,7 @@ import javax.swing.LookAndFeel;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
+import mtools.apps.litemessage.ConnectionManager;
 import mtools.apps.litemessage.Contact;
 import mtools.apps.litemessage.ContactManager;
 import mtools.apps.litemessage.SettingsModule;
@@ -61,6 +62,8 @@ public class MainGUI extends JFrame {
 	
 	public ContactManager cMan;
 	public SettingsModule sMod;
+	
+	public ConnectionManager connectionMan;
 	
 	public JList<String> contactList;
 	public JScrollPane contactScroll;	
@@ -75,6 +78,8 @@ public class MainGUI extends JFrame {
 		cMan = new ContactManager(sMod.getSettings());
 		cMan.loadContacts();
 		
+		connectionMan = new ConnectionManager();
+		
 		try {
 			UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
 		} catch (Exception e) {
@@ -83,7 +88,7 @@ public class MainGUI extends JFrame {
 		
 		buildGUI();
 		
-		ReceiveMessageHandler rmh = new ReceiveMessageHandler(this);
+		ReceiveMessageHandler rmh = new ReceiveMessageHandler(this, connectionMan);
 		rmh.start();
 	}
 	
@@ -155,7 +160,7 @@ public class MainGUI extends JFrame {
 			
 			try {
 				selectedContact = cMan.getContactByName(contactList.getSelectedValue());
-				mGUI = new MessagingGUI();
+				mGUI = new MessagingGUI(connectionMan);
 				mGUI.initiateMessaging(selectedContact, cMan);
 				
 				//There might have been a change to the contact list, so we'll update it.
@@ -181,7 +186,7 @@ public class MainGUI extends JFrame {
 					return;
 				}
 				
-				mGUI = new MessagingGUI();
+				mGUI = new MessagingGUI(connectionMan);
 				mGUI.initiateMessaging(address, cMan);
 				
 				//If it's somebody new, there should be a new contact to list, so we'll update it.
