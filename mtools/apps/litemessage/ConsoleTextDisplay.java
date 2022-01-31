@@ -44,7 +44,7 @@ package mtools.apps.litemessage;
 public class ConsoleTextDisplay implements TextDisplayObject {
 
 	@Override
-	public void print(String s) {
+	public void println(String s) {
 		System.out.print(s + "\n> ");
 	}
 	
