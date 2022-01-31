@@ -50,12 +50,12 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
-import mtools.apps.litemessage.Contact;
-import mtools.apps.litemessage.ContactManager;
-import mtools.apps.litemessage.MessagingState;
-import mtools.apps.litemessage.TextDisplayObject;
+import mtools.apps.litemessage.control.logic.ContactManager;
 import mtools.apps.litemessage.control.logic.MessagingControlModule;
-import mtools.apps.litemessage.networking.ConnectionManager;
+import mtools.apps.litemessage.core.Contact;
+import mtools.apps.litemessage.core.MessagingState;
+import mtools.apps.litemessage.core.TextDisplayObject;
+import mtools.apps.litemessage.core.networking.ConnectionManager;
 import mtools.io.MConsole;
 import mtools.io.MDisplay;
 

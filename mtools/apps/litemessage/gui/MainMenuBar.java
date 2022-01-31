@@ -45,7 +45,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 
-import mtools.apps.litemessage.ContactManager;
+import mtools.apps.litemessage.control.logic.ContactManager;
 import mtools.apps.litemessage.control.logic.SettingsModule;
 
 public class MainMenuBar extends JMenuBar {

@@ -36,7 +36,7 @@
 
 package mtools.apps.litemessage.control.logic;
 
-import mtools.apps.litemessage.MessagingState;
+import mtools.apps.litemessage.core.MessagingState;
 
 /**
  * A simple class that contains a {@link MessagingState} enum that can be passed

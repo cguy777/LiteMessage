@@ -34,13 +34,8 @@
  * IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package mtools.apps.litemessage;
+package mtools.apps.litemessage.core;
 
-public interface TextInputObject {
-	/**
-	 * This should read text data from an input source, whether it's a console input stream, or a JTextField,
-	 * or something else.  It should return whatever string is read.
-	 * @return
-	 */
-	public String readString();
+public enum MessagingState {
+	INITIATED_MESSAGING, AWAITING_MESSAGING, CURRENTLY_MESSAGING, NOT_MESSAGING
 }

@@ -42,12 +42,12 @@ import java.net.SocketException;
 
 import javax.swing.JOptionPane;
 
-import mtools.apps.litemessage.Contact;
-import mtools.apps.litemessage.ContactManager;
-import mtools.apps.litemessage.MessagingState;
-import mtools.apps.litemessage.TextDisplayObject;
-import mtools.apps.litemessage.networking.ConnectionManager;
-import mtools.apps.litemessage.networking.StreamBundle;
+import mtools.apps.litemessage.core.Contact;
+import mtools.apps.litemessage.core.MessagingState;
+import mtools.apps.litemessage.core.TextDisplayObject;
+import mtools.apps.litemessage.core.TextInputObject;
+import mtools.apps.litemessage.core.networking.ConnectionManager;
+import mtools.apps.litemessage.core.networking.StreamBundle;
 import mtools.io.MConsole;
 import mtools.io.MDisplay;
 
@@ -64,8 +64,8 @@ public class MessagingControlModule extends Thread {
 	private Contact otherUser;
 	private ContactManager cMan;
 	CommandParseModule cpm;
-	MConsole console;
 	TextDisplayObject displayObject;
+	TextInputObject inputObject;
 	ConnectionManager connectionMan;
 	StreamBundle sBundle;
 	
@@ -73,7 +73,7 @@ public class MessagingControlModule extends Thread {
 	 * The constructor.
 	 * @param dis
 	 */
-	public MessagingControlModule(MDisplay dis, TextDisplayObject tdo, MConsole con, ConnectionManager conMan, ContactManager cm) {
+	public MessagingControlModule(MDisplay dis, TextDisplayObject tdo, TextInputObject tio, ConnectionManager conMan, ContactManager cm) {
 		display = dis;
 		cMan = cm;
 		thisUser = cMan.getSelfContact();
@@ -81,7 +81,7 @@ public class MessagingControlModule extends Thread {
 		mState = new MessageStatusObject();
 		cpm = new CommandParseModule();
 		displayObject = tdo;
-		console = con;
+		inputObject = tio;
 		connectionMan = conMan;
 	}
 	
@@ -98,7 +98,7 @@ public class MessagingControlModule extends Thread {
 		System.out.println("\nPlease select one of the contacts above (if available), or enter a hostname or IP address...");
 		//We'll drop down a line and print a thing to indicate it's ready to type.
 		System.out.print("\n> ");
-		String input = console.getInputString();
+		String input = inputObject.readString();
 		InetAddress address = null;
 		int contactSelection;
 		

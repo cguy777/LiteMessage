@@ -34,8 +34,25 @@
  * IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package mtools.apps.litemessage;
+package mtools.apps.litemessage.core;
 
-public enum MenuState {
-	IN_MAIN_MENU, IN_SETTINGS_MENU, IN_HELP_MENU, NOT_IN_A_MENU
+
+/**
+ * For future use and implementation for secure text data in transit.
+ * @author Noah
+ *
+ */
+public class EncryptionModule {
+	
+	public EncryptionModule() {
+	
+	}
+	
+	public String encryptText(String clearText) {
+		return clearText;
+	}
+	
+	public String decryptText(String cipherText) {
+		return cipherText;
+	}
 }

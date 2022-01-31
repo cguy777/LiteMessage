@@ -34,22 +34,13 @@
  * IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package mtools.apps.litemessage;
+package mtools.apps.litemessage.core;
 
-/**
- * Wrapper for System.out.println() but it implements {@link TextDisplayObject}
- * @author Noah
- *
- */
-public class ConsoleTextDisplay implements TextDisplayObject {
-
-	@Override
-	public void println(String s) {
-		System.out.print(s + "\n> ");
-	}
-	
-	public void tearDown() {
-		//Do nothing.  It's a console window.
-	}
-	
+public interface TextInputObject {
+	/**
+	 * This should read text data from an input source, whether it's a console input stream, or a JTextField,
+	 * or something else.  It should return whatever string is read.
+	 * @return
+	 */
+	public String readString();
 }

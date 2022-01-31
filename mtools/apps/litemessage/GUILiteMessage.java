@@ -36,15 +36,12 @@
 
 package mtools.apps.litemessage;
 
-public interface TextDisplayObject {
-	/**
-	 * This should print a line of text to a display of some sort
-	 * @param s
-	 */
-	public void println(String s);
-	
-	/**
-	 * What should occur if a window is closed that is displaying text
-	 */
-	public void tearDown();
+import javax.swing.UIManager;
+
+import mtools.apps.litemessage.gui.MainGUI;
+
+public class GUILiteMessage {
+	public static void main(String[] args) {
+		MainGUI mGUI = new MainGUI();
+	}
 }

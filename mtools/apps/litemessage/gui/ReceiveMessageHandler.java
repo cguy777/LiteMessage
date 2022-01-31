@@ -36,9 +36,9 @@
 
 package mtools.apps.litemessage.gui;
 
-import mtools.apps.litemessage.ContactManager;
-import mtools.apps.litemessage.MessagingState;
-import mtools.apps.litemessage.networking.ConnectionManager;
+import mtools.apps.litemessage.control.logic.ContactManager;
+import mtools.apps.litemessage.core.MessagingState;
+import mtools.apps.litemessage.core.networking.ConnectionManager;
 
 public class ReceiveMessageHandler extends Thread {
 	

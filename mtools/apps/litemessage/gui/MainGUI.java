@@ -56,10 +56,10 @@ import javax.swing.plaf.metal.MetalLookAndFeel;
 import javax.swing.plaf.metal.MetalTheme;
 import javax.swing.plaf.metal.OceanTheme;
 
-import mtools.apps.litemessage.Contact;
-import mtools.apps.litemessage.ContactManager;
+import mtools.apps.litemessage.control.logic.ContactManager;
 import mtools.apps.litemessage.control.logic.SettingsModule;
-import mtools.apps.litemessage.networking.ConnectionManager;
+import mtools.apps.litemessage.core.Contact;
+import mtools.apps.litemessage.core.networking.ConnectionManager;
 import mtools.io.MConsole;
 
 public class MainGUI extends JFrame {

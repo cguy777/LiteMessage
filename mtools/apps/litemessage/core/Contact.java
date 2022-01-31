@@ -34,7 +34,7 @@
  * IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package mtools.apps.litemessage;
+package mtools.apps.litemessage.core;
 
 import java.net.InetAddress;
 

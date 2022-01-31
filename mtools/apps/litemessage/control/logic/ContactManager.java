@@ -34,7 +34,7 @@
  * IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package mtools.apps.litemessage;
+package mtools.apps.litemessage.control.logic;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -44,7 +44,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 
-import mtools.apps.litemessage.control.logic.Settings;
+import mtools.apps.litemessage.core.Contact;
 
 public class ContactManager {
 	private ArrayList<Contact> contacts;

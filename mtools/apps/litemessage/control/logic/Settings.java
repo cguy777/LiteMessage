@@ -36,7 +36,7 @@
 
 package mtools.apps.litemessage.control.logic;
 
-import mtools.apps.litemessage.Contact;
+import mtools.apps.litemessage.core.Contact;
 
 /**
  * A class just to store settings.  {@link Contact} thisUser is a contact of this client.

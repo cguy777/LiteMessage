@@ -1,4 +1,4 @@
-package mtools.apps.litemessage.networking;
+package mtools.apps.litemessage.core.networking;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;

@@ -34,12 +34,24 @@
  * IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package mtools.apps.litemessage.gui;
+package mtools.apps.litemessage.console;
 
-import javax.swing.UIManager;
+import mtools.apps.litemessage.core.TextDisplayObject;
 
-public class GUILiteMessage {
-	public static void main(String[] args) {
-		MainGUI mGUI = new MainGUI();
+/**
+ * Wrapper for System.out.println() but it implements {@link TextDisplayObject}
+ * @author Noah
+ *
+ */
+public class ConsoleTextDisplay implements TextDisplayObject {
+
+	@Override
+	public void println(String s) {
+		System.out.print(s + "\n> ");
 	}
+	
+	public void tearDown() {
+		//Do nothing.  It's a console window.
+	}
+	
 }

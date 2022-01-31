@@ -34,8 +34,17 @@
  * IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package mtools.apps.litemessage;
+package mtools.apps.litemessage.core;
 
-public enum MessagingState {
-	INITIATED_MESSAGING, AWAITING_MESSAGING, CURRENTLY_MESSAGING, NOT_MESSAGING
+public interface TextDisplayObject {
+	/**
+	 * This should print a line of text to a display of some sort
+	 * @param s
+	 */
+	public void println(String s);
+	
+	/**
+	 * What should occur if a window is closed that is displaying text
+	 */
+	public void tearDown();
 }

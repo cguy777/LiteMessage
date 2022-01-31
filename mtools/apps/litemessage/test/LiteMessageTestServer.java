@@ -36,11 +36,12 @@
 
 package mtools.apps.litemessage.test;
 
-import mtools.apps.litemessage.ConsoleTextDisplay;
-import mtools.apps.litemessage.ContactManager;
+import mtools.apps.litemessage.console.ConsoleTextDisplay;
+import mtools.apps.litemessage.console.ConsoleTextInput;
+import mtools.apps.litemessage.control.logic.ContactManager;
 import mtools.apps.litemessage.control.logic.MessagingControlModule;
 import mtools.apps.litemessage.control.logic.SettingsModule;
-import mtools.apps.litemessage.networking.ConnectionManager;
+import mtools.apps.litemessage.core.networking.ConnectionManager;
 import mtools.io.MConsole;
 import mtools.io.MDisplay;
 
@@ -48,7 +49,7 @@ public class LiteMessageTestServer {
 	public static void main(String[] args) {
 		MDisplay display = new MDisplay("Messaging App", 5);
 		display.setDisplayReverse();
-		MConsole console = new MConsole();
+		ConsoleTextInput console = new ConsoleTextInput();
 		MessagingControlModule cMod = null;
 		SettingsModule sMod = new SettingsModule(console, true);
 		

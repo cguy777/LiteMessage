@@ -34,7 +34,7 @@
  * IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package mtools.apps.litemessage.networking;
+package mtools.apps.litemessage.core.networking;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -265,5 +265,6 @@ public class ConnectionManager {
 	
 	public static void main(String[]args) throws UnknownHostException, IOException {
 		ConnectionManager cm = new ConnectionManager();
+		cm.listServerSocketAvailability();
 	}
 }

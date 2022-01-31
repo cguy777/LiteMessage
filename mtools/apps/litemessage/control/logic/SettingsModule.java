@@ -43,7 +43,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import javax.swing.JOptionPane;
 
-import mtools.apps.litemessage.ContactManager;
 import mtools.io.*;
 
 /**

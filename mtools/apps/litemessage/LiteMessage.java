@@ -35,9 +35,14 @@
  */
 
 package mtools.apps.litemessage;
+import mtools.apps.litemessage.console.ConsoleTextDisplay;
+import mtools.apps.litemessage.console.ConsoleTextInput;
+import mtools.apps.litemessage.console.MenuModule;
+import mtools.apps.litemessage.control.logic.ContactManager;
 import mtools.apps.litemessage.control.logic.MessagingControlModule;
 import mtools.apps.litemessage.control.logic.SettingsModule;
-import mtools.apps.litemessage.networking.ConnectionManager;
+import mtools.apps.litemessage.core.MessagingState;
+import mtools.apps.litemessage.core.networking.ConnectionManager;
 import mtools.io.*;
 
 public class LiteMessage {
@@ -45,7 +50,7 @@ public class LiteMessage {
 	public static void main(String[] args) {
 		MDisplay display = new MDisplay("Messaging App", 5);
 		display.setDisplayReverse();
-		MConsole console = new MConsole();
+		ConsoleTextInput console = new ConsoleTextInput();
 		MMenu menu = new MMenu();
 		MessagingControlModule cMod = null;
 		ConnectionManager connectionMan = new ConnectionManager();
