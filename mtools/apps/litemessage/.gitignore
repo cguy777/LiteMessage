@@ -19,3 +19,6 @@
 /ConsoleTextDisplay.class
 /LiteMessageTestServer.class
 /MessagingState.class
+/ConnectionManager.class
+/StreamBundle.class
+/TextInputObject.class
