@@ -38,10 +38,10 @@ package mtools.apps.litemessage;
 
 public interface TextDisplayObject {
 	/**
-	 * This should print text to a display of some sort
+	 * This should print a line of text to a display of some sort
 	 * @param s
 	 */
-	public void print(String s);
+	public void println(String s);
 	
 	/**
 	 * What should occur if a window is closed that is displaying text

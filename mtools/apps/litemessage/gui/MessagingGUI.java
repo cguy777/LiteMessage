@@ -49,10 +49,13 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+
+import mtools.apps.litemessage.ConnectionManager;
 import mtools.apps.litemessage.Contact;
 import mtools.apps.litemessage.ContactManager;
 import mtools.apps.litemessage.MessagingControlModule;
 import mtools.apps.litemessage.TextDisplayObject;
+import mtools.io.MConsole;
 import mtools.io.MDisplay;
 
 /**
@@ -64,6 +67,8 @@ public class MessagingGUI extends JFrame implements TextDisplayObject {
 	
 	private Contact contact;
 	public MessagingControlModule mcm;
+	
+	public ConnectionManager connectionMan;
 	
 	private JPanel mainPanel;
 	private JTextArea convoHistory;
@@ -78,7 +83,9 @@ public class MessagingGUI extends JFrame implements TextDisplayObject {
 	 * you can call {@link waitForessagig()} and it will be
 	 * made visible when somebody reaches to us.
 	 */
-	public MessagingGUI() {
+	public MessagingGUI(ConnectionManager cm) {
+		connectionMan = cm;
+		
 		buildGUI();
 	}
 	
@@ -92,7 +99,7 @@ public class MessagingGUI extends JFrame implements TextDisplayObject {
 		this.setVisible(true);
 		this.setTitle("Connecting...");
 		contact = c;
-		mcm = new MessagingControlModule(new MDisplay(), this, cm);
+		mcm = new MessagingControlModule(null, this, null, connectionMan, cm);
 		mcm.startInitiateMessageLogicFromGUI(contact);
 		this.setTitle(mcm.getConnectedContact().getName());
 	}
@@ -106,14 +113,14 @@ public class MessagingGUI extends JFrame implements TextDisplayObject {
 	public void initiateMessaging(String ipAddress, ContactManager cm) {
 		this.setVisible(true);
 		this.setTitle("Connecting...");
-		mcm = new MessagingControlModule(new MDisplay(), this, cm);
+		mcm = new MessagingControlModule(null, this, null, connectionMan, cm);
 		mcm.startInitiateMessageLogicFromGUI(ipAddress);
 		this.setTitle(mcm.getConnectedContact().getName());
 		contact = mcm.getConnectedContact();
 	}
 	
 	public void waitForMessaging(ContactManager cm) {
-		mcm = new MessagingControlModule(new MDisplay(), this, cm);
+		mcm = new MessagingControlModule(new MDisplay(), this, null, connectionMan, cm);
 		mcm.startReceiveMessageLogic();
 		this.setVisible(true);
 		this.setTitle(mcm.getConnectedContact().getName());
@@ -164,7 +171,7 @@ public class MessagingGUI extends JFrame implements TextDisplayObject {
 	}
 	
 	@Override
-	public void print(String s) {
+	public void println(String s) {
 		convoHistory.append(s + "\n");
 		convoScroll.getVerticalScrollBar().setValue(convoScroll.getVerticalScrollBar().getMaximum());
 		
@@ -183,7 +190,7 @@ public class MessagingGUI extends JFrame implements TextDisplayObject {
 			//Don't want to process a blank message.
 			if(!message.matches("")) {
 				mcm.sendData(message);
-				print("You: " + message);
+				println("You: " + message);
 				composeArea.setText("");
 			}
 		}
@@ -198,7 +205,7 @@ public class MessagingGUI extends JFrame implements TextDisplayObject {
 				//Don't want to process a blank message.
 				if(!message.matches("")) {
 					mcm.sendData(message);
-					print("You: " + message);
+					println("You: " + message);
 				}
 			}
 		}
