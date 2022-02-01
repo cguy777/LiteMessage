@@ -40,7 +40,7 @@ import javax.swing.UIManager;
 
 import mtools.apps.litemessage.gui.MainGUI;
 
-public class GUILiteMessage {
+public class LiteMessageGUI {
 	public static void main(String[] args) {
 		MainGUI mGUI = new MainGUI();
 	}
