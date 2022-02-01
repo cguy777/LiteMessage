@@ -281,12 +281,10 @@ public class MessagingControlModule extends Thread {
 	 */
 	public void startReceiveMessageLogic() {
 		
-		displayObject.println("Awaiting Connection...");
-		
 		try {
 			sBundle = connectionMan.waitForSessionNegotiation();
 		} catch(Exception e) {
-			System.err.println("Error while reaching back to the peer initiating connection.");
+			//System.err.println("Error while reaching back to the peer initiating connection.");
 			return;
 		}
 		
@@ -297,7 +295,7 @@ public class MessagingControlModule extends Thread {
 			//Send the info about ourselves
 			sBundle.writeUTFData(thisUser.getName() + "," + thisUser.getUID());
 		} catch (IOException e) {
-			System.err.println("Had issue either sending our user info, or receiving their user info.");
+			System.err.println("Error while sending our user info, or receiving their user info.");
 			e.printStackTrace();
 		}
 		
@@ -350,10 +348,15 @@ public class MessagingControlModule extends Thread {
 		
 		try {
 			sBundle.closeStreams();
+			connectionMan.closeSocket(sBundle.getSocket());
 		} catch (IOException e) {
 			e.printStackTrace();
+		} catch (NullPointerException npe) {
+			//If the sBundle is null, there was never a connection to begin with
+			//So do nothing.
 		}
-		connectionMan.closeSocket(sBundle.getSocket());
+		
+		
 		
 		mState.setMessagingState(MessagingState.NOT_MESSAGING);
 	}
