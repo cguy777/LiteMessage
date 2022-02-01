@@ -65,6 +65,15 @@ public class LiteMessageTestServer {
 		
 		//Main control loop
 		while(true) {
+			
+			if(!connectionMan.isLocalPortUsable(ConnectionManager.INIT_STANDARD_PORT)) {
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e) {}
+				
+				continue;
+			}
+			
 			cMod = new TestServerMessagingControlModule(display, ctd, console, connectionMan, cMan);
 			cMod.startTestServerLogic();
 		}

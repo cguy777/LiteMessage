@@ -53,15 +53,22 @@ import java.util.ArrayList;
  */
 public class ConnectionManager {
 	
-	private int INIT_STANDARD_PORT = 5676;
+	public static final int INIT_STANDARD_PORT = 5676;
+	public static final int FIRST_DYNAMIC_PORT = 49152;
+	public static final int LAST_DYNAMIC_PORT = 65535;
 	
-	private int FIRST_DYNAMIC_PORT = 49152;
-	private int LAST_DYNAMIC_PORT = 65535;
+	private int initPort;
+	private int firstDynamicPort;
+	private int lastDynamicPort;
 	
 	ArrayList<Socket> sockets;
 	
 	public ConnectionManager() {
 		sockets = new ArrayList<Socket>();
+		
+		initPort = INIT_STANDARD_PORT;
+		firstDynamicPort = FIRST_DYNAMIC_PORT;
+		lastDynamicPort = LAST_DYNAMIC_PORT;
 	}
 	
 	/**
@@ -69,7 +76,7 @@ public class ConnectionManager {
 	 * @param newPortNumber
 	 */
 	public void setStandardPort(int newPortNumber) {
-		INIT_STANDARD_PORT = newPortNumber;
+		initPort = newPortNumber;
 	}
 	
 	/**
@@ -79,8 +86,8 @@ public class ConnectionManager {
 	 * @param highPort
 	 */
 	public void setDynamicPortRange(int lowPort, int highPort) {
-		FIRST_DYNAMIC_PORT = lowPort;
-		LAST_DYNAMIC_PORT = highPort;
+		firstDynamicPort = lowPort;
+		lastDynamicPort = highPort;
 	}
 	
 	/**
@@ -93,7 +100,7 @@ public class ConnectionManager {
 	 * @throws IOException
 	 */
 	public StreamBundle initSessionNegotiation(InetAddress ipAddress) throws IOException {
-		Socket initSocket = new Socket(ipAddress, INIT_STANDARD_PORT);
+		Socket initSocket = new Socket(ipAddress, initPort);
 		DataInputStream initInputStream = new DataInputStream(initSocket.getInputStream());
 		
 		String port = initInputStream.readUTF();
@@ -123,7 +130,7 @@ public class ConnectionManager {
 	 * @throws IOException
 	 */
 	public StreamBundle waitForSessionNegotiation() throws IOException {
-		ServerSocket tempServerSocket = new ServerSocket(INIT_STANDARD_PORT);
+		ServerSocket tempServerSocket = new ServerSocket(initPort);
 		Socket initSocket = tempServerSocket.accept();
 		tempServerSocket.close();
 		
@@ -184,6 +191,22 @@ public class ConnectionManager {
 	}
 	
 	/**
+	 * Returns true if we are able to establish a ServerSocket on the specified port.
+	 * Returns false if one can't be made.
+	 * @param port
+	 * @return
+	 */
+	public boolean isLocalPortUsable(int port) {
+		try {
+			ServerSocket tempServerSocket = new ServerSocket(port);
+			tempServerSocket.close();
+			return true;
+		} catch (IOException e) {
+			return false;
+		}
+	}
+	
+	/**
 	 * Searches through ephemeral/dynamic ports until an open one is available.  It then creates
 	 * and returns a server socket using that port.  Will return null if a usable port can't be found.
 	 * @return
@@ -195,10 +218,10 @@ public class ConnectionManager {
 		
 		while(newServerSocket == null) {
 			try {
-				if(FIRST_DYNAMIC_PORT + portOffset > LAST_DYNAMIC_PORT)
+				if(firstDynamicPort + portOffset > lastDynamicPort)
 					return null;
 				
-				newServerSocket = new ServerSocket(FIRST_DYNAMIC_PORT + portOffset);
+				newServerSocket = new ServerSocket(firstDynamicPort + portOffset);
 
 			} catch (IOException e) {
 				portOffset++;
@@ -206,7 +229,7 @@ public class ConnectionManager {
 		}
 		
 		//Re-implement commented line below to a log
-		//System.out.println("Found port " + (FIRST_DYNAMIC_PORT + portOffset));
+		//System.out.println("Found port " + (firstDynamicPort + portOffset));
 		return newServerSocket;
 	}
 	
@@ -257,16 +280,16 @@ public class ConnectionManager {
 		int portOffset = 0;
 		while(true) {
 			try {
-				if(FIRST_DYNAMIC_PORT + portOffset > LAST_DYNAMIC_PORT) {
+				if(firstDynamicPort + portOffset > lastDynamicPort) {
 					break;
 				}
 				
-				newServerSocket = new ServerSocket(FIRST_DYNAMIC_PORT + portOffset);
+				newServerSocket = new ServerSocket(firstDynamicPort + portOffset);
 				newServerSocket.close();
 				
 				//System.out.println("Found port " + (STARTING_DYNAMIC_PORT + portOffset));
 			} catch (IOException e) {
-				System.out.println("Can't use " + (FIRST_DYNAMIC_PORT + portOffset));
+				System.out.println("Can't use " + (firstDynamicPort + portOffset));
 			}
 			
 			portOffset++;

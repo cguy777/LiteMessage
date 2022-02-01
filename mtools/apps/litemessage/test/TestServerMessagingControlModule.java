@@ -72,6 +72,7 @@ public class TestServerMessagingControlModule extends MessagingControlModule {
 			if(cpm.evaluateText(message) == CommandType.EXIT) {
 				clearConnections();
 				System.out.println(otherUser.getName() + " has left...");
+				displayCurrentConnections();
 				return;
 			}
 			

@@ -36,6 +36,8 @@
 
 package mtools.apps.litemessage.gui;
 
+import javax.swing.JOptionPane;
+
 import mtools.apps.litemessage.control.logic.ContactManager;
 import mtools.apps.litemessage.core.MessagingState;
 import mtools.apps.litemessage.core.networking.ConnectionManager;
@@ -52,7 +54,22 @@ public class ReceiveMessageHandler extends Thread {
 
 	@Override
 	public void run() {
+		
+		if(!connectionMan.isLocalPortUsable(ConnectionManager.INIT_STANDARD_PORT)) {
+			JOptionPane.showMessageDialog(null, "The default initialization port is not available!  You cannot be contacted until otherwise.", "Network Error", JOptionPane.ERROR_MESSAGE);
+		}
+		
 		while(true) {
+			
+			//Prevents a bunch of windows from popping up and stealing resources when the port isn't available.
+			if(!connectionMan.isLocalPortUsable(ConnectionManager.INIT_STANDARD_PORT)) {
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e) {}
+				
+				continue;
+			}
+			
 			MessagingGUI messagingGUI = new MessagingGUI(connectionMan);
 			messagingGUI.waitForMessaging(mainGUI.cMan);
 			mainGUI.updateContactList();
