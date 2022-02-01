@@ -2,3 +2,6 @@
 .classpath
 .project
 *.cfg
+.settings/org.eclipse.jdt.core.prefs
+.settings/org.eclipse.jdt.launching.prefs
+.settings/org.eclipse.jdt.ui.prefs

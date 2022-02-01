@@ -22,3 +22,5 @@
 /ConnectionManager.class
 /StreamBundle.class
 /TextInputObject.class
+/GUILiteMessage.class
+/LiteMessageGUI.class
