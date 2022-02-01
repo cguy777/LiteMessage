@@ -36,8 +36,6 @@
 
 package mtools.apps.litemessage;
 
-import javax.swing.UIManager;
-
 import mtools.apps.litemessage.gui.MainGUI;
 
 public class LiteMessageGUI {
