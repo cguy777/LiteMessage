@@ -174,6 +174,16 @@ public class ConnectionManager {
 	}
 	
 	/**
+	 * Returns the number of established connections that have been negotiated off of the default
+	 * initializing port.  This is determined by the size of the sockets ArrayList.  The sockets
+	 * ArrayList contains every active socket. 
+	 * @return
+	 */
+	public int getNumOfConnections() {
+		return sockets.size();
+	}
+	
+	/**
 	 * Searches through ephemeral/dynamic ports until an open one is available.  It then creates
 	 * and returns a server socket using that port.  Will return null if a usable port can't be found.
 	 * @return

@@ -46,11 +46,11 @@ import mtools.io.MConsole;
 import mtools.io.MDisplay;
 
 public class LiteMessageTestServer {
-	public static void main(String[] args) {
+	public static void main(String[] args) throws InterruptedException {
 		MDisplay display = new MDisplay("Messaging App", 5);
 		display.setDisplayReverse();
 		ConsoleTextInput console = new ConsoleTextInput();
-		MessagingControlModule cMod = null;
+		TestServerMessagingControlModule cMod = null;
 		SettingsModule sMod = new SettingsModule(console, true);
 		
 		ContactManager cMan = new ContactManager(sMod.getSettings());
@@ -60,9 +60,12 @@ public class LiteMessageTestServer {
 		
 		ConnectionManager connectionMan = new ConnectionManager();
 		
+		System.out.println("---LiteMessage Test Server---");
+		System.out.println("\nRunning...\n");
+		
 		//Main control loop
 		while(true) {
-			cMod = new MessagingControlModule(display, ctd, console, connectionMan, cMan);
+			cMod = new TestServerMessagingControlModule(display, ctd, console, connectionMan, cMan);
 			cMod.startTestServerLogic();
 		}
 	}

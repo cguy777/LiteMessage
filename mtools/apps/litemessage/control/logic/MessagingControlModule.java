@@ -58,16 +58,16 @@ import mtools.io.MDisplay;
  */
 public class MessagingControlModule extends Thread {
 	
-	private MDisplay display;
-	private MessageStatusObject mState;
-	private Contact thisUser;
-	private Contact otherUser;
-	private ContactManager cMan;
-	CommandParseModule cpm;
-	TextDisplayObject displayObject;
-	TextInputObject inputObject;
-	ConnectionManager connectionMan;
-	StreamBundle sBundle;
+	protected MDisplay display;
+	protected MessageStatusObject mState;
+	protected Contact thisUser;
+	protected Contact otherUser;
+	protected ContactManager cMan;
+	protected CommandParseModule cpm;
+	protected TextDisplayObject displayObject;
+	protected TextInputObject inputObject;
+	protected ConnectionManager connectionMan;
+	protected StreamBundle sBundle;
 	
 	/**
 	 * The constructor.
@@ -341,60 +341,7 @@ public class MessagingControlModule extends Thread {
 	/**
 	 * Used for testing.
 	 */
-	public void startTestServerLogic() {
-		
-		System.out.println("Awaiting Connection...");
-		
-		try {
-			sBundle = connectionMan.waitForSessionNegotiation();
-		} catch(Exception e) {
-			System.err.println("Error while reaching back to the peer initiating connection.");
-			return;
-		}
-		
-		try {
-			//Grab the info about the other user.
-			parseOtherUserData(sBundle.readUTFData());
-			otherUser.setIPAddress(sBundle.getSocket().getInetAddress());
-			//Send the info about ourselves
-			sBundle.writeUTFData(thisUser.getName() + "," + thisUser.getUID());
-		} catch (IOException e) {
-			System.err.println("Had issue either sending our user info, or receiving their user info.");
-			e.printStackTrace();
-		}
-		
-		System.out.println("Connected with " + otherUser.getName());
-		
-		mState.setMessagingState(MessagingState.CURRENTLY_MESSAGING);
-		cMan.addContact(otherUser);
-		
-		String message;
-		CommandParseModule cpm = new CommandParseModule();
-		
-		
-		while(true) {
-			
-			try {
-				message = sBundle.readUTFData();
-			} catch(IOException e) {
-				clearConnections();
-				return;
-			}
-			
-			System.out.println(otherUser.getName() + " said: " + message);
-			
-			if(cpm.evaluateText(message) == CommandType.EXIT) {
-				clearConnections();
-				return;
-			}
-			
-			try {
-				sBundle.writeUTFData(message);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-	}
+	
 	
 	/**
 	 * closes all of the sockets/connections.
@@ -477,7 +424,7 @@ public class MessagingControlModule extends Thread {
 		}
 	}
 	
-	private void parseOtherUserData(String data) {
+	protected void parseOtherUserData(String data) {
 		int count = 0;
 		String username = null;
 		String uid = null;
