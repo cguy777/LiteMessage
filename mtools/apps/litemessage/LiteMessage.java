@@ -35,9 +35,12 @@
  */
 
 package mtools.apps.litemessage;
+import mtools.apps.litemessage.console.ConsoleReceiveMessageHandler;
 import mtools.apps.litemessage.console.ConsoleTextDisplay;
 import mtools.apps.litemessage.console.ConsoleTextInput;
 import mtools.apps.litemessage.console.MenuModule;
+import mtools.apps.litemessage.control.logic.CommandParseModule;
+import mtools.apps.litemessage.control.logic.CommandType;
 import mtools.apps.litemessage.control.logic.ContactManager;
 import mtools.apps.litemessage.control.logic.MessagingControlModule;
 import mtools.apps.litemessage.control.logic.SettingsModule;
@@ -46,73 +49,100 @@ import mtools.apps.litemessage.core.networking.ConnectionManager;
 import mtools.io.*;
 
 public class LiteMessage {
-
+	
+	static MessagingControlModule cMod;
+	static ConsoleReceiveMessageHandler rmh;
+	static MDisplay display;
+	static ConsoleTextDisplay ctd;
+	static ConsoleTextInput console;
+	static ConnectionManager connectionMan;
+	static ContactManager cMan;
+	
 	public static void main(String[] args) {
-		MDisplay display = new MDisplay("Messaging App", 5);
+		display = new MDisplay("Messaging App", 5);
 		display.setDisplayReverse();
-		ConsoleTextInput console = new ConsoleTextInput();
+		console = new ConsoleTextInput();
 		MMenu menu = new MMenu();
-		MessagingControlModule cMod = null;
-		ConnectionManager connectionMan = new ConnectionManager();
+		
+		connectionMan = new ConnectionManager();
 		SettingsModule sMod = new SettingsModule(console, true);
 		MenuModule menuMod = new MenuModule(console, menu, sMod.getSettings().thisUser.getName());
+		CommandParseModule cpm = new CommandParseModule();
 		
-		ContactManager cMan = new ContactManager(sMod.getSettings());
+		cMan = new ContactManager(sMod.getSettings());
 		cMan.loadContacts();
 		
-		ConsoleTextDisplay ctd = new ConsoleTextDisplay();
+		ctd = new ConsoleTextDisplay();
+		
+		boolean justExited = true;
 		
 		//Main control loop
 		while(true) {
-			menuMod.displayMainMenu();
-			//We'll drop down a line and print a thing to indicate it's ready to type.
-			System.out.print("\n> ");
-			int choice = console.getInputInt();
-			
-			switch(choice) {
-			//Message Somebody
-			case 0:
-				cMod = new MessagingControlModule(display, ctd, console, connectionMan, cMan);
-				cMod.startInitiateMessageLogic();
-				break;
-			
-			//Receive Messages
-			case 1:
-				cMod = new MessagingControlModule(display, ctd, console, connectionMan, cMan);
-				cMod.startReceiveMessageLogic();
-				break;
-			
-			//Change settings
-			case 2:
-				sMod.configSettingsFromConsole(cMan);
-				break;
 				
-			//Exit
-			case 3:
-				System.exit(0);
-				
+			if(justExited) {
+				initializeRxComms();
+				justExited = false;
 			}
+				
+			if(cMod.getMessagingState() != MessagingState.CURRENTLY_MESSAGING)
+				menuMod.displayMainMenu();
+				
+			//We'll drop down a line and print a thing to indicate it's ready to type.
+			System.out.print("> ");
+			String input = console.getInputString();
 			
-			//Save ourselves some exception trouble by checking if things were initialized or not
-			if(cMod != null) {
-				while(cMod.getMessagingState() != MessagingState.NOT_MESSAGING) {
-					//We'll print a thing to indicate it's ready to type.
-					System.out.print("> ");
-					String data = console.getInputString();
-					if(cMod.getMessagingState() != MessagingState.NOT_MESSAGING) {
-						cMod.sendData(data);
-					}
+			if(cMod.getMessagingState() == MessagingState.CURRENTLY_MESSAGING) {
+				cMod.sendData(input);
+					
+				if(cpm.evaluateText(input) == CommandType.EXIT) {
+					justExited = true;
+					initializeRxComms();
 				}
+			
+			} else {
+					
+				int choice = 0;
+					
 				try {
+					choice = Integer.parseInt(input);
+				} catch(NumberFormatException nfe) {
+					continue;
+				}
+					
+				switch(choice) {
+				//Message Somebody
+				case 0:
 					cMod.clearConnections();
-				} catch(Exception e) {
-					//Not doing anything
-					//Just helps catch an exception caused by a inputting a bad IP address
-					//or contact name
+					cMod = new MessagingControlModule(display, ctd, console, connectionMan, cMan);
+					cMod.startInitiateMessageLogic();
+					break;
+			
+				//Receive Messages
+				case 1:
+					cMod.clearConnections();
+					cMod = new MessagingControlModule(display, ctd, console, connectionMan, cMan);
+					cMod.startReceiveMessageLogic();
+					break;
+			
+				//Change settings
+				case 2:
+					sMod.configSettingsFromConsole(cMan);
+					break;
+				
+				//Exit
+				case 3:
+					System.exit(0);
+			
 				}
 			}
 		
 		}
+	}
+	
+	private static void initializeRxComms() {
+		cMod = new MessagingControlModule(display, ctd, console, connectionMan, cMan);
+		rmh = new ConsoleReceiveMessageHandler(cMod);
+		rmh.start();
 	}
 
 }
