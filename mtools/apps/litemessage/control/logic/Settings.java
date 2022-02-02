@@ -55,13 +55,24 @@ import mtools.apps.litemessage.core.Contact;
 public class Settings {
 	public Contact thisUser;
 	public boolean dynamicUIDUpdates;
+	public int initPort;
+	public int dataPort;
 	
 	/**
-	 * Sets the settings to the default values.  Might be useful if we have trouble
-	 * reading from our settings file
+	 * Initializes and sets every to default.
 	 */
 	public Settings() {
 		thisUser = new Contact();
+		setToDefault();
+	}
+	
+	/**
+	 * Sets everything to their default values.
+	 */
+	public void setToDefault() {
+		thisUser.setToDefault();
 		dynamicUIDUpdates = false;
+		initPort = 5676;
+		dataPort = 49212;
 	}
 }

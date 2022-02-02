@@ -55,9 +55,8 @@ public class SettingsModule {
 	private MDisplay display;
 	private MMenu menu;
 	private Settings settings;
-	private String username;
-	private String uid;
-	private boolean isBlank;
+	private boolean dUIDUpdate;
+	private boolean isDefault;
 	private boolean isConsoleBased;
 	
 	/**
@@ -78,15 +77,11 @@ public class SettingsModule {
 		menu.addMenuItem("Delete Contact");
 		menu.addMenuItem("Go back");
 		
-		username = null;
-		uid = null;
-		isBlank = false;
+		isDefault = false;
 		
 		//Initially read the settings
 		readSettingsFromFile();
 	}
-	
-
 	
 	/**
 	 * Reads the settings from the file and configures out {@link Settings} object to match.
@@ -97,120 +92,42 @@ public class SettingsModule {
 		try {
 			FileReader fReader = new FileReader("settings.cfg");
 			BufferedReader bReader = new BufferedReader(fReader);
-			String selfContactInfo = bReader.readLine();
 			
-			isBlank = false;
+			//Display name
+			settings.thisUser.setName(bReader.readLine());
 			
-			int count = 0;
+			//UID
+			settings.thisUser.setUID(bReader.readLine());
 			
-			//NEED TO ORGANIZE THE PARSING AND SETTING CODE BETTER
-			//Parse the Self Contact info and grab the user/display name
-			while(true) {
-				//If file is blank, set a default username.
-				if(selfContactInfo == null) {
-					username = "errnoname";
-					//If the first line is null, then the config is blank.
-					isBlank = true;
-					break;
-				}
-				if(selfContactInfo.charAt(count) != ',') {
-					if(username == null)
-						username = String.valueOf(selfContactInfo.charAt(count));
-					else
-						username = username + String.valueOf(selfContactInfo.charAt(count));
-					
-				} else {
-					break;
-				}
-				count++;
-				
-			}
-			
-			//Advance the counter past the comma.
-			count++;
-			
-			///Grab the UID
-			while(true) {
-				//If file is blank, set a default UID.
-				//if(selfContactInfo == null) {
-				if(isBlank) {
-					uid = "1234567";
-					break;
-				}
-				
-				//We'll read to the end of the line
-				if(count < (selfContactInfo.length())) {
-					if(uid == null)
-						uid = String.valueOf(selfContactInfo.charAt(count));
-					else
-						uid = uid + String.valueOf(selfContactInfo.charAt(count));
-					
-				} else {
-					break;
-				}
-				count++;
-				
-			}
-			
-			//if the name is the default value, we'll get a new name from the user.
-			if(username.matches("errnoname")) {
-				getDisplayName();
-				
-			} else {
-				settings.thisUser.setName(username);
-			}
-			
-			//If the UID is the default value, we will generate a new one
-			if(uid.matches("1234567")) {
-				settings.thisUser.generateUID();
-			} else {
-				settings.thisUser.setUID(uid);
-			}
-			
-			boolean dUIDUpdate;
+			//Dynamic UID update
 			String uidup = bReader.readLine();
-			//default behavior is false, unless explicitly stated to be true
-			if(isBlank) {
-				dUIDUpdate = false;
+			if(uidup.matches("true")) {
+				dUIDUpdate = true;
 			} else {
-				if(uidup.matches("true")) {
-					dUIDUpdate = true;
-				} else {
-					dUIDUpdate = false;
-				}
+				dUIDUpdate = false;
 			}
 			settings.dynamicUIDUpdates = dUIDUpdate;
 			
+			//Port info
+			settings.initPort = Integer.parseInt(bReader.readLine());
+			settings.dataPort = Integer.parseInt(bReader.readLine());
+			
+			//Close readers
 			bReader.close();
 			fReader.close();
-			
-			//If anything was default (or blank), it means it was changed.
-			//So we will write those changes to the settings.cfg file.
-			if(username.matches("errnoname") || uid.matches("1234567") || isBlank) {
-				writeSettingsToFile();
-			}
+
 		//If we can't read settings.cfg, we'll try to create a default one.
-		} catch (IOException e) {
+		} catch (Exception e) {
 			System.err.println("Can not access settings file, or file is corrupt!!! (settings.cfg)");
-			try {
-				FileWriter fWriter = new FileWriter("settings.cfg");
-				BufferedWriter bWriter = new BufferedWriter(fWriter);
-				
-				settings.thisUser.setName("errnoname");
-				settings.thisUser.setUID("1234567");
-				settings.dynamicUIDUpdates = false;
-				
-				System.err.println("Default settings file has been created.");
-				bWriter.close();
-				fWriter.close();
-				
-				//We'll start over and make sure at least the defaults can be read.
-				readSettingsFromFile();
-				
-			} catch (IOException e1) {
-				System.err.println("Can not write default settings file.  Please check user and application permissions.");
-			}
+			
+			settings.setToDefault();
+			writeSettingsToFile();
+			System.err.println("Default settings file has been created.");
 		}
+		
+		//If things are default, we need to do a couple of things first.
+		if(areSettingsDefault())
+			configForFirstRun();
 	}
 	
 	/**
@@ -221,7 +138,9 @@ public class SettingsModule {
 			FileWriter fWriter = new FileWriter("settings.cfg");
 			BufferedWriter bWriter = new BufferedWriter(fWriter);
 			
-			bWriter.write(settings.thisUser.getName() + "," + settings.thisUser.getUID());
+			bWriter.write(settings.thisUser.getName());
+			bWriter.newLine();
+			bWriter.write(settings.thisUser.getUID());
 			bWriter.newLine();
 			
 			if(settings.dynamicUIDUpdates == true) {
@@ -229,6 +148,11 @@ public class SettingsModule {
 			} else {
 				bWriter.write("false");
 			}
+			bWriter.newLine();
+			
+			bWriter.write(String.valueOf(settings.initPort));
+			bWriter.newLine();
+			bWriter.write(String.valueOf(settings.dataPort));
 			
 			bWriter.flush();
 			bWriter.close();
@@ -340,13 +264,24 @@ public class SettingsModule {
 		return settings;
 	}
 	
+	private void configForFirstRun() {
+		getDisplayName();
+		settings.thisUser.generateUID();
+		
+		writeSettingsToFile();
+	}
 	
-	
-	//******************************
-	//Internal private methods below
-	//******************************
-	
-	
+	private boolean areSettingsDefault() {
+		//We'll just check for the default name.
+		//Should be good enough.
+		if(settings.thisUser.getName().matches("errnoname")) {
+			isDefault = true;
+		} else {
+			isDefault = false;
+		}
+		
+		return isDefault;
+	}
 	
 	/**
 	 * This will grab the display name from either the GUI

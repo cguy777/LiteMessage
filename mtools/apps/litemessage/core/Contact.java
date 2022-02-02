@@ -53,9 +53,7 @@ public class Contact {
 	 * Sets everything to their default values
 	 */
 	public Contact() {
-		name = "errnoname";
-		ipAddress = null;
-		uniqueID = "1234567";
+		setToDefault();
 	}
 	
 	/**
@@ -80,6 +78,16 @@ public class Contact {
 	
 	public void setUID(String uid) {
 		uniqueID = uid;
+	}
+	
+	/**
+	 * Sets everything about the contact
+	 * to default values.
+	 */
+	public void setToDefault() {
+		name = "errnoname";
+		ipAddress = null;
+		uniqueID = "1234567";
 	}
 	
 	public String getName() {

@@ -53,6 +53,10 @@ import java.util.ArrayList;
  */
 public class ConnectionManager {
 	
+	/**
+	 * This is the port on which sessions are initiated by default, and then is handed
+	 * over to one of the dynamic ports.
+	 */
 	public static final int INIT_STANDARD_PORT = 5676;
 	public static final int FIRST_DYNAMIC_PORT = 49152;
 	public static final int LAST_DYNAMIC_PORT = 65535;
