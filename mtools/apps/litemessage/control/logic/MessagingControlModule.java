@@ -299,13 +299,13 @@ public class MessagingControlModule extends Thread {
 			e.printStackTrace();
 		}
 		
-		this.start();
-		
 		display.setBanner("Connected with " + otherUser.getName());
 		display.display();
 		
 		mState.setMessagingState(MessagingState.CURRENTLY_MESSAGING);
 		cMan.addContact(otherUser);
+		
+		this.start();
 	}
 	
 	public void startReceiveMessageLogicFromGUI() {
@@ -342,23 +342,39 @@ public class MessagingControlModule extends Thread {
 	
 	
 	/**
-	 * closes all of the sockets/connections.
+	 * closes all of the sockets/connections.  However, it does
+	 * not close any ServerSockets.
 	 */
 	public void clearConnections() {
 		
 		try {
-			sBundle.closeStreams();
-			connectionMan.closeSocket(sBundle.getSocket());
+			sBundle.closeStreams();	
 		} catch (IOException e) {
-			e.printStackTrace();
 		} catch (NullPointerException npe) {
 			//If the sBundle is null, there was never a connection to begin with
 			//So do nothing.
 		}
 		
-		
+		try {
+			connectionMan.closeSocket(sBundle.getSocket());
+		} catch(Exception e) {
+			
+		}
 		
 		mState.setMessagingState(MessagingState.NOT_MESSAGING);
+	}
+	
+	/**
+	 * Closes any open ServerSoket in the ConnectionManager.
+	 * Mainly just used for the Console version because program
+	 * flow is convoluted in that version.
+	 */
+	public void clearServerSocket() {
+		try {
+			connectionMan.closeServerSocket();
+		} catch(Exception e) {
+			
+		}
 	}
 	
 	public MessagingState getMessagingState() {

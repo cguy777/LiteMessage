@@ -35,6 +35,8 @@
  */
 
 package mtools.apps.litemessage;
+import java.io.IOException;
+
 import mtools.apps.litemessage.console.ConsoleReceiveMessageHandler;
 import mtools.apps.litemessage.console.ConsoleTextDisplay;
 import mtools.apps.litemessage.console.ConsoleTextInput;
@@ -74,33 +76,34 @@ public class LiteMessage {
 		
 		ctd = new ConsoleTextDisplay();
 		
-		boolean justExited = true;
+		//this is called specifically at this time to prevent a null MessagingControlModule
+		initializeRxComms();
 		
 		//Main control loop
 		while(true) {
-				
-			if(justExited) {
-				initializeRxComms();
-				justExited = false;
+			
+			//If we just exited a chat session, we will set up the menu, clear any
+			//remaining connections, and reinitialize the background message receiver.
+			if(cMod.getMessagingState() != MessagingState.CURRENTLY_MESSAGING) {
+				menuMod.displayMainMenu();
+				try {
+					cMod.clearConnections();
+					cMod.clearServerSocket();
+					initializeRxComms();
+				} catch(NullPointerException npe) {/* Do nothing */}
 			}
 				
-			if(cMod.getMessagingState() != MessagingState.CURRENTLY_MESSAGING)
-				menuMod.displayMainMenu();
 				
 			//We'll drop down a line and print a thing to indicate it's ready to type.
 			System.out.print("> ");
 			String input = console.getInputString();
 			
+			//Depending on if we are messaging or not, we will either send
+			//the input to the connected peer, or towards menu selection.
 			if(cMod.getMessagingState() == MessagingState.CURRENTLY_MESSAGING) {
 				cMod.sendData(input);
-					
-				if(cpm.evaluateText(input) == CommandType.EXIT) {
-					justExited = true;
-					initializeRxComms();
-				}
-			
 			} else {
-					
+				
 				int choice = 0;
 					
 				try {
@@ -113,32 +116,32 @@ public class LiteMessage {
 				//Message Somebody
 				case 0:
 					cMod.clearConnections();
+					cMod.clearServerSocket();
 					cMod = new MessagingControlModule(display, ctd, console, connectionMan, cMan);
 					cMod.startInitiateMessageLogic();
 					break;
 			
-				//Receive Messages
-				case 1:
-					cMod.clearConnections();
-					cMod = new MessagingControlModule(display, ctd, console, connectionMan, cMan);
-					cMod.startReceiveMessageLogic();
-					break;
-			
 				//Change settings
-				case 2:
+				case 1:
+					//We'll close any listening ports so that nobody can start chatting
+					//with us while we are configuring settings.
+					cMod.clearConnections();
+					cMod.clearServerSocket();
 					sMod.configSettingsFromConsole(cMan);
 					break;
 				
 				//Exit
-				case 3:
+				case 2:
 					System.exit(0);
-			
 				}
 			}
 		
 		}
 	}
 	
+	/**
+	 * Creates a new MessagingControl module, and then starts listening for incoming chat sessions
+	 */
 	private static void initializeRxComms() {
 		cMod = new MessagingControlModule(display, ctd, console, connectionMan, cMan);
 		rmh = new ConsoleReceiveMessageHandler(cMod);

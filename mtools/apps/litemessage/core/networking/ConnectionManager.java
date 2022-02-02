@@ -61,6 +61,8 @@ public class ConnectionManager {
 	private int firstDynamicPort;
 	private int lastDynamicPort;
 	
+	private ServerSocket serverSocket;
+	
 	ArrayList<Socket> sockets;
 	
 	public ConnectionManager() {
@@ -111,7 +113,7 @@ public class ConnectionManager {
 			initInputStream.close();
 			initSocket.close();
 		} catch(Exception e) {
-			System.err.println("Error while negotiating connection.");
+			System.err.println("ConnectionManager: Error while negotiating connection.");
 			e.printStackTrace();
 			return null;
 		}
@@ -130,27 +132,27 @@ public class ConnectionManager {
 	 * @throws IOException
 	 */
 	public StreamBundle waitForSessionNegotiation() throws IOException {
-		ServerSocket tempServerSocket = new ServerSocket(initPort);
-		Socket initSocket = tempServerSocket.accept();
-		tempServerSocket.close();
+		serverSocket = new ServerSocket(initPort);
+		Socket initSocket = serverSocket.accept();
+		serverSocket.close();
 		
 		DataOutputStream initStream = new DataOutputStream(initSocket.getOutputStream());
 		
-		tempServerSocket = createUsableServerSocket();
+		serverSocket = createUsableServerSocket();
 		
 		try {
-			initStream.writeUTF(String.valueOf(tempServerSocket.getLocalPort()));
+			initStream.writeUTF(String.valueOf(serverSocket.getLocalPort()));
 			initStream.close();
 			initSocket.close();
 		} catch(Exception e) {
-			System.err.println("Error while negotiating connection.");
+			System.err.println("ConnectionManager: Error while negotiating connection.");
 			e.printStackTrace();
-			tempServerSocket.close();
+			serverSocket.close();
 			return null;
 		}
 		
-		Socket dataSocket = tempServerSocket.accept();
-		tempServerSocket.close();
+		Socket dataSocket = serverSocket.accept();
+		serverSocket.close();
 		sockets.add(dataSocket);
 		return new StreamBundle(dataSocket);
 	}
@@ -272,6 +274,17 @@ public class ConnectionManager {
 	}
 	
 	/**
+	 * Closes the ServerSocket if it is waiting for a connection.
+	 * It will throw a SocketException if the ServerSocket is waiting for a connection.
+	 * It can also throw a NullPointerException if the ServerSocket wasn't initialized.
+	 * It can also throw an IOException if there are any other issues closing the ServerSocket.
+	 * @throws IOException
+	 */
+	public void closeServerSocket() throws IOException {
+		serverSocket.close();
+	}
+	
+	/**
 	 * for testing
 	 */
 	public void listServerSocketAvailability() {
@@ -286,8 +299,6 @@ public class ConnectionManager {
 				
 				newServerSocket = new ServerSocket(firstDynamicPort + portOffset);
 				newServerSocket.close();
-				
-				//System.out.println("Found port " + (STARTING_DYNAMIC_PORT + portOffset));
 			} catch (IOException e) {
 				System.out.println("Can't use " + (firstDynamicPort + portOffset));
 			}

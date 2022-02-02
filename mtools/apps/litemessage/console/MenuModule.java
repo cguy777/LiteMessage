@@ -74,9 +74,8 @@ public class MenuModule {
 	 */
 	public void displayMainMenu() {
 		menu.clearMenu();
-		menu.setBanner("Welcome to LiteMessage, " + displayName + ".  Please make a selection...");
+		menu.setBanner("Welcome to LiteMessage, " + displayName + ".");
 		menu.addMenuItem("Message Somebody");
-		menu.addMenuItem("Receive Messages");
 		menu.addMenuItem("Change Settings");
 		menu.addMenuItem("Exit");
 		menu.display();
