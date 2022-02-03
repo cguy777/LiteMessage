@@ -45,6 +45,7 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 
 import mtools.apps.litemessage.core.Contact;
+import mtools.apps.litemessage.core.Settings;
 
 public class ContactManager {
 	private ArrayList<Contact> contacts;
