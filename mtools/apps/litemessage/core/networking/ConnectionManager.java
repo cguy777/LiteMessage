@@ -61,6 +61,7 @@ public class ConnectionManager {
 	public static final int CONTROL_PORT = 5676;
 	public static final int FIRST_DYNAMIC_PORT = 49152;
 	public static final int LAST_DYNAMIC_PORT = 65535;
+	public static final int DEFAULT_NEGOTIATION_TIMEOUT = 2000;
 	
 	private int controlPort;
 	private int firstDynamicPort;
@@ -78,7 +79,7 @@ public class ConnectionManager {
 		controlPort = CONTROL_PORT;
 		firstDynamicPort = FIRST_DYNAMIC_PORT;
 		lastDynamicPort = LAST_DYNAMIC_PORT;
-		negotiationTimeout = 1000;
+		negotiationTimeout = DEFAULT_NEGOTIATION_TIMEOUT;
 		outgoingPortEnforcement = false;
 	}
 	
@@ -86,37 +87,56 @@ public class ConnectionManager {
 	 * Changes the port that the dynamic sockets are negotiated over.  Default is 5676.
 	 * @param newPortNumber
 	 */
-	public void setControlPort(int newPortNumber) {
+	public void setControlPort(int newPortNumber) throws PortRangeException {
+		if(newPortNumber < 1 || newPortNumber > 65535)
+			throw new PortRangeException("Specified ports must be between 1 and 65535.");
+		
+		if(newPortNumber >= firstDynamicPort && newPortNumber <= lastDynamicPort)
+			throw new PortRangeException("Control port cannot be within the range of data ports.");
+			
 		controlPort = newPortNumber;
 	}
 	
 	/**
 	 * Changes the port range that the dynamic sockets can be created over.  Default values
-	 * are the IANA ephemeral port range (49152-65535).
+	 * are the IANA ephemeral port range (49152-65535).  Throws a {@link PortRangeException}
+	 * if low port is greater than high port, or if low Port is less than 1, or high
+	 * port is greater than 65535.
 	 * @param lowPort
 	 * @param highPort
+	 * @throws PortRangeException
 	 */
-	public void setDynamicPortRange(int lowPort, int highPort) {
+	public void setDynamicPortRange(int lowPort, int highPort) throws PortRangeException {
+		if(lowPort > highPort)
+			throw new PortRangeException("Specified low port cannot be greater than specified high port.");
+		
+		if(lowPort < 1 || highPort > 65535)
+			throw new PortRangeException("Specified ports must be between 1 and 65535.");
+		
+		if(controlPort >= lowPort && controlPort <= highPort)
+			throw new PortRangeException("Control port cannot be within the range of data ports.");
+		
 		firstDynamicPort = lowPort;
 		lastDynamicPort = highPort;
 	}
 	
 	/**
 	 * Sets the amount of time, in milliseconds, that the ServerSocket used during port negotiation
-	 * will take to timeout.  Default is 1000 milliseconds.  A value of zero means that it will never
+	 * will take to timeout.  Default is 2000 milliseconds.  A value of zero means that it will never
 	 * timeout.  This is not recommended as the Thread could hang forever waiting for negotiation to
 	 * finish.
 	 * @param time
 	 */
-	public void setNegotiationTimeout(int time) {
-		negotiationTimeout = time;
+	public void setNegotiationTimeout(int milliseconds) {
+		negotiationTimeout = milliseconds;
 	}
 	
 	/**
 	 * Attempts to initiate a connection with another device by reaching out and connecting
-	 * on a predetermined port.  The default port is 5676.  It will then negotiate for
-	 * a new port that is, by default, within the IANA ephemeral port range (49152-65535).
-	 * A {@link StreamBundle} is then returned based off of this new socket connection.
+	 * on a predetermined port.  The default port is 5676 (This port is configurable).
+	 * It will then negotiate for a new port that is, by default, within the IANA ephemeral
+	 * port range (49152-65535, this range is configurable).  A {@link StreamBundle} is
+	 * then returned based off of this new socket connection.
 	 * @param ipAddress
 	 * @return
 	 * @throws IOException
@@ -154,8 +174,8 @@ public class ConnectionManager {
 	/**
 	 * Waits for a connection on a predetermined port.  The default port is 5676.  It will
 	 * then negotiate for a new port that is, by default, within the IANA ephemeral port
-	 * range (49152-65535). A {@link StreamBundle} is then returned based off of this new
-	 * socket connection.
+	 * range (49152-65535). This range is configurable.  A {@link StreamBundle} is then
+	 * returned based off of this new socket connection.
 	 * @return
 	 * @throws IOException
 	 */
