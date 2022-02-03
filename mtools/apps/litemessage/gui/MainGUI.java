@@ -61,6 +61,7 @@ import mtools.apps.litemessage.control.logic.ContactManager;
 import mtools.apps.litemessage.control.logic.SettingsModule;
 import mtools.apps.litemessage.core.Contact;
 import mtools.apps.litemessage.core.networking.ConnectionManager;
+import mtools.apps.litemessage.core.networking.PortRangeException;
 import mtools.io.MConsole;
 
 public class MainGUI extends JFrame {
@@ -78,20 +79,28 @@ public class MainGUI extends JFrame {
 	public JButton contactSomebodyNew;
 	
 	public MainGUI() {
+		
+		try {
+			UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
+		} catch (Exception e) {}
+		
 		sMod = new SettingsModule(new MConsole(), false);
 		
 		cMan = new ContactManager(sMod.getSettings());
 		cMan.loadContacts();
 		
 		connectionMan = new ConnectionManager();
-		connectionMan.setControlPort(sMod.getSettings().controlPort);
-		connectionMan.setDynamicPortRange(sMod.getSettings().dataPort, sMod.getSettings().dataPort);
-		connectionMan.setOutgoingPortEnforcement(true);
 		
 		try {
-			UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
-		} catch (Exception e) {
+			connectionMan.setControlPort(sMod.getSettings().controlPort);
+			connectionMan.setDynamicPortRange(sMod.getSettings().dataPort, sMod.getSettings().dataPort);
+		} catch(PortRangeException pre) {
+			JOptionPane.showMessageDialog(null, pre.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+			pre.printStackTrace();
+			System.exit(-1);
 		}
+		
+		connectionMan.setOutgoingPortEnforcement(true);
 		
 		buildGUI();
 		
