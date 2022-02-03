@@ -55,7 +55,7 @@ import mtools.apps.litemessage.core.Contact;
 public class Settings {
 	public Contact thisUser;
 	public boolean dynamicUIDUpdates;
-	public int initPort;
+	public int controlPort;
 	public int dataPort;
 	
 	/**
@@ -72,7 +72,7 @@ public class Settings {
 	public void setToDefault() {
 		thisUser.setToDefault();
 		dynamicUIDUpdates = false;
-		initPort = 5676;
+		controlPort = 5676;
 		dataPort = 49212;
 	}
 }
