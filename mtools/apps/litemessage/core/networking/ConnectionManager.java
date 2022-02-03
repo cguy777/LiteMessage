@@ -42,6 +42,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 
@@ -57,13 +58,15 @@ public class ConnectionManager {
 	 * This is the port on which sessions are initiated by default, and then is handed
 	 * over to one of the dynamic ports.
 	 */
-	public static final int INIT_STANDARD_PORT = 5676;
+	public static final int CONTROL_PORT = 5676;
 	public static final int FIRST_DYNAMIC_PORT = 49152;
 	public static final int LAST_DYNAMIC_PORT = 65535;
 	
-	private int initPort;
+	private int controlPort;
 	private int firstDynamicPort;
 	private int lastDynamicPort;
+	private int negotiationTimeout;
+	private boolean outgoingPortEnforcement;
 	
 	private ServerSocket serverSocket;
 	
@@ -72,17 +75,19 @@ public class ConnectionManager {
 	public ConnectionManager() {
 		sockets = new ArrayList<Socket>();
 		
-		initPort = INIT_STANDARD_PORT;
+		controlPort = CONTROL_PORT;
 		firstDynamicPort = FIRST_DYNAMIC_PORT;
 		lastDynamicPort = LAST_DYNAMIC_PORT;
+		negotiationTimeout = 1000;
+		outgoingPortEnforcement = false;
 	}
 	
 	/**
 	 * Changes the port that the dynamic sockets are negotiated over.  Default is 5676.
 	 * @param newPortNumber
 	 */
-	public void setStandardPort(int newPortNumber) {
-		initPort = newPortNumber;
+	public void setControlPort(int newPortNumber) {
+		controlPort = newPortNumber;
 	}
 	
 	/**
@@ -97,6 +102,17 @@ public class ConnectionManager {
 	}
 	
 	/**
+	 * Sets the amount of time, in milliseconds, that the ServerSocket used during port negotiation
+	 * will take to timeout.  Default is 1000 milliseconds.  A value of zero means that it will never
+	 * timeout.  This is not recommended as the Thread could hang forever waiting for negotiation to
+	 * finish.
+	 * @param time
+	 */
+	public void setNegotiationTimeout(int time) {
+		negotiationTimeout = time;
+	}
+	
+	/**
 	 * Attempts to initiate a connection with another device by reaching out and connecting
 	 * on a predetermined port.  The default port is 5676.  It will then negotiate for
 	 * a new port that is, by default, within the IANA ephemeral port range (49152-65535).
@@ -106,7 +122,7 @@ public class ConnectionManager {
 	 * @throws IOException
 	 */
 	public StreamBundle initSessionNegotiation(InetAddress ipAddress) throws IOException {
-		Socket initSocket = new Socket(ipAddress, initPort);
+		Socket initSocket = new Socket(ipAddress, controlPort);
 		DataInputStream initInputStream = new DataInputStream(initSocket.getInputStream());
 		
 		String port = initInputStream.readUTF();
@@ -116,6 +132,14 @@ public class ConnectionManager {
 			portNumber = Integer.parseInt(port);
 			initInputStream.close();
 			initSocket.close();
+			
+			//If enabled, and negotiated port is outside of set range
+			//Then throw an exception.
+			if(outgoingPortEnforcement) {
+				if(portNumber < firstDynamicPort || portNumber > lastDynamicPort) {
+					throw new Exception("Negotiated port was outside of acceptable configured ports.");
+				}
+			}
 		} catch(Exception e) {
 			System.err.println("ConnectionManager: Error while negotiating connection.");
 			e.printStackTrace();
@@ -136,7 +160,7 @@ public class ConnectionManager {
 	 * @throws IOException
 	 */
 	public StreamBundle waitForSessionNegotiation() throws IOException {
-		serverSocket = new ServerSocket(initPort);
+		serverSocket = new ServerSocket(controlPort);
 		Socket initSocket = serverSocket.accept();
 		serverSocket.close();
 		
@@ -155,7 +179,18 @@ public class ConnectionManager {
 			return null;
 		}
 		
-		Socket dataSocket = serverSocket.accept();
+		serverSocket.setSoTimeout(negotiationTimeout);
+		Socket dataSocket = null;
+		
+		try {
+			dataSocket = serverSocket.accept();
+		} catch(SocketTimeoutException ste) {
+			System.err.println("ConnectionManager: Error while negotiating connection.");
+			ste.printStackTrace();
+			serverSocket.close();
+			return null;
+		}
+		
 		serverSocket.close();
 		sockets.add(dataSocket);
 		return new StreamBundle(dataSocket);
@@ -311,8 +346,24 @@ public class ConnectionManager {
 		}
 	}
 	
-	public static void main(String[]args) throws UnknownHostException, IOException {
-		ConnectionManager cm = new ConnectionManager();
-		cm.listServerSocketAvailability();
+	/**
+	 * Determines if an outgoing connection is limited to ports
+	 * within the set dynamic port range.  By default, the dynamic
+	 * port range only limits incoming connections; it does not
+	 * limit negotiated outgoing connections.  Setting this to
+	 * true will enforce the dynamic port range on outgoing
+	 * connections as well.  Could cause exceptions to be thrown
+	 * if it is set and a port requested is outside of the enforced
+	 * range.
+	 * @param onlyListed
+	 */
+	public void setOutgoingPortEnforcement(boolean portEnforcement) {
+		outgoingPortEnforcement = portEnforcement;
 	}
+	
+	/*
+	public static void main(String[]args) throws UnknownHostException, IOException {
+	
+	}
+	*/
 }
