@@ -31,6 +31,11 @@ public class TestServerMessagingControlModule extends MessagingControlModule {
 			return;
 		}
 		
+		//If null, something failed.  Need to exit and try again.
+		if(sBundle == null) {
+			return;
+		}
+		
 		try {
 			//Grab the info about the other user.
 			parseOtherUserData(sBundle.readUTFData());
