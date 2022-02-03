@@ -66,7 +66,7 @@ public class LiteMessageTestServer {
 		//Main control loop
 		while(true) {
 			
-			if(!connectionMan.isLocalPortUsable(ConnectionManager.INIT_STANDARD_PORT)) {
+			if(!connectionMan.isLocalPortUsable(ConnectionManager.CONTROL_PORT)) {
 				try {
 					Thread.sleep(1000);
 				} catch (InterruptedException e) {}
