@@ -109,7 +109,7 @@ public class SettingsModule {
 			settings.dynamicUIDUpdates = dUIDUpdate;
 			
 			//Port info
-			settings.initPort = Integer.parseInt(bReader.readLine());
+			settings.controlPort = Integer.parseInt(bReader.readLine());
 			settings.dataPort = Integer.parseInt(bReader.readLine());
 			
 			//Close readers
@@ -150,7 +150,7 @@ public class SettingsModule {
 			}
 			bWriter.newLine();
 			
-			bWriter.write(String.valueOf(settings.initPort));
+			bWriter.write(String.valueOf(settings.controlPort));
 			bWriter.newLine();
 			bWriter.write(String.valueOf(settings.dataPort));
 			
