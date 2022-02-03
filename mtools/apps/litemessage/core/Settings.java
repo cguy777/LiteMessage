@@ -34,9 +34,7 @@
  * IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package mtools.apps.litemessage.control.logic;
-
-import mtools.apps.litemessage.core.Contact;
+package mtools.apps.litemessage.core;
 
 /**
  * A class just to store settings.  {@link Contact} thisUser is a contact of this client.
