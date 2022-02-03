@@ -39,6 +39,7 @@ package mtools.apps.litemessage.gui;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -70,7 +71,7 @@ public class MainGUI extends JFrame {
 	public ConnectionManager connectionMan;
 	
 	public JList<String> contactList;
-	public JScrollPane contactScroll;	
+	public JScrollPane contactScroll;
 	public JPanel mainPanel;
 	public JPanel lowerPanel;
 	public JButton messageButton;
@@ -83,6 +84,9 @@ public class MainGUI extends JFrame {
 		cMan.loadContacts();
 		
 		connectionMan = new ConnectionManager();
+		connectionMan.setControlPort(sMod.getSettings().controlPort);
+		connectionMan.setDynamicPortRange(sMod.getSettings().dataPort, sMod.getSettings().dataPort);
+		connectionMan.setOutgoingPortEnforcement(true);
 		
 		try {
 			UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
@@ -130,7 +134,8 @@ public class MainGUI extends JFrame {
 		mainPanel.add(contactScroll, BorderLayout.CENTER);
 		
 		//Lower panel
-		lowerPanel = new JPanel(new BorderLayout(5, 5));
+		lowerPanel = new JPanel(new GridLayout(1, 2, 10, 10));
+		lowerPanel.setSize(0, 30);
 		mainPanel.add(lowerPanel, BorderLayout.SOUTH);
 				
 		//Connect To Button
