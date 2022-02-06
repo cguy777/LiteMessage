@@ -130,16 +130,16 @@ public class SettingsGUI extends JFrame {
 		advancedSettings.add(controlPortLabel);
 		controlPortField = new JTextField(String.valueOf(sMod.getSettings().controlPort), 0);
 		controlPortField.setMaximumSize(new Dimension(30, 30));
-		controlPortField.setToolTipText("The port that control and negotiation data is received on. Change equires program restart.");
+		controlPortField.setToolTipText("The port that control and negotiation data is received on. Change requires program restart.");
 		advancedSettings.add(controlPortField);
 		
 		dataPortLabel = new JLabel("Data Port");
 		dataPortLabel.setHorizontalAlignment(SwingConstants.RIGHT);
-		dataPortLabel.setToolTipText("The port that chat messages are received on.");
+		dataPortLabel.setToolTipText("The port that chat messages are received on. Change requires program restart.");
 		advancedSettings.add(dataPortLabel);
 		dataPortField = new JTextField(String.valueOf(sMod.getSettings().dataPort), 0);
 		dataPortField.setMaximumSize(new Dimension(30, 30));
-		dataPortField.setToolTipText("The port that chat messages are received on.");
+		dataPortField.setToolTipText("The port that chat messages are received on. Change requires program restart.");
 		advancedSettings.add(dataPortField);
 		
 		
