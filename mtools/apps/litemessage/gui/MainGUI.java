@@ -93,7 +93,11 @@ public class MainGUI extends JFrame {
 		
 		try {
 			connectionMan.setControlPort(sMod.getSettings().controlPort);
-			connectionMan.setDynamicPortRange(sMod.getSettings().dataPort, sMod.getSettings().dataPort);
+			
+			if(!sMod.getSettings().randomDataPorts) {
+				connectionMan.setDynamicPortRange(sMod.getSettings().dataPort, sMod.getSettings().dataPort);
+			}
+		
 		} catch(PortRangeException pre) {
 			JOptionPane.showMessageDialog(null, pre.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
 			pre.printStackTrace();
