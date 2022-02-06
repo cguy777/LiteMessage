@@ -37,6 +37,8 @@
 package mtools.apps.litemessage;
 import java.io.IOException;
 
+import javax.swing.JOptionPane;
+
 import mtools.apps.litemessage.console.ConsoleReceiveMessageHandler;
 import mtools.apps.litemessage.console.ConsoleTextDisplay;
 import mtools.apps.litemessage.console.ConsoleTextInput;
@@ -48,6 +50,7 @@ import mtools.apps.litemessage.control.logic.MessagingControlModule;
 import mtools.apps.litemessage.control.logic.SettingsModule;
 import mtools.apps.litemessage.core.MessagingState;
 import mtools.apps.litemessage.core.networking.ConnectionManager;
+import mtools.apps.litemessage.core.networking.PortRangeException;
 import mtools.io.*;
 
 public class LiteMessage {
@@ -70,6 +73,21 @@ public class LiteMessage {
 		SettingsModule sMod = new SettingsModule(console, true);
 		MenuModule menuMod = new MenuModule(console, menu, sMod.getSettings().thisUser.getName());
 		CommandParseModule cpm = new CommandParseModule();
+		
+		try {
+			connectionMan.setControlPort(sMod.getSettings().controlPort);
+			
+			if(!sMod.getSettings().randomDataPorts) {
+				connectionMan.setDynamicPortRange(sMod.getSettings().dataPort, sMod.getSettings().dataPort);
+			}
+		
+		} catch(PortRangeException pre) {
+			JOptionPane.showMessageDialog(null, pre.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+			pre.printStackTrace();
+			System.exit(-1);
+		}
+		
+		connectionMan.setOutgoingPortEnforcement(true);
 		
 		cMan = new ContactManager(sMod.getSettings());
 		cMan.loadContacts();
