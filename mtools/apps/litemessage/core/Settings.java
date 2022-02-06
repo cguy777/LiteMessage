@@ -55,6 +55,7 @@ public class Settings {
 	public boolean dynamicUIDUpdates;
 	public int controlPort;
 	public int dataPort;
+	public boolean randomDataPorts;
 	
 	/**
 	 * Initializes and sets every to default.
@@ -72,5 +73,6 @@ public class Settings {
 		dynamicUIDUpdates = false;
 		controlPort = 5676;
 		dataPort = 49212;
+		randomDataPorts = false;
 	}
 }
