@@ -71,7 +71,7 @@ public class ConnectionManager {
 	
 	private ServerSocket serverSocket;
 	
-	ArrayList<Socket> sockets;
+	private ArrayList<Socket> sockets;
 	
 	public ConnectionManager() {
 		sockets = new ArrayList<Socket>();
@@ -165,7 +165,6 @@ public class ConnectionManager {
 			e.printStackTrace();
 			return null;
 		}
-		
 		Socket dataSocket = new Socket(ipAddress, portNumber);
 		sockets.add(dataSocket);
 		return new StreamBundle(dataSocket);
@@ -173,7 +172,7 @@ public class ConnectionManager {
 	
 	/**
 	 * Waits for a connection on a predetermined port.  The default port is 5676.  It will
-	 * then negotiate for a new port that is, by default, within the IANA ephemeral port
+	 * then negotiate for a random new port that is, by default, within the IANA ephemeral port
 	 * range (49152-65535). This range is configurable.  A {@link StreamBundle} is then
 	 * returned based off of this new socket connection.
 	 * @return
@@ -268,33 +267,6 @@ public class ConnectionManager {
 	}
 	
 	/**
-	 * Searches through ephemeral/dynamic ports until an open one is available.  It then creates
-	 * and returns a server socket using that port.  Will return null if a usable port can't be found.
-	 * @return
-	 */
-	private ServerSocket createUsableServerSocket() {
-		ServerSocket newServerSocket = null;
-		
-		int portOffset = 0;
-		
-		while(newServerSocket == null) {
-			try {
-				if(firstDynamicPort + portOffset > lastDynamicPort)
-					return null;
-				
-				newServerSocket = new ServerSocket(firstDynamicPort + portOffset);
-
-			} catch (IOException e) {
-				portOffset++;
-			}
-		}
-		
-		//Re-implement commented line below to a log
-		//System.out.println("Found port " + (firstDynamicPort + portOffset));
-		return newServerSocket;
-	}
-	
-	/**
 	 * Closes the socket that is referenced from the IP address, and then removes it from the 
 	 * active socket array list.
 	 * @param remoteIPAddress
@@ -381,9 +353,58 @@ public class ConnectionManager {
 		outgoingPortEnforcement = portEnforcement;
 	}
 	
-	/*
-	public static void main(String[]args) throws UnknownHostException, IOException {
+	/**
+	 * Randomly searches through ephemeral/dynamic ports until an open one is available.  It then creates
+	 * and returns a server socket using that port.  Will return null if no usable ports are available.
+	 * @return
+	 */
+	private ServerSocket createUsableServerSocket() {
+		
+		ServerSocket newServerSocket = null;
+		int startingPort = selectRandomStartingPort();
+		int hopefulPort = startingPort;
+		boolean returnedToFirst = false;
+		
+		while(newServerSocket == null) {
+			try {
+				
+				newServerSocket = new ServerSocket(hopefulPort);
+
+			} catch (IOException e) {
+				
+				if(returnedToFirst) {
+					if(hopefulPort == startingPort) {
+						return null;
+					} else {
+						hopefulPort++;
+					}
+				} else {
+					if(hopefulPort >= lastDynamicPort) {
+						hopefulPort = firstDynamicPort;
+						returnedToFirst = true;
+					} else {
+						hopefulPort++;
+					}
+				}
+			}
+		}
+		
+		return newServerSocket;
+	}
 	
+	private int selectRandomStartingPort() {
+		int portRangeSize = lastDynamicPort - firstDynamicPort;
+		
+		double rand = Math.random();
+		rand = rand * portRangeSize;
+		
+		int port = (int) (firstDynamicPort + Math.round(rand));
+		
+		return port;
+	}	
+	
+	/*
+	public static void main(String[]args) throws UnknownHostException, IOException, PortRangeException {
 	}
 	*/
 }
