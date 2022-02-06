@@ -75,6 +75,9 @@ public class SettingsGUI extends JFrame {
 	JLabel controlPortLabel;
 	JLabel dataPortLabel;
 	
+	JLabel randomPortsLabel;
+	JCheckBox randomPortsCB;
+	
 	JButton saveButton;
 	JButton cancelButton;
 	
@@ -83,7 +86,7 @@ public class SettingsGUI extends JFrame {
 		
 		//Main window frame
 		this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		this.setSize(235, 175);
+		this.setSize(245, 200);
 		this.setLayout(new BorderLayout(10, 10));
 		this.setResizable(true);
 		this.setTitle("LiteMessage - Settings");
@@ -99,7 +102,7 @@ public class SettingsGUI extends JFrame {
 		standardSettings.setLayout(null);
 		tabbedPane.addTab("Standard", standardSettings);
 		advancedSettings = new JPanel();
-		advancedSettings.setLayout(new GridLayout(2, 2, 10, 10));
+		advancedSettings.setLayout(new GridLayout(3, 2, 10, 10));
 		tabbedPane.addTab("Advanced", advancedSettings);
 		
 		//Standard Settings
@@ -142,6 +145,18 @@ public class SettingsGUI extends JFrame {
 		dataPortField.setToolTipText("The port that chat messages are received on. Change requires program restart.");
 		advancedSettings.add(dataPortField);
 		
+		randomPortsLabel = new JLabel("Random Data Ports");
+		randomPortsLabel.setToolTipText("Randomizes the ports that messages are sent and received over. Change requires program restart.");
+		randomPortsLabel.setHorizontalAlignment(SwingConstants.RIGHT);
+		advancedSettings.add(randomPortsLabel);
+		randomPortsCB = new JCheckBox();
+		randomPortsCB.setToolTipText("Randomizes the ports that messages are sent and received over. Change requires program restart.");
+		randomPortsCB.addActionListener(new PortsCheckboxAction());
+		if(sMod.getSettings().randomDataPorts) {
+			randomPortsCB.doClick();
+		}
+		advancedSettings.add(randomPortsCB);
+		
 		
 		//Lower panel
 		lowerPanel = new JPanel(new GridLayout(1, 2, 10, 10));
@@ -168,7 +183,19 @@ public class SettingsGUI extends JFrame {
 		this.setVisible(true);
 	}
 	
-	
+	private class PortsCheckboxAction implements ActionListener {
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			if(randomPortsCB.isSelected()) {
+				dataPortField.setEnabled(false);
+			} else {
+				dataPortField.setEnabled(true);
+				dataPortField.setText(String.valueOf(sMod.getSettings().dataPort));
+			}
+		}
+		
+	}
 	
 	private class SaveAction implements ActionListener {
 
@@ -211,7 +238,13 @@ public class SettingsGUI extends JFrame {
 			sMod.getSettings().thisUser.setName(displayName.getText());
 			sMod.getSettings().dynamicUIDUpdates = dynamicUID.isSelected();
 			sMod.getSettings().controlPort = controlPort;
-			sMod.getSettings().dataPort = dataPort;
+			
+			//If unchecked, we want to update it.  Otherwise, no update.
+			if(!randomPortsCB.isSelected()) {
+				sMod.getSettings().dataPort = dataPort;
+			}
+			
+			sMod.getSettings().randomDataPorts = randomPortsCB.isSelected();
 			sMod.writeSettingsToFile();
 			
 			frame.dispose();
