@@ -157,7 +157,7 @@ public class ConnectionManager {
 			//Then throw an exception.
 			if(outgoingPortEnforcement) {
 				if(portNumber < firstDynamicPort || portNumber > lastDynamicPort) {
-					throw new Exception("Negotiated port was outside of acceptable configured ports.");
+					throw new PortRangeException("Negotiated port was outside of acceptable configured ports.");
 				}
 			}
 		} catch(Exception e) {
