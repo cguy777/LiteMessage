@@ -25,3 +25,5 @@
 /MainMenuBar$RemoveContactAction.class
 /MessagingGUI$EnterKeyAction.class
 /SessionInfo.class
+/SettingsGUI$portsCheckboxAction.class
+/SettingsGUI$PortsCheckboxAction.class
