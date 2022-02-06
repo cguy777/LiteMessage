@@ -56,7 +56,6 @@ public class SettingsModule {
 	private MDisplay display;
 	private MMenu menu;
 	private Settings settings;
-	private boolean dUIDUpdate;
 	private boolean isDefault;
 	private boolean isConsoleBased;
 	
@@ -75,6 +74,9 @@ public class SettingsModule {
 		
 		menu.addMenuItem("Change display name");
 		menu.addMenuItem("Enable/disable dynamic UID updates");
+		menu.addMenuItem("Change control port");
+		menu.addMenuItem("Change data port");
+		menu.addMenuItem("Randomize data port");
 		menu.addMenuItem("Delete Contact");
 		menu.addMenuItem("Go back");
 		
@@ -101,6 +103,7 @@ public class SettingsModule {
 			settings.thisUser.setUID(bReader.readLine());
 			
 			//Dynamic UID update
+			boolean dUIDUpdate;
 			String uidup = bReader.readLine();
 			if(uidup.matches("true")) {
 				dUIDUpdate = true;
@@ -112,6 +115,16 @@ public class SettingsModule {
 			//Port info
 			settings.controlPort = Integer.parseInt(bReader.readLine());
 			settings.dataPort = Integer.parseInt(bReader.readLine());
+			
+			//Random Data Ports
+			String randomDataPorts = bReader.readLine();
+			boolean randDP;
+			if(randomDataPorts.matches("true")) {
+				randDP = true;
+			} else {
+				randDP = false;
+			}
+			settings.randomDataPorts = randDP;
 			
 			//Close readers
 			bReader.close();
@@ -154,6 +167,14 @@ public class SettingsModule {
 			bWriter.write(String.valueOf(settings.controlPort));
 			bWriter.newLine();
 			bWriter.write(String.valueOf(settings.dataPort));
+			
+			bWriter.newLine();
+			
+			if(settings.randomDataPorts == true) {
+				bWriter.write("true");
+			} else {
+				bWriter.write("false");
+			}
 			
 			bWriter.flush();
 			bWriter.close();
@@ -227,9 +248,83 @@ public class SettingsModule {
 				settings.dynamicUIDUpdates = false;
 			}
 			break;
-		
-		//Remove Contact
+			
+		//Change Control Port
 		case 2:
+			display.clear();
+			display.setBanner("Change control port");
+			display.addLine("Changes the port over which chat sessions are established.");
+			display.addLine("The default port is 5676.  The currently configured port is " + settings.controlPort + ".");
+			display.addLine("Change requires program restart.");
+			display.addLine("");
+			display.display();
+			System.out.print("New control port > ");
+			
+			int controlPort = 0;
+			
+			try {
+				controlPort = console.getInputInt();
+			} catch(Exception e) {
+				return;
+			}
+			
+			settings.controlPort = controlPort;
+			break;
+			
+		//Change Data Port
+		case 3:
+			display.clear();
+			display.setBanner("Change data port");
+			display.addLine("Changes the port over which chat messages are received.");
+			display.addLine("The default port is 49212.  The currently configured port is " + settings.dataPort + ".");
+			display.addLine("Change requires program restart.");
+			display.addLine("");
+			display.display();
+			System.out.print("New data port > ");
+			
+			int dataPort = 0;
+			
+			try {
+				dataPort = console.getInputInt();
+			} catch(Exception e) {
+				return;
+			}
+			
+			settings.dataPort = dataPort;
+			break;
+			
+		//Randomize data port
+		case 4:
+			display.clear();
+			display.setBanner("Randomize data port");
+			display.addLine("Determines whether or not to disregard the configured data port and negotiate for a random port instead.");
+			display.addLine("The default setting is false.  It is currently set to " + settings.randomDataPorts + ".");
+			display.addLine("Change requires program restart.");
+			display.addLine("");
+			display.addLine("0. True");
+			display.addLine("1. False");
+			display.addLine("");
+			display.display();
+			System.out.print("> ");
+			
+			int rdp = 0;
+			
+			try {
+				rdp = console.getInputInt();
+			} catch(Exception e) {
+				return;
+			}
+			
+			if(rdp == 0) {
+				settings.randomDataPorts = true;
+			} else if(rdp == 1) {
+				settings.randomDataPorts = false;
+			}
+			
+			break;
+			
+		//Remove Contact
+		case 5:
 			display.clear();
 			System.out.println("Delete Contact\n");
 			for(int i = 0; i<cm.getNumContacts(); i++) {
@@ -253,7 +348,7 @@ public class SettingsModule {
 			break;
 			
 		//Go back to the main menu
-		case 3:
+		case 6:
 			break;
 		}
 		
