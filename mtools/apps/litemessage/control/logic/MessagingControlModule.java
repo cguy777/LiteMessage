@@ -140,7 +140,11 @@ public class MessagingControlModule extends Thread {
 			return;
 		}
 		
-		
+		if(sBundle == null) {
+			System.err.println("Made contact with peer, but could not negotiate a connection.");
+			displayObject.tearDown();
+			return;
+		}
 		
 		try {
 			//Send the info about ourselves
@@ -158,60 +162,6 @@ public class MessagingControlModule extends Thread {
 		
 		display.setBanner("Connected with " + otherUser.getName());
 		display.display();
-		
-		mState.setMessagingState(MessagingState.CURRENTLY_MESSAGING);
-		
-		cMan.addContact(otherUser);
-	}
-	
-	
-	/**
-	 * To be called only from the GUI variant.
-	 * Initiates a messaging session with another client.  The other client
-	 * has to be waiting for connections first.  This then constructs the {@link TransmitModule}
-	 * and {@link ReceiveModule}
-	 * 
-	 * @param contact the contact we want to make a connection with
-	 */
-	public void startInitiateMessageLogicFromGUI(Contact contact) {
-		InetAddress address = null;
-		
-		try {
-			address = contact.getIPAddress();
-		} catch (Exception e) {
-			System.err.println("Could not establish a connection.");
-			JOptionPane.showMessageDialog(null, "Could not establish connection", "Error", JOptionPane.ERROR_MESSAGE);
-			displayObject.tearDown();
-			return;
-		}
-
-		displayObject.println("Making Connection...");
-		
-		//We initiate the TransmitModule first, and it's constructor will
-		//reach out and let the other client know that we are attempting to connect
-		try {
-			sBundle = connectionMan.initSessionNegotiation(address);
-		} catch(Exception e) {
-			System.err.println("Could not establish a connection.");
-			JOptionPane.showMessageDialog(null, "Could not establish connection", "Error", JOptionPane.ERROR_MESSAGE);
-			displayObject.tearDown();
-			return;
-		}
-		
-		try {
-			//Send the info about ourselves
-			sBundle.writeUTFData(thisUser.getName() + "," + thisUser.getUID());
-			//Grab the info about the other user.
-			parseOtherUserData(sBundle.readUTFData());
-			otherUser.setIPAddress(sBundle.getSocket().getInetAddress());
-		} catch (IOException e) {
-			System.err.println("Had issue either sending our user info, or receiving their user info.");
-			e.printStackTrace();
-		}
-		
-		this.start();
-		
-		displayObject.println("Connected with " + otherUser.getName() + "\n");
 		
 		mState.setMessagingState(MessagingState.CURRENTLY_MESSAGING);
 		
@@ -247,6 +197,13 @@ public class MessagingControlModule extends Thread {
 		} catch(Exception e) {
 			System.err.println("Could not establish a connection.");
 			JOptionPane.showMessageDialog(null, "Could not establish connection", "Error", JOptionPane.ERROR_MESSAGE);
+			displayObject.tearDown();
+			return;
+		}
+		
+		if(sBundle == null) {
+			System.err.println("Made contact with peer, but could not negotiate a connection.");
+			JOptionPane.showMessageDialog(null, "Made contact with peer, but could not negotiate a connection.", "Error", JOptionPane.ERROR_MESSAGE);
 			displayObject.tearDown();
 			return;
 		}
