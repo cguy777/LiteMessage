@@ -64,7 +64,9 @@ public class LiteMessageTestServer {
 		
 		try {
 			connectionMan.setControlPort(sMod.getSettings().controlPort);
-			connectionMan.setDynamicPortRange(sMod.getSettings().dataPort, sMod.getSettings().dataPort);
+			if(!sMod.getSettings().randomDataPorts) {
+				connectionMan.setDynamicPortRange(sMod.getSettings().dataPort, sMod.getSettings().dataPort);
+			}
 		} catch(PortRangeException rpe) {
 			rpe.printStackTrace();
 		}
