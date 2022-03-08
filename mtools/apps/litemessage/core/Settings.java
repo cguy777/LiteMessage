@@ -73,6 +73,6 @@ public class Settings {
 		dynamicUIDUpdates = false;
 		controlPort = 5676;
 		dataPort = 49212;
-		randomDataPorts = false;
+		randomDataPorts = true;
 	}
 }
