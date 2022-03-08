@@ -90,8 +90,8 @@ public class TestServerMessagingControlModule extends MessagingControlModule {
 	}
 	
 	private void displayCurrentConnections() {
-		System.out.println("\n-------------------");
-		System.out.println("Current connections\n");
+		System.out.println("\n----------------------");
+		System.out.println("  Current connections\n");
 		
 		if(connectionMan.getNumOfConnections() > 0 ) {
 			

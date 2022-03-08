@@ -47,8 +47,7 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 
 /**
- * Used for keeping track of what connections are established and what
- * ports are being used
+ * Used for establishing connections and managing those connections.
  * @author Noah
  *
  */

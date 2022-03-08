@@ -258,6 +258,7 @@ public class MessagingControlModule extends Thread {
 		
 		display.setBanner("Connected with " + otherUser.getName());
 		display.display();
+		System.out.print("> ");
 		
 		mState.setMessagingState(MessagingState.CURRENTLY_MESSAGING);
 		cMan.addContact(otherUser);
