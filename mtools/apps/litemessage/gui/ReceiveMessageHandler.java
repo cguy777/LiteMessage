@@ -56,7 +56,7 @@ public class ReceiveMessageHandler extends Thread {
 	public void run() {
 		
 		if(!connectionMan.isLocalPortUsable(ConnectionManager.CONTROL_PORT)) {
-			JOptionPane.showMessageDialog(null, "The default initialization port is not available!  You cannot be contacted until available.", "Network Error", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(null, "The configured control port (" + ConnectionManager.CONTROL_PORT + ") is not available.  You cannot be contacted until otherwise!", "Network Error", JOptionPane.ERROR_MESSAGE);
 		}
 		
 		while(true) {
