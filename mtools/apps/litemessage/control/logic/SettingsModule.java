@@ -43,6 +43,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import javax.swing.JOptionPane;
 
+import mtools.apps.litemessage.AppInfo;
 import mtools.apps.litemessage.core.Settings;
 import mtools.io.*;
 
@@ -78,6 +79,7 @@ public class SettingsModule {
 		menu.addMenuItem("Change data port");
 		menu.addMenuItem("Randomize data port");
 		menu.addMenuItem("Delete Contact");
+		menu.addMenuItem("About");
 		menu.addMenuItem("Go back");
 		
 		isDefault = false;
@@ -347,8 +349,16 @@ public class SettingsModule {
 			
 			break;
 			
-		//Go back to the main menu
+		//About Information
 		case 6:
+			display.clear();
+			display.setBanner(AppInfo.getAboutInfoString());
+			display.addLine("Press enter to continue...");
+			display.display();
+			console.getInputString();
+			
+		//Go back to the main menu
+		case 7:
 			break;
 		}
 		

@@ -45,9 +45,15 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 
+import mtools.apps.litemessage.AppInfo;
 import mtools.apps.litemessage.control.logic.ContactManager;
 import mtools.apps.litemessage.control.logic.SettingsModule;
 
+/**
+ * The menu bar at the top of the main window
+ * @author Noah
+ *
+ */
 public class MainMenuBar extends JMenuBar {
 	MainGUI mGUI;
 	
@@ -125,7 +131,7 @@ public class MainMenuBar extends JMenuBar {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			JOptionPane.showMessageDialog(null, "LiteMessage 0.2.0\nCopyright (c) 2022 Noah McLean", "About", JOptionPane.INFORMATION_MESSAGE);
+			JOptionPane.showMessageDialog(null, AppInfo.getAboutInfoString(), "About", JOptionPane.INFORMATION_MESSAGE);
 		}
 	}
 }
