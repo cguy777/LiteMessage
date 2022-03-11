@@ -47,6 +47,11 @@ import java.util.ArrayList;
 import mtools.apps.litemessage.core.Contact;
 import mtools.apps.litemessage.core.Settings;
 
+/**
+ * Manages the contact system.  Creates, sorts, and deletes contacts.
+ * @author Noah
+ *
+ */
 public class ContactManager {
 	private ArrayList<Contact> contacts;
 	private Settings settings;
@@ -215,8 +220,10 @@ public class ContactManager {
 					return;
 				} else {
 					if(!contacts.get(i).getUID().matches(c.getUID())) {
-						System.err.println("This person may not be " + '"' + c.getName() + '"' + ".  Different identifier detected!!");
-						System.err.println("If the contact needs to be updated, or you'd like to ignore this in the future, please remove the contact, or enable dynamic UID updates.");
+						//System.err.println("This person may not be " + '"' + c.getName() + '"' + ".  Different identifier detected!!");
+						//System.err.println("If the contact needs to be updated, or you'd like to ignore this in the future, please remove the contact, or enable dynamic UID updates.");
+						
+						c.setUIDProblem(true);
 						return;
 					//If name and UID match, do nothing.  We already have it.
 					} else {

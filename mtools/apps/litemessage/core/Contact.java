@@ -49,6 +49,9 @@ public class Contact {
 	private InetAddress ipAddress;
 	private String uniqueID;
 	
+	//This value is not saved and is updated with every chat session.
+	private boolean UIDProblem;
+	
 	/**
 	 * Sets everything to their default values
 	 */
@@ -88,6 +91,11 @@ public class Contact {
 		name = "errnoname";
 		ipAddress = null;
 		uniqueID = "1234567";
+		UIDProblem = false;
+	}
+	
+	public void setUIDProblem(boolean isProblem) {
+		UIDProblem = isProblem;
 	}
 	
 	public String getName() {
@@ -100,5 +108,9 @@ public class Contact {
 	
 	public String getUID() {
 		return uniqueID;
+	}
+	
+	public boolean getUIDProblem() {
+		return UIDProblem;
 	}
 }

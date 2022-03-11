@@ -166,6 +166,12 @@ public class MessagingControlModule extends Thread {
 		mState.setMessagingState(MessagingState.CURRENTLY_MESSAGING);
 		
 		cMan.addContact(otherUser);
+		
+		//Checking for possibly fishy contact info.
+		if(otherUser.getUIDProblem()) {
+			System.err.println("This person may not be " + '"' + otherUser.getName() + '"' + ".  Different identifier detected!");
+			System.err.println("If the contact needs to be updated, or you'd like to ignore this in the future, please remove the contact, or enable dynamic UID updates.");
+		}
 	}
 	
 	/**
@@ -226,6 +232,12 @@ public class MessagingControlModule extends Thread {
 		mState.setMessagingState(MessagingState.CURRENTLY_MESSAGING);
 		
 		cMan.addContact(otherUser);
+		
+		//Checking for possibly fishy contact info.
+		if(otherUser.getUIDProblem()) {
+			JOptionPane.showMessageDialog(null, "This person may not be " + '"' + otherUser.getName() + '"' + ".  Different identifier detected!", "Warning", JOptionPane.WARNING_MESSAGE);
+			JOptionPane.showMessageDialog(null, "If the contact needs to be updated, or you'd like to ignore this in the future, please remove the contact, or enable dynamic UID updates.", "Information", JOptionPane.INFORMATION_MESSAGE);
+		}
 	}
 	
 	/**
@@ -292,12 +304,13 @@ public class MessagingControlModule extends Thread {
 		
 		mState.setMessagingState(MessagingState.CURRENTLY_MESSAGING);
 		cMan.addContact(otherUser);
-	}
-	
-	/**
-	 * Used for testing.
-	 */
-	
+		
+		//Checking for possibly fishy contact info.
+		if(otherUser.getUIDProblem()) {
+			JOptionPane.showMessageDialog(null, "This person may not be " + '"' + otherUser.getName() + '"' + ".  Different identifier detected!", "Warning", JOptionPane.WARNING_MESSAGE);
+			JOptionPane.showMessageDialog(null, "If the contact needs to be updated, or you'd like to ignore this in the future, please remove the contact, or enable dynamic UID updates.", "Information", JOptionPane.INFORMATION_MESSAGE);
+		}
+	}	
 	
 	/**
 	 * closes all of the sockets/connections.  However, it does
