@@ -64,7 +64,7 @@ public class LiteMessage {
 	static ContactManager cMan;
 	
 	public static void main(String[] args) {
-		display = new MDisplay("Messaging App", 5);
+		display = new MDisplay("LiteMessage", 5);
 		display.setDisplayReverse();
 		console = new ConsoleTextInput();
 		MMenu menu = new MMenu();
