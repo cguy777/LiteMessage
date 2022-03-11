@@ -162,7 +162,7 @@ public class LiteMessage {
 	 */
 	private static void initializeRxComms() {
 		cMod = new MessagingControlModule(display, ctd, console, connectionMan, cMan);
-		rmh = new ConsoleReceiveMessageHandler(cMod);
+		rmh = new ConsoleReceiveMessageHandler(cMod, connectionMan);
 		rmh.start();
 	}
 

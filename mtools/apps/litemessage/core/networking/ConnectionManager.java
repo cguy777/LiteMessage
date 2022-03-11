@@ -250,6 +250,30 @@ public class ConnectionManager {
 	}
 	
 	/**
+	 * Returns the currently configured control port.
+	 * @return
+	 */
+	public int getControlPort() {
+		return controlPort;
+	}
+	
+	/**
+	 * Returns the first dynamic port that is currently configured.
+	 * @return
+	 */
+	public int getFirstDynamicPort() {
+		return firstDynamicPort;
+	}
+	
+	/**
+	 * Returns the last dynamic port that is currently configured.
+	 * @return
+	 */
+	public int getLastDynamicPort() {
+		return lastDynamicPort;
+	}
+	
+	/**
 	 * Returns true if we are able to establish a ServerSocket on the specified port.
 	 * Returns false if one can't be made.
 	 * @param port

@@ -55,14 +55,14 @@ public class ReceiveMessageHandler extends Thread {
 	@Override
 	public void run() {
 		
-		if(!connectionMan.isLocalPortUsable(ConnectionManager.CONTROL_PORT)) {
-			JOptionPane.showMessageDialog(null, "The configured control port (" + ConnectionManager.CONTROL_PORT + ") is not available.  You cannot be contacted until otherwise!", "Network Error", JOptionPane.ERROR_MESSAGE);
+		if(!connectionMan.isLocalPortUsable(connectionMan.getControlPort())) {
+			JOptionPane.showMessageDialog(null, "The configured control port (" + connectionMan.getControlPort() + ") is not available.  You cannot be contacted until otherwise!", "Network Error", JOptionPane.ERROR_MESSAGE);
 		}
 		
 		while(true) {
 			
 			//Prevents a bunch of windows from popping up and stealing resources when the port isn't available.
-			if(!connectionMan.isLocalPortUsable(ConnectionManager.CONTROL_PORT)) {
+			if(!connectionMan.isLocalPortUsable(connectionMan.getControlPort())) {
 				try {
 					Thread.sleep(1000);
 				} catch (InterruptedException e) {}
