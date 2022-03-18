@@ -37,9 +37,13 @@
 package mtools.apps.litemessage;
 
 import mtools.apps.litemessage.gui.MainGUI;
+import mtools.logging.MLog;
 
 public class LiteMessageGUI {
+	@SuppressWarnings("unused")
 	public static void main(String[] args) {
+		//Testing logging functionality
+		MLog.initFileLogger();
 		MainGUI mGUI = new MainGUI();
 	}
 }

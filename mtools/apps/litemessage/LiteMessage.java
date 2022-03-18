@@ -52,6 +52,7 @@ import mtools.apps.litemessage.core.MessagingState;
 import mtools.apps.litemessage.core.networking.ConnectionManager;
 import mtools.apps.litemessage.core.networking.PortRangeException;
 import mtools.io.*;
+import mtools.logging.MLog;
 
 public class LiteMessage {
 	
@@ -64,6 +65,7 @@ public class LiteMessage {
 	static ContactManager cMan;
 	
 	public static void main(String[] args) {
+		MLog.initFileLogger();
 		display = new MDisplay("LiteMessage", 5);
 		display.setDisplayReverse();
 		console = new ConsoleTextInput();

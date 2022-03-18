@@ -58,6 +58,7 @@ import mtools.apps.litemessage.core.TextDisplayObject;
 import mtools.apps.litemessage.core.networking.ConnectionManager;
 import mtools.io.MConsole;
 import mtools.io.MDisplay;
+import mtools.logging.MLog;
 
 /**
  * This is the window that you be messaging people in.
