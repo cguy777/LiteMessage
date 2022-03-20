@@ -40,6 +40,7 @@ import javax.swing.JOptionPane;
 
 import mtools.apps.litemessage.control.logic.MessagingControlModule;
 import mtools.apps.litemessage.core.networking.ConnectionManager;
+import mtools.logging.MLog;
 
 /**
  * Just handles incoming connections from the console version.
@@ -57,6 +58,7 @@ public class ConsoleReceiveMessageHandler extends Thread {
 		
 		if(!connectionMan.isLocalPortUsable(connectionMan.getControlPort())) {
 			System.err.println("***The configured control port (" + connectionMan.getControlPort() + ") is not available.  You cannot be contacted until otherwise!***");
+			MLog.fileLog.log("Port " + connectionMan.getControlPort() + " is unavailable for use as the control port.");
 		}
 	}
 	

@@ -46,6 +46,7 @@ import java.util.ArrayList;
 
 import mtools.apps.litemessage.core.Contact;
 import mtools.apps.litemessage.core.Settings;
+import mtools.logging.MLog;
 
 /**
  * Manages the contact system.  Creates, sorts, and deletes contacts.
@@ -217,12 +218,10 @@ public class ContactManager {
 					contacts.get(i).setIPAddress(c.getIPAddress());
 					//Write them to file now so we don't have to worry about it later.
 					saveContacts();
+					MLog.fileLog.log("Updated contact " + c.getName() + ", with IP address " + c.getIPAddress() + ", and a UID of " + c.getUID());
 					return;
 				} else {
 					if(!contacts.get(i).getUID().matches(c.getUID())) {
-						//System.err.println("This person may not be " + '"' + c.getName() + '"' + ".  Different identifier detected!!");
-						//System.err.println("If the contact needs to be updated, or you'd like to ignore this in the future, please remove the contact, or enable dynamic UID updates.");
-						
 						c.setUIDProblem(true);
 						return;
 					//If name and UID match, do nothing.  We already have it.
@@ -237,6 +236,7 @@ public class ContactManager {
 				contacts.get(i).setIPAddress(c.getIPAddress());
 				//We'll write the contacts to file now so we don't have to worry about it later
 				saveContacts();
+				MLog.fileLog.log("Updated contact " + c.getName() + ", with IP address " + c.getIPAddress() + ", and a UID of " + c.getUID());
 				return;
 			}
 		}
@@ -244,6 +244,7 @@ public class ContactManager {
 		//If we can't find a matching UID or name, we'll just add it alphabetically.
 		if(contacts.size() < 1) {
 			contacts.add(c);
+			MLog.fileLog.log("Added contact " + c.getName() + ", with IP address " + c.getIPAddress() + ", and a UID of " + c.getUID());
 		} else {
 			int count = 0;
 			
@@ -266,6 +267,8 @@ public class ContactManager {
 					break;
 				}
 			}
+			
+			MLog.fileLog.log("Added contact " + c.getName() + ", with IP address " + c.getIPAddress() + ", and a UID of " + c.getUID());
 		}
 		
 		//We'll write the contacts to file now so we don't have to worry about it later

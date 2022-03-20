@@ -105,7 +105,7 @@ public class ConnectionManager {
 	 * @param highPort
 	 * @throws PortRangeException
 	 */
-	public void setDynamicPortRange(int lowPort, int highPort) throws PortRangeException {
+	public void setDynamicPortRange(int lowPort, int highPort) {
 		if(lowPort > highPort)
 			throw new PortRangeException("Specified low port cannot be greater than specified high port.");
 		
@@ -424,10 +424,5 @@ public class ConnectionManager {
 		int port = (int) (firstDynamicPort + Math.round(rand));
 		
 		return port;
-	}	
-	
-	/*
-	public static void main(String[]args) throws UnknownHostException, IOException, PortRangeException {
 	}
-	*/
 }

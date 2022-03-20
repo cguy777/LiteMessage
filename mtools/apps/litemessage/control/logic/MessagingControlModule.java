@@ -50,6 +50,8 @@ import mtools.apps.litemessage.core.networking.ConnectionManager;
 import mtools.apps.litemessage.core.networking.StreamBundle;
 import mtools.io.MConsole;
 import mtools.io.MDisplay;
+import mtools.logging.MFileLogger;
+import mtools.logging.MLog;
 
 /**
  * This is used to control data flow in a single chat session.
@@ -124,6 +126,7 @@ public class MessagingControlModule extends Thread {
 			
 		} catch (Exception e) {
 			System.err.println("Could not establish a connection.");
+			MLog.fileLog.log("Could not establish a connection with " + input);
 			return;
 		}
 		
@@ -137,11 +140,13 @@ public class MessagingControlModule extends Thread {
 			sBundle = connectionMan.initSessionNegotiation(address);
 		} catch(Exception e) {
 			System.err.println("Could not establish a connection.");
+			MLog.fileLog.log("Could not establish a connection with " + address.getHostAddress());
 			return;
 		}
 		
 		if(sBundle == null) {
 			System.err.println("Made contact with peer, but could not negotiate a connection.");
+			MLog.fileLog.log("Made contact with peer, but could not negotiate a connection (" + address.getHostAddress() + ").");
 			displayObject.tearDown();
 			return;
 		}
@@ -154,6 +159,7 @@ public class MessagingControlModule extends Thread {
 			otherUser.setIPAddress(sBundle.getSocket().getInetAddress());
 		} catch (IOException e) {
 			System.err.println("Had issue either sending our user info, or receiving their user info.");
+			MLog.fileLog.log("Had issue either sending our user info, or receiving their user info (" + address.getHostAddress() + ")." );
 			e.printStackTrace();
 		}
 		
@@ -162,15 +168,21 @@ public class MessagingControlModule extends Thread {
 		
 		display.setBanner("Connected with " + otherUser.getName());
 		display.display();
+		MLog.fileLog.log("Connected with " + otherUser.getName());
 		
 		mState.setMessagingState(MessagingState.CURRENTLY_MESSAGING);
 		
 		cMan.addContact(otherUser);
 		
+		System.out.print("> ");
+		
 		//Checking for possibly fishy contact info.
 		if(otherUser.getUIDProblem()) {
 			System.err.println("This person may not be " + '"' + otherUser.getName() + '"' + ".  Different identifier detected!");
-			System.err.println("If the contact needs to be updated, or you'd like to ignore this in the future, please remove the contact, or enable dynamic UID updates.");
+			System.err.println("> If the contact needs to be updated, or you'd like to ignore this in the future, please remove the contact, or enable dynamic UID updates.");
+			MLog.fileLog.log("UID mismatch with name \"" + otherUser.getName() + '"');
+			
+			System.out.print("> ");
 		}
 	}
 	
@@ -188,7 +200,7 @@ public class MessagingControlModule extends Thread {
 		try {
 			address = InetAddress.getByName(ipAddress);
 		} catch (Exception e) {
-			System.err.println("Could not establish a connection.");
+			MLog.fileLog.log("Could not establish a connection with " + ipAddress);
 			JOptionPane.showMessageDialog(null, "Could not establish connection", "Error", JOptionPane.ERROR_MESSAGE);
 			displayObject.tearDown();
 			return;
@@ -201,14 +213,14 @@ public class MessagingControlModule extends Thread {
 		try {
 			sBundle = connectionMan.initSessionNegotiation(address);
 		} catch(Exception e) {
-			System.err.println("Could not establish a connection.");
+			MLog.fileLog.log("Could not establish a connection with " + address.getHostAddress());
 			JOptionPane.showMessageDialog(null, "Could not establish connection", "Error", JOptionPane.ERROR_MESSAGE);
 			displayObject.tearDown();
 			return;
 		}
 		
 		if(sBundle == null) {
-			System.err.println("Made contact with peer, but could not negotiate a connection.");
+			MLog.fileLog.log("Made contact with peer, but could not negotiate a connection (" + address.getHostAddress() + ").");
 			JOptionPane.showMessageDialog(null, "Made contact with peer, but could not negotiate a connection.", "Error", JOptionPane.ERROR_MESSAGE);
 			displayObject.tearDown();
 			return;
@@ -221,13 +233,15 @@ public class MessagingControlModule extends Thread {
 			parseOtherUserData(sBundle.readUTFData());
 			otherUser.setIPAddress(sBundle.getSocket().getInetAddress());
 		} catch (IOException e) {
-			System.err.println("Had issue either sending our user info, or receiving their user info.");
+			MLog.fileLog.log("Had issue either sending our user info, or receiving their user info. (" + address.getHostAddress() + ").");
+			JOptionPane.showMessageDialog(null, "Had issue either sending our user info, or receiving their user info.", "Error", JOptionPane.ERROR_MESSAGE);
 			e.printStackTrace();
 		}
 		
 		this.start();
 		
 		displayObject.println("Connected with " + otherUser.getName() + "\n");
+		MLog.fileLog.log("Connected with " + otherUser.getName() + "\n");
 		
 		mState.setMessagingState(MessagingState.CURRENTLY_MESSAGING);
 		
@@ -237,6 +251,7 @@ public class MessagingControlModule extends Thread {
 		if(otherUser.getUIDProblem()) {
 			JOptionPane.showMessageDialog(null, "This person may not be " + '"' + otherUser.getName() + '"' + ".  Different identifier detected!", "Warning", JOptionPane.WARNING_MESSAGE);
 			JOptionPane.showMessageDialog(null, "If the contact needs to be updated, or you'd like to ignore this in the future, please remove the contact, or enable dynamic UID updates.", "Information", JOptionPane.INFORMATION_MESSAGE);
+			MLog.fileLog.log("UID mismatch with name \"" + otherUser.getName() + '"');
 		}
 	}
 	
@@ -264,16 +279,27 @@ public class MessagingControlModule extends Thread {
 			//Send the info about ourselves
 			sBundle.writeUTFData(thisUser.getName() + "," + thisUser.getUID());
 		} catch (IOException e) {
-			System.err.println("Error while sending our user info, or receiving their user info.");
+			System.err.println("Sombody else attempted to initiate contact.  Error while sending our user info, or receiving their user info.");
+			MLog.fileLog.log("Sombody else attempted to initiate contact.  Error while sending our user info, or receiving their user info.");
 			e.printStackTrace();
 		}
 		
 		display.setBanner("Connected with " + otherUser.getName());
 		display.display();
+		MLog.fileLog.log("Connected with " + otherUser.getName());
 		System.out.print("> ");
 		
 		mState.setMessagingState(MessagingState.CURRENTLY_MESSAGING);
 		cMan.addContact(otherUser);
+		
+		//Checking for possibly fishy contact info.
+		if(otherUser.getUIDProblem()) {
+			System.out.println("This person may not be " + '"' + otherUser.getName() + '"' + ".  Different identifier detected!");
+			System.out.println("> If the contact needs to be updated, or you'd like to ignore this in the future, please remove the contact, or enable dynamic UID updates.");
+			MLog.fileLog.log("UID mismatch with name \"" + otherUser.getName() + '"');
+			
+			System.out.print("> ");
+		}
 		
 		this.start();
 	}
@@ -283,7 +309,8 @@ public class MessagingControlModule extends Thread {
 		try {
 			sBundle = connectionMan.waitForSessionNegotiation();
 		} catch(Exception e) {
-			System.err.println("Error while reaching back to the peer initiating connection.");
+			System.err.println("Somebody else attempted to initiate contact.  Error while reaching back to the peer initiating connection.");
+			MLog.fileLog.log("Somebody else attempted to initiate contact.  Error while reaching back to the peer initiating connection.");
 			return;
 		}
 		
@@ -294,13 +321,15 @@ public class MessagingControlModule extends Thread {
 			//Send the info about ourselves
 			sBundle.writeUTFData(thisUser.getName() + "," + thisUser.getUID());
 		} catch (IOException e) {
-			System.err.println("Had issue either sending our user info, or receiving their user info.");
+			System.err.println("Error encountered while sending our user info, or receiving their user info.");
+			MLog.fileLog.log("Error encountered while sending our user info, or receiving their user info.");
 			e.printStackTrace();
 		}
 		
 		this.start();
 		
 		displayObject.println("Connected with " + otherUser.getName());
+		MLog.fileLog.log("Connected with " + otherUser.getName());
 		
 		mState.setMessagingState(MessagingState.CURRENTLY_MESSAGING);
 		cMan.addContact(otherUser);
@@ -309,6 +338,7 @@ public class MessagingControlModule extends Thread {
 		if(otherUser.getUIDProblem()) {
 			JOptionPane.showMessageDialog(null, "This person may not be " + '"' + otherUser.getName() + '"' + ".  Different identifier detected!", "Warning", JOptionPane.WARNING_MESSAGE);
 			JOptionPane.showMessageDialog(null, "If the contact needs to be updated, or you'd like to ignore this in the future, please remove the contact, or enable dynamic UID updates.", "Information", JOptionPane.INFORMATION_MESSAGE);
+			MLog.fileLog.log("UID mismatch with name \"" + otherUser.getName() + '"');
 		}
 	}	
 	
@@ -333,6 +363,7 @@ public class MessagingControlModule extends Thread {
 		}
 		
 		mState.setMessagingState(MessagingState.NOT_MESSAGING);
+		MLog.fileLog.log("Closed a session");
 	}
 	
 	/**
@@ -395,10 +426,12 @@ public class MessagingControlModule extends Thread {
 				rxData = sBundle.readUTFData();
 			} catch (SocketException se) {
 				displayObject.println("Connection was reset.  You have been disconnected...");
+				MLog.fileLog.log("Connection with " + otherUser.getName() + " has ended");	
 				clearConnections();
 				return;
 			} catch (IOException e) {
 				displayObject.println("You have been disconnected...");
+				MLog.fileLog.log("Connection with " + otherUser.getName() + " has ended");
 				clearConnections();
 				return;
 			}
@@ -407,6 +440,7 @@ public class MessagingControlModule extends Thread {
 				clearConnections();
 				
 				displayObject.println(otherUser.getName() + " has left...");
+				MLog.fileLog.log("Connection with " + otherUser.getName() + " has ended");
 				return;
 			}
 			

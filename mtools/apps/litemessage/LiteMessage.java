@@ -66,6 +66,7 @@ public class LiteMessage {
 	
 	public static void main(String[] args) {
 		MLog.initFileLogger();
+		MLog.fileLog.log("LiteMessage " + AppInfo.VERSION + " (console) has started.");
 		display = new MDisplay("LiteMessage", 5);
 		display.setDisplayReverse();
 		console = new ConsoleTextInput();

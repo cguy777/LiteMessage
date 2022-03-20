@@ -44,6 +44,7 @@ public class LiteMessageGUI {
 	public static void main(String[] args) {
 		//Testing logging functionality
 		MLog.initFileLogger();
+		MLog.fileLog.log("LiteMessage " + AppInfo.VERSION + " (GUI) has started.");
 		MainGUI mGUI = new MainGUI();
 	}
 }

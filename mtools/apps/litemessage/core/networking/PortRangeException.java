@@ -1,6 +1,6 @@
 package mtools.apps.litemessage.core.networking;
 
-public class PortRangeException extends Exception {
+public class PortRangeException extends IllegalArgumentException {
 	public PortRangeException() {
 		
 	}
