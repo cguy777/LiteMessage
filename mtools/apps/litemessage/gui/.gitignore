@@ -27,3 +27,7 @@
 /SessionInfo.class
 /SettingsGUI$portsCheckboxAction.class
 /SettingsGUI$PortsCheckboxAction.class
+/MainGUI$RemoveContactAction.class
+/MainGUI$RightClickMenu.class
+/MainGUI$RightClickAction.class
+/MainGUI$ConnectToAction.class
