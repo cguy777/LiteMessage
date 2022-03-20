@@ -43,11 +43,16 @@ import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JList;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.LookAndFeel;
 import javax.swing.UIManager;
@@ -77,6 +82,8 @@ public class MainGUI extends JFrame {
 	public JPanel lowerPanel;
 	public JButton messageButton;
 	public JButton contactSomebodyNew;
+	
+	public RightClickMenu rightClickMenu;
 	
 	public MainGUI() {
 		
@@ -136,12 +143,15 @@ public class MainGUI extends JFrame {
 		
 		
 		//Contacts List
+		rightClickMenu = new RightClickMenu();
+		
 		contactList = new JList<String>();
 		updateContactList();
 		
 		contactList.setSize(100, 100);
 		contactList.setFont(new Font(contactList.getFont().getName(), Font.BOLD, 15));
 		contactList.setBackground(new Color(0xf0f0f0));
+		contactList.addMouseListener(new RightClickAction());
 		contactScroll = new JScrollPane(contactList);
 		contactScroll.setSize(200, 300);
 		mainPanel.add(contactScroll, BorderLayout.CENTER);
@@ -155,7 +165,7 @@ public class MainGUI extends JFrame {
 		messageButton = new JButton("Connect To...");
 		messageButton.setVisible(true);
 		messageButton.setSize(95, 30);
-		messageButton.addActionListener(new ConnectButtonAction());
+		messageButton.addActionListener(new ConnectToAction());
 		messageButton.setMargin(new Insets(0, 0, 0, 0));
 		lowerPanel.add(messageButton, BorderLayout.WEST);
 		
@@ -172,7 +182,7 @@ public class MainGUI extends JFrame {
 		this.setVisible(true);
 	}
 	
-	private class ConnectButtonAction implements ActionListener {
+	private class ConnectToAction implements ActionListener {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
@@ -184,6 +194,9 @@ public class MainGUI extends JFrame {
 				selectedContact = cMan.getContactByName(contactList.getSelectedValue());
 				mGUI = new MessagingGUI(connectionMan);
 				mGUI.initiateMessaging(selectedContact, cMan);
+				
+				//Close the right click context menu if it was opened.
+				rightClickMenu.setVisible(false);
 				
 				//There might have been a change to the contact list, so we'll update it.
 				updateContactList();
@@ -216,6 +229,82 @@ public class MainGUI extends JFrame {
 			} catch(Exception ex) {
 				ex.printStackTrace();
 			}
+		}
+	}
+	
+	private class RightClickMenu extends JPopupMenu {
+		
+		JMenuItem ConnectToItem;
+		JMenuItem deleteContactItem;
+		
+		public RightClickMenu() {
+			ConnectToItem = new JMenuItem("Connect");
+			deleteContactItem = new JMenuItem("Remove");
+			ConnectToItem.addActionListener(new ConnectToAction());
+			deleteContactItem.addActionListener(new RemoveContactAction());
+			this.add(ConnectToItem);
+			this.add(deleteContactItem);
+		}
+	}
+	
+	private class RightClickAction implements MouseListener {
+		
+		public RightClickAction() {
+			
+		}
+
+		@Override
+		public void mouseClicked(MouseEvent e) {
+			// TODO Auto-generated method stub
+			if(e.getButton() == MouseEvent.BUTTON3) {
+				rightClickMenu.setLocation(e.getXOnScreen(), e.getYOnScreen());
+				rightClickMenu.setVisible(true);
+			}
+		}
+
+		@Override
+		public void mousePressed(MouseEvent e) {
+			//Make the right click menu disappear if we click off of it.
+			if(e.getButton() == MouseEvent.BUTTON1) {
+				rightClickMenu.setVisible(false);
+			}
+			
+		}
+
+		@Override
+		public void mouseReleased(MouseEvent e) {
+			
+			
+		}
+
+		@Override
+		public void mouseEntered(MouseEvent e) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void mouseExited(MouseEvent e) {
+			//rcm.setVisible(false);
+		}
+		
+	}
+	
+	private class RemoveContactAction implements ActionListener {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			//Make the menu disappear.
+			rightClickMenu.setVisible(false);
+			
+			String contact = contactList.getSelectedValue();
+			
+			//Do nothing if we get a bad selection
+			if(contact == null || contact.matches(""))
+				return;
+			
+			cMan.removeContact(contact);
+			updateContactList();
+			
 		}
 	}
 }
