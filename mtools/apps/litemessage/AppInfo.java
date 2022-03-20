@@ -38,7 +38,7 @@ package mtools.apps.litemessage;
 
 public class AppInfo {
 	public static final String NAME = "LiteMessage";
-	public static final String VERSION = "0.3.1";
+	public static final String VERSION = "0.3.2";
 	public static final String COPYRIGHT_HOLDER = "Noah McLean";
 	public static final String COPYRIGHT_YEAR = "2022";
 	
