@@ -241,7 +241,7 @@ public class MessagingControlModule extends Thread {
 		this.start();
 		
 		displayObject.println("Connected with " + otherUser.getName() + "\n");
-		MLog.fileLog.log("Connected with " + otherUser.getName() + "\n");
+		MLog.fileLog.log("Connected with " + otherUser.getName());
 		
 		mState.setMessagingState(MessagingState.CURRENTLY_MESSAGING);
 		
@@ -363,7 +363,6 @@ public class MessagingControlModule extends Thread {
 		}
 		
 		mState.setMessagingState(MessagingState.NOT_MESSAGING);
-		MLog.fileLog.log("Closed a session");
 	}
 	
 	/**
