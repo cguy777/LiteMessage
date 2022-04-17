@@ -42,7 +42,6 @@ import mtools.apps.litemessage.control.logic.ContactManager;
 import mtools.apps.litemessage.control.logic.MessagingControlModule;
 import mtools.apps.litemessage.control.logic.SettingsModule;
 import mtools.apps.litemessage.core.networking.ConnectionManager;
-import mtools.apps.litemessage.core.networking.PortRangeException;
 import mtools.io.MConsole;
 import mtools.io.MDisplay;
 
@@ -67,7 +66,7 @@ public class LiteMessageTestServer {
 			if(!sMod.getSettings().randomDataPorts) {
 				connectionMan.setDynamicPortRange(sMod.getSettings().dataPort, sMod.getSettings().dataPort);
 			}
-		} catch(PortRangeException rpe) {
+		} catch(IllegalArgumentException rpe) {
 			rpe.printStackTrace();
 		}
 		

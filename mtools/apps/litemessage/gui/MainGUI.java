@@ -59,7 +59,6 @@ import mtools.apps.litemessage.control.logic.ContactManager;
 import mtools.apps.litemessage.control.logic.SettingsModule;
 import mtools.apps.litemessage.core.Contact;
 import mtools.apps.litemessage.core.networking.ConnectionManager;
-import mtools.apps.litemessage.core.networking.PortRangeException;
 import mtools.io.MConsole;
 
 public class MainGUI extends JFrame {
@@ -98,7 +97,7 @@ public class MainGUI extends JFrame {
 				connectionMan.setDynamicPortRange(sMod.getSettings().dataPort, sMod.getSettings().dataPort);
 			}
 		
-		} catch(PortRangeException pre) {
+		} catch(IllegalArgumentException pre) {
 			JOptionPane.showMessageDialog(null, pre.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
 			pre.printStackTrace();
 			System.exit(-1);
