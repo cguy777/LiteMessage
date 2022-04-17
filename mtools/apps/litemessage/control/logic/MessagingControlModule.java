@@ -48,9 +48,7 @@ import mtools.apps.litemessage.core.TextDisplayObject;
 import mtools.apps.litemessage.core.TextInputObject;
 import mtools.apps.litemessage.core.networking.ConnectionManager;
 import mtools.apps.litemessage.core.networking.StreamBundle;
-import mtools.io.MConsole;
 import mtools.io.MDisplay;
-import mtools.logging.MFileLogger;
 import mtools.logging.MLog;
 
 /**

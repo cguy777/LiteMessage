@@ -38,8 +38,6 @@ package mtools.apps.litemessage.gui;
 
 import javax.swing.JOptionPane;
 
-import mtools.apps.litemessage.control.logic.ContactManager;
-import mtools.apps.litemessage.core.MessagingState;
 import mtools.apps.litemessage.core.networking.ConnectionManager;
 
 public class ReceiveMessageHandler extends Thread {

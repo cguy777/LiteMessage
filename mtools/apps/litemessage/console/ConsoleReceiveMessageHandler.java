@@ -36,8 +36,6 @@
 
 package mtools.apps.litemessage.console;
 
-import javax.swing.JOptionPane;
-
 import mtools.apps.litemessage.control.logic.MessagingControlModule;
 import mtools.apps.litemessage.core.networking.ConnectionManager;
 import mtools.logging.MLog;

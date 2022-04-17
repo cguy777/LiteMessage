@@ -43,7 +43,6 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 
 /**
@@ -86,12 +85,12 @@ public class ConnectionManager {
 	 * Changes the port that the dynamic sockets are negotiated over.  Default is 5676.
 	 * @param newPortNumber
 	 */
-	public void setControlPort(int newPortNumber) throws PortRangeException {
+	public void setControlPort(int newPortNumber) {
 		if(newPortNumber < 1 || newPortNumber > 65535)
-			throw new PortRangeException("Specified ports must be between 1 and 65535.");
+			throw new IllegalArgumentException("Specified ports must be between 1 and 65535.");
 		
 		if(newPortNumber >= firstDynamicPort && newPortNumber <= lastDynamicPort)
-			throw new PortRangeException("Control port cannot be within the range of data ports.");
+			throw new IllegalArgumentException("Control port cannot be within the range of data ports.");
 			
 		controlPort = newPortNumber;
 	}
@@ -107,13 +106,13 @@ public class ConnectionManager {
 	 */
 	public void setDynamicPortRange(int lowPort, int highPort) {
 		if(lowPort > highPort)
-			throw new PortRangeException("Specified low port cannot be greater than specified high port.");
+			throw new IllegalArgumentException("Specified low port cannot be greater than specified high port.");
 		
 		if(lowPort < 1 || highPort > 65535)
-			throw new PortRangeException("Specified ports must be between 1 and 65535.");
+			throw new IllegalArgumentException("Specified ports must be between 1 and 65535.");
 		
 		if(controlPort >= lowPort && controlPort <= highPort)
-			throw new PortRangeException("Control port cannot be within the range of data ports.");
+			throw new IllegalArgumentException("Control port cannot be within the range of data ports.");
 		
 		firstDynamicPort = lowPort;
 		lastDynamicPort = highPort;
@@ -156,7 +155,7 @@ public class ConnectionManager {
 			//Then throw an exception.
 			if(outgoingPortEnforcement) {
 				if(portNumber < firstDynamicPort || portNumber > lastDynamicPort) {
-					throw new PortRangeException("Negotiated port was outside of acceptable configured ports.");
+					throw new IllegalArgumentException("Negotiated port was outside of acceptable configured ports.");
 				}
 			}
 		} catch(Exception e) {

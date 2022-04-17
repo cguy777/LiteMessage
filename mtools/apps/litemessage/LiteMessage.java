@@ -35,16 +35,12 @@
  */
 
 package mtools.apps.litemessage;
-import java.io.IOException;
-
 import javax.swing.JOptionPane;
 
 import mtools.apps.litemessage.console.ConsoleReceiveMessageHandler;
 import mtools.apps.litemessage.console.ConsoleTextDisplay;
 import mtools.apps.litemessage.console.ConsoleTextInput;
 import mtools.apps.litemessage.console.MenuModule;
-import mtools.apps.litemessage.control.logic.CommandParseModule;
-import mtools.apps.litemessage.control.logic.CommandType;
 import mtools.apps.litemessage.control.logic.ContactManager;
 import mtools.apps.litemessage.control.logic.MessagingControlModule;
 import mtools.apps.litemessage.control.logic.SettingsModule;
@@ -75,7 +71,6 @@ public class LiteMessage {
 		connectionMan = new ConnectionManager();
 		SettingsModule sMod = new SettingsModule(console, true);
 		MenuModule menuMod = new MenuModule(console, menu, sMod.getSettings().thisUser.getName());
-		CommandParseModule cpm = new CommandParseModule();
 		
 		try {
 			connectionMan.setControlPort(sMod.getSettings().controlPort);
